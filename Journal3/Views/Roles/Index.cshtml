@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
+@{
+    ViewBag.Title = "Роли";
+}
+<div class="container">
+    <h2>@ViewBag.Title </h2>
+    <h5>   @Html.ActionLink("Добавить роль", "Create", "Roles") </h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Наименование</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Roles", new {id = item.Id.ToString()})">
+                            Редактировать
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
