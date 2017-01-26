@@ -1,0 +1,12 @@
+﻿
+@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+@{
+    ViewBag.Title = "Редактировать роль";
+}
+<h3>@ViewBag.Title</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.Partial("_EditPartial")
+    <input type="submit" value="Редактировать" />
+}

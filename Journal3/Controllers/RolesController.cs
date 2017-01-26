@@ -88,6 +88,18 @@ namespace Journal3.Controllers
         // GET: Roles/Edit/5
         public ActionResult Edit(string id)
         {
+            /*if (User.Identity.IsAuthenticated)
+            {
+                if (!isAdminUser())
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }*/
+
             var Role = db.Roles.Find(id);
             return View(Role);
         }
@@ -96,9 +108,22 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Edit(IdentityRole Role)
         {
+            /*if (User.Identity.IsAuthenticated)
+            {
+                if (!isAdminUser())
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }*/
+
+            var dbRole = db.Roles.Find(Role.Id);
             if (ModelState.IsValid)
             {
-                UpdateModel(Role);
+                UpdateModel(dbRole);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -107,25 +132,29 @@ namespace Journal3.Controllers
         }
 
         // GET: Roles/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
-            return View();
+            var Role = db.Roles.Find(id);
+            return View(Role);
         }
 
         // POST: Roles/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(string id, FormCollection collection)
         {
+            var Role = db.Roles.Find(id);
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                db.Roles.Remove(Role);
+                db.SaveChanges();
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                throw new Exception("Невозможно удалить роль");
+                //TempData["Message"] = "Невозможно удалить скидку.";
+                //return RedirectToAction("Index");
             }
+            return RedirectToAction("Index");
         }
 
         public Boolean isAdminUser()

@@ -1,0 +1,21 @@
+﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+
+@{
+    ViewBag.Title = "Удалить роль";
+}
+
+<h3>@ViewBag.Title</h3>
+    <h3>Вы уверены, что хотите удалить выбранную скидку?</h3>
+
+    <div class="display-label">Наименование</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Name)
+    </div>
+
+    <br />
+    @using (Html.BeginForm())
+    {
+        <p>
+            <input type="submit" value="Удалить" />
+        </p>
+    }

@@ -2,9 +2,14 @@
 @{
     ViewBag.Title = "Роли";
 }
-<div class="container">
+
     <h2>@ViewBag.Title </h2>
-    <h5>   @Html.ActionLink("Добавить роль", "Create", "Roles") </h5>
+    
+    <hr />
+    <a href="/Roles/Create">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        Добавить роль
+    </a>
     <table class="table">
         <thead>
             <tr>
@@ -20,12 +25,10 @@
                         @item.Name
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Roles", new {id = item.Id.ToString()})">
-                            Редактировать
-                        </a>
+                        <a href="@Url.Action("Edit", "Roles", new {id = item.Id.ToString()})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Delete", "Roles", new {id = item.Id.ToString()})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-</div>
