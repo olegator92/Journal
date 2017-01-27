@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Роли";
 }
-<h2>@ViewBag.Title</h2>
+@Html.Partial("_HeaderPartial")
 <h4>Добавить новую роль</h4>
 <hr />
 @using (Html.BeginForm("Create", "Roles", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -14,4 +14,5 @@
         </div>
     </div>
 }
+
 
