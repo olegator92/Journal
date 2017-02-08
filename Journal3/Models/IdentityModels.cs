@@ -23,7 +23,6 @@ namespace Journal3.Models
             return userIdentity;
         }
 
-        public int RollNo { get; set; }
 
         public virtual ICollection<UserInfo> UserInfos { get; set; }
         public virtual ICollection<Record> Records { get; set; }

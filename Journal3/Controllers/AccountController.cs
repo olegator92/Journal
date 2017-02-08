@@ -15,11 +15,14 @@ namespace Journal3.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private ApplicationDbContext db = null;
+
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
         public AccountController()
         {
+            db = new ApplicationDbContext();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -139,6 +142,7 @@ namespace Journal3.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            ViewBag.Roles = new SelectList(db.Roles.ToList(), "Id", "Name");
             return View();
         }
 
@@ -156,18 +160,23 @@ namespace Journal3.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    await this.UserManager.AddToRoleAsync(user.Id, model.UserRoles);
+
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.User = user;
+                    userInfo.Name = model.UserName;
 
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
             }
-
+            ViewBag.Roles = new SelectList(db.Roles.ToList(), "Id", "Name");
             // If we got this far, something failed, redisplay form
             return View(model);
         }

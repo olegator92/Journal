@@ -65,6 +65,14 @@ namespace Journal3.Models
     public class RegisterViewModel
     {
         [Required]
+        [Display(Name = "Роль")]
+        public string UserRoles { get; set; }
+
+        [Required]
+        [Display(Name = "ФИО")]
+        public string UserName { get; set; }
+
+        [Required]
         [EmailAddress]
         [Display(Name = "Электронный адрес")]
         public string Email { get; set; }
