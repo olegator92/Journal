@@ -12,7 +12,6 @@ namespace Journal3.Models
     {
         public ApplicationUser()
         {
-            this.UserInfos = new HashSet<UserInfo>();
             this.Records = new HashSet<Record>();
         }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -23,9 +22,9 @@ namespace Journal3.Models
             return userIdentity;
         }
 
-
-        public virtual ICollection<UserInfo> UserInfos { get; set; }
+        //public virtual UserInfo UserInfo { get; set; }
         public virtual ICollection<Record> Records { get; set; }
+   
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -38,7 +37,7 @@ namespace Journal3.Models
 
         public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<Record> Records { get; set; }
-
+        public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

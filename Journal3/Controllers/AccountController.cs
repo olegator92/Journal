@@ -89,7 +89,7 @@ namespace Journal3.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    ModelState.AddModelError("", "Неправильный электронный адрес или пароль.");
                     return View(model);
             }
         }
@@ -142,7 +142,11 @@ namespace Journal3.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            ViewBag.Roles = new SelectList(db.Roles.ToList(), "Id", "Name");
+            if (db.Users.Any())
+                ViewBag.Role = "Admin";
+            else
+                ViewBag.Role = "Employee";
+
             return View();
         }
 
@@ -169,14 +173,41 @@ namespace Journal3.Controllers
                     await this.UserManager.AddToRoleAsync(user.Id, model.UserRoles);
 
                     UserInfo userInfo = new UserInfo();
-                    userInfo.User = user;
+                    userInfo.User = db.Users.Find(user.Id);
                     userInfo.Name = model.UserName;
+
+                    TimeSpan startWork = new TimeSpan(8, 0, 0);
+                    TimeSpan endWork = new TimeSpan(18, 0, 0);
+                    WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
+                    if (workSchedule != null)
+                    {
+                        userInfo.WorkSchedule = workSchedule;
+                    }
+                    else
+                    {
+                        WorkSchedule newWorkSchedule = new WorkSchedule
+                        {
+                            Name = "08:00 - 18:00",
+                            StartWork = startWork,
+                            EndWork = endWork
+                        };
+                        db.WorkSchedules.Add(newWorkSchedule);
+                        db.SaveChanges();
+
+                        userInfo.WorkSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
+                    }
+
+                    db.UserInfoes.Add(userInfo);
+                    db.SaveChanges();
 
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
             }
-            ViewBag.Roles = new SelectList(db.Roles.ToList(), "Id", "Name");
+            if (db.Users.Any())
+                ViewBag.Role = "Admin";
+            else
+                ViewBag.Role = "Employee";
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -220,10 +251,10 @@ namespace Journal3.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
+                await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form

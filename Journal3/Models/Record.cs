@@ -18,5 +18,6 @@ namespace Journal3.Models
         public bool IsSystem { get; set; }
 
         public virtual ApplicationUser User { get; set; }
+        public virtual WorkSchedule WorkSchedule { get; set; }
     }
 }

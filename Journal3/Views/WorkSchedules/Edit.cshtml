@@ -1,0 +1,16 @@
+﻿@model Journal3.Models.WorkSchedule
+@{
+    ViewBag.Title = "Редактировать график работы";
+}
+
+@Html.Partial("_HeaderPartial")
+
+@using (Html.BeginForm("Edit", "WorkSchedules", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.Partial("_EditPartial")
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Редактировать" />
+        </div>
+    </div>
+}

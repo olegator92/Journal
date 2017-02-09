@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Journal3.Models.WorkSchedule>
+@{
+    ViewBag.Title = "График работы";
+}
+<h2>@ViewBag.Title </h2>
+
+<hr />
+<a href="/WorkSchedules/Create">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Добавить график работы
+</a>
+<table class="table table-hover customTheme" style="width:auto;">
+    <thead>
+        <tr class="tabcolor">
+            <th scope="row">Наименование</th>
+            <th scope="row">Начало</th>
+            <th scope="row">Конец</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.StartWork
+                </td>
+                <td>
+                    @item.EndWork
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "WorkSchedules", new {id = item.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    <a href="@Url.Action("Delete", "WorkSchedules", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

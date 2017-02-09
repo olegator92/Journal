@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -10,9 +11,8 @@ namespace Journal3.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Key { get; set; }
-        public TimeSpan StartWork { get; set; }
-        public TimeSpan EndWork { get; set; }
-
+        
         public virtual ApplicationUser User { get; set; }
+        public virtual WorkSchedule WorkSchedule { get; set; }
     }
 }

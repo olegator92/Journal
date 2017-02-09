@@ -199,6 +199,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\WorkSchedulesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -206,14 +208,36 @@
     <Compile Include="Migrations\201701201153291_InitialCreate.Designer.cs">
       <DependentUpon>201701201153291_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702080857560_TryToUpdate.cs" />
+    <Compile Include="Migrations\201702080857560_TryToUpdate.Designer.cs">
+      <DependentUpon>201702080857560_TryToUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702080913115_WorkSchedules.cs" />
+    <Compile Include="Migrations\201702080913115_WorkSchedules.Designer.cs">
+      <DependentUpon>201702080913115_WorkSchedules.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702080923039_CorrectSchedule.cs" />
+    <Compile Include="Migrations\201702080923039_CorrectSchedule.Designer.cs">
+      <DependentUpon>201702080923039_CorrectSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702081131363_CorrectSchedule2.cs" />
+    <Compile Include="Migrations\201702081131363_CorrectSchedule2.Designer.cs">
+      <DependentUpon>201702081131363_CorrectSchedule2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702090407107_CorrectUserInfo.cs" />
+    <Compile Include="Migrations\201702090407107_CorrectUserInfo.Designer.cs">
+      <DependentUpon>201702090407107_CorrectUserInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Record.cs" />
     <Compile Include="Models\UserInfo.cs" />
+    <Compile Include="Models\WorkSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\UserViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -279,9 +303,16 @@
     <Content Include="Views\Roles\Edit.cshtml" />
     <Content Include="Views\Roles\Delete.cshtml" />
     <Content Include="Views\Roles\_HeaderPartial.cshtml" />
+    <Content Include="Views\WorkSchedules\Index.cshtml" />
+    <Content Include="Views\WorkSchedules\Create.cshtml" />
+    <Content Include="Views\WorkSchedules\_EditPartial.cshtml" />
+    <Content Include="Views\WorkSchedules\_HeaderPartial.cshtml" />
+    <Content Include="Views\WorkSchedules\Edit.cshtml" />
+    <Content Include="Views\WorkSchedules\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -294,6 +325,21 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201701201153291_InitialCreate.resx">
       <DependentUpon>201701201153291_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702080857560_TryToUpdate.resx">
+      <DependentUpon>201702080857560_TryToUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702080913115_WorkSchedules.resx">
+      <DependentUpon>201702080913115_WorkSchedules.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702080923039_CorrectSchedule.resx">
+      <DependentUpon>201702080923039_CorrectSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702081131363_CorrectSchedule2.resx">
+      <DependentUpon>201702081131363_CorrectSchedule2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702090407107_CorrectUserInfo.resx">
+      <DependentUpon>201702090407107_CorrectUserInfo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

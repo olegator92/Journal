@@ -1,0 +1,28 @@
+﻿@model Journal3.Models.WorkSchedule
+@{
+    ViewBag.Title = "Удалить график работы";
+}
+
+@Html.Partial("_HeaderPartial")
+<h3>Вы уверены, что хотите удалить выбранный график работы?</h3>
+
+<div class="display-label"><b>Наименование</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.Name)
+</div>
+<div class="display-label"><b>Начало</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.StartWork)
+</div>
+<div class="display-label"><b>Конец</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.EndWork)
+</div>
+
+<br />
+@using (Html.BeginForm())
+{
+    <p>
+        <input type="submit" value="Удалить" />
+    </p>
+}
