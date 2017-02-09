@@ -11,5 +11,6 @@ namespace Journal3.Models
         public string Name { get; set; }
         public TimeSpan StartWork { get; set; }
         public TimeSpan EndWork { get; set; }
+
     }
 }

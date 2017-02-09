@@ -22,7 +22,6 @@ namespace Journal3.Models
             return userIdentity;
         }
 
-        //public virtual UserInfo UserInfo { get; set; }
         public virtual ICollection<Record> Records { get; set; }
    
     }

@@ -1,15 +1,20 @@
 ﻿using Journal3.Models;
+using Journal3.ViewModels;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace Journal3.Controllers
 {
     public class UsersController : Controller
     {
         private ApplicationDbContext db = null;
+
         public UsersController()
         {
             db = new ApplicationDbContext();
@@ -17,7 +22,30 @@ namespace Journal3.Controllers
         // GET: Users
         public ActionResult Index()
         {
-            return View();
+            List<UserViewModel> usersModel = new List<UserViewModel>();
+            var roleAdminId = db.Roles.FirstOrDefault(x => x.Name == "Admin").Id;
+            var users = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleAdminId)).ToList();
+            if (users.Any())
+            {
+                foreach (var user in users)
+                {
+                    UserViewModel model = new UserViewModel();
+                    model.UserId = user.Id;
+                    model.Email = user.UserName;
+     
+                    var userInfo = db.UserInfoes.FirstOrDefault(x => x.User.Id == user.Id);
+                    if (userInfo != null)
+                    {
+                        model.Name = userInfo.Name;
+                        model.Key = userInfo.Key;
+                        if(userInfo.WorkSchedule != null)
+                            model.WorkSchedule = userInfo.WorkSchedule;
+                    }
+                    usersModel.Add(model);
+                }
+
+            }
+            return View(usersModel);
         }
 
         // GET: Users/Details/5

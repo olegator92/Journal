@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Journal3.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,6 @@ namespace Journal3.ViewModels
         public string Name { get; set; }
         public string Email { get; set; }
         public string Key { get; set; }
-        public string WorkSchedule { get; set; }
+        public WorkSchedule WorkSchedule { get; set; }
     }
 }
