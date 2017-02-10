@@ -69,6 +69,13 @@ namespace Journal3.Models
         public string UserRoles { get; set; }
 
         [Required]
+        [Display(Name = "График работы")]
+        public int WorkSchedules { get; set; }
+
+        [Display(Name = "Ключ")]
+        public string Key { get; set; }
+
+        [Required]
         [Display(Name = "ФИО")]
         public string UserName { get; set; }
 

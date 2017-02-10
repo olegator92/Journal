@@ -314,6 +314,10 @@
     <Content Include="Views\WorkSchedules\Edit.cshtml" />
     <Content Include="Views\WorkSchedules\Delete.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Users\Create.cshtml" />
+    <Content Include="Views\Users\_HeaderPartial.cshtml" />
+    <Content Include="Views\Users\_EditPartial.cshtml" />
+    <Content Include="Views\Users\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
