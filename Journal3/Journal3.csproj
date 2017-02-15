@@ -232,6 +232,22 @@
     <Compile Include="Migrations\201702090859550_TryMigration.Designer.cs">
       <DependentUpon>201702090859550_TryMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702150827549_Check.cs" />
+    <Compile Include="Migrations\201702150827549_Check.Designer.cs">
+      <DependentUpon>201702150827549_Check.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702150847231_TryCascade.cs" />
+    <Compile Include="Migrations\201702150847231_TryCascade.Designer.cs">
+      <DependentUpon>201702150847231_TryCascade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702150857214_RecordCascade.cs" />
+    <Compile Include="Migrations\201702150857214_RecordCascade.Designer.cs">
+      <DependentUpon>201702150857214_RecordCascade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702151003025_FinalCascade.cs" />
+    <Compile Include="Migrations\201702151003025_FinalCascade.Designer.cs">
+      <DependentUpon>201702151003025_FinalCascade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -352,6 +368,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702090859550_TryMigration.resx">
       <DependentUpon>201702090859550_TryMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702150827549_Check.resx">
+      <DependentUpon>201702150827549_Check.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702150847231_TryCascade.resx">
+      <DependentUpon>201702150847231_TryCascade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702150857214_RecordCascade.resx">
+      <DependentUpon>201702150857214_RecordCascade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702151003025_FinalCascade.resx">
+      <DependentUpon>201702151003025_FinalCascade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

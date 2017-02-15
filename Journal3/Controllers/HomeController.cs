@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Journal3.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,9 +11,18 @@ namespace Journal3.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext db = null;
+        private UserManager<ApplicationUser> userManager;
+
+        public HomeController()
+        {
+            db = new ApplicationDbContext();
+            userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+        }
         public ActionResult Index()
         {
-            return View();
+            var records = db.Records.Where(x => x.DateRecord.Date == DateTime.Now.Date);
+            return View(records);
         }
 
         public ActionResult About()

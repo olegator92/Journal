@@ -142,11 +142,6 @@ namespace Journal3.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            if (db.Users.Any())
-                ViewBag.Role = "Admin";
-            else
-                ViewBag.Role = "Employee";
-
             return View();
         }
 
@@ -204,10 +199,6 @@ namespace Journal3.Controllers
                 }
                 AddErrors(result);
             }
-            if (db.Users.Any())
-                ViewBag.Role = "Admin";
-            else
-                ViewBag.Role = "Employee";
             // If we got this far, something failed, redisplay form
             return View(model);
         }

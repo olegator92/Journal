@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace Journal3.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
         private ApplicationDbContext db = null;
@@ -22,44 +23,15 @@ namespace Journal3.Controllers
         // GET: Roles
         public ActionResult Index()
         {
-            /*if (User.Identity.IsAuthenticated)
-            {
-
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }*/
             
             var Roles = db.Roles.ToList();
             return View(Roles);
         }
 
-        // GET: Roles/Details/5
-        /*public ActionResult Details(int id)
-        {
-            return View();
-        }*/
 
         // GET: Roles/Create
         public ActionResult Create()
         {
-            /*if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }*/
-
             var Role = new IdentityRole();
             return View(Role);
         }
@@ -68,18 +40,6 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Create(IdentityRole Role)
         {
-            /*if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }*/
-
             db.Roles.Add(Role);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -88,18 +48,6 @@ namespace Journal3.Controllers
         // GET: Roles/Edit/5
         public ActionResult Edit(string id)
         {
-            /*if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }*/
-
             var Role = db.Roles.Find(id);
             return View(Role);
         }
@@ -108,18 +56,6 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Edit(IdentityRole Role)
         {
-            /*if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }*/
-
             var dbRole = db.Roles.Find(Role.Id);
             if (ModelState.IsValid)
             {

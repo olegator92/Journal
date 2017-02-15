@@ -17,7 +17,7 @@ namespace Journal3.Models
         public bool IsForgiven { get; set; }
         public bool IsSystem { get; set; }
 
-        public virtual ApplicationUser User { get; set; }
-        public virtual WorkSchedule WorkSchedule { get; set; }
+        //public virtual ApplicationUser User { get; set; }
+        //public virtual WorkSchedule WorkSchedule { get; set; }
     }
 }

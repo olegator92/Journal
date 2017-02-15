@@ -14,6 +14,7 @@ using System.Net;
 
 namespace Journal3.Controllers
 {
+    //[Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private ApplicationDbContext db = null;
@@ -212,14 +213,6 @@ namespace Journal3.Controllers
         public ActionResult Delete(string id, RegisterViewModel model)
         {
             var user = db.Users.Find(id);
-            var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
-            if (userInfo != null)
-            {
-
-                db.UserInfoes.Remove(userInfo);
-                db.SaveChanges();
-            }
-
             try
             {
                 db.Users.Remove(user);

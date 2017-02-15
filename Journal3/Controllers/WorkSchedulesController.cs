@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace Journal3.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class WorkSchedulesController : Controller
     {
         private ApplicationDbContext db = null;
