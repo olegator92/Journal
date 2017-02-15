@@ -41,5 +41,6 @@ namespace Journal3.Models
         {
             return new ApplicationDbContext();
         }
+
     }
 }

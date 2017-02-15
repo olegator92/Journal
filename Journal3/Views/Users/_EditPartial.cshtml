@@ -17,13 +17,20 @@
 <div class="form-group">
     @Html.LabelFor(m => m.UserRoles, new { @class = "col-md-2 control-label" })
     <div class="col-md-10">
-        @Html.DropDownList("UserRoles", (SelectList)ViewBag.UserRoles, new { @class = "form-control" })
+        @Html.DropDownList("UserRoles", (SelectList)ViewBag.UserRole, new { @class = "form-control" })
     </div>
 </div>
+
+<!--<div class="form-group">
+    @Html.LabelFor(m => m.WorkSchedules, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+        @Html.DropDownList("WorkSchedules", (SelectList)ViewBag.WorkSchedule, new { @class = "form-control" })
+    </div>
+</div>-->
 
 <div class="form-group">
     @Html.LabelFor(m => m.WorkSchedules, new { @class = "col-md-2 control-label" })
     <div class="col-md-10">
-        @Html.DropDownList("WorkSchedules", (SelectList)ViewBag.WorkSchedules, new { @class = "form-control" })
+        @Html.DropDownListFor(m => m.WorkSchedules, (SelectList)ViewBag.WorkSchedule, new { @class = "form-control" })
     </div>
 </div>

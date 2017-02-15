@@ -318,6 +318,7 @@
     <Content Include="Views\Users\_HeaderPartial.cshtml" />
     <Content Include="Views\Users\_EditPartial.cshtml" />
     <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

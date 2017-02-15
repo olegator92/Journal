@@ -1,6 +1,6 @@
 ﻿@model Journal3.Models.RegisterViewModel
 @{
-    ViewBag.Title = "Редактировать график работы";
+    ViewBag.Title = "Редактировать пользователя - " + Model.UserName;
 }
 
 @Html.Partial("_HeaderPartial")
@@ -12,9 +12,11 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Model.Email
+            <p class="col-md-1 control-label">@Model.Email</p>
         </div>
     </div>
+
+    @Html.Hidden("id", (string)ViewBag.UserId);
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

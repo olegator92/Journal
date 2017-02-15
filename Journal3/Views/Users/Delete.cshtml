@@ -1,0 +1,41 @@
+﻿@model Journal3.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Удалить пользователя";
+}
+
+@Html.Partial("_HeaderPartial")
+<h3>Вы уверены, что хотите удалить пользователя @Model.UserName?</h3>
+
+<div class="display-label"><b>ФИО</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.UserName)
+</div>
+
+<div class="display-label"><b>Роль</b></div>
+<div class="display-field">
+    <p class="control-label">@ViewBag.UserRole</p>
+</div>
+
+<div class="display-label"><b>График работы</b></div>
+<div class="display-field">
+    <p class="control-label">@ViewBag.WorkSchedule</p>
+</div>
+
+<div class="display-label"><b>Ключ</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.Key)
+</div>
+
+<div class="display-label"><b>Электронный адрес</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.Email)
+</div>
+
+<br />
+@using (Html.BeginForm())
+{
+    @Html.Hidden("id", (string)ViewBag.UserId, new { @class = "form-control" });
+    <p>
+        <input type="submit" value="Удалить" class="form-control"/>
+    </p>
+}
