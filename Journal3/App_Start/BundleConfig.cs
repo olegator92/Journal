@@ -26,6 +26,10 @@ namespace Journal3
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new LessBundle("~/Less/datepicker").Include("~/Less/*.less"));
+            bundles.Add(new LessBundle("~/Less/build").Include("~/Less/*.less"));
+            bundles.Add(new LessBundle("~/Less/build_standalone").Include("~/Less/*.less"));
         }
     }
 }

@@ -1,0 +1,67 @@
+﻿@model Journal3.Models.Record
+@{
+    ViewBag.Title = "Записаться";
+}
+@Html.Partial("_HeaderPartial")
+<h4>Добавить пользователя</h4>
+<hr />
+@using (Html.BeginForm("Create", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div class="input-append date" id="datepicker" name="DateRecord" data-date-format="dd-mm-yyyy">
+    <label class="control-label" for="Date" style="display: inline-block;">Дата:</label>
+        <input class="form-control" size="16" type="text" value="@ViewBag.DateNow" readonly="">
+        <span class="add-on glyphicon glyphicon-calendar"></span>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="TimeRecord">Время:</label>
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.TimeRecord, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="TimeRecord">Статус</label>
+        <div class="col-md-10">
+            <select class="form-control" id="Status" name="Status">
+                <option value="1">Пришел</option>
+                <option value="2">Ушел</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Remark">Примечание</label>
+        <div class="col-md-10">
+            <select class="form-control" id="Remark" name="Remark">
+                <option value="1">Пришел/Ушел</option>
+                <option value="2">Выез по работе</option>
+                <option value="3">Отпросился</option>
+                <option value="4">Отработка</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Comment">Комментарий</label>
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Comment, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Добавить" />
+        </div>
+    </div>
+}
+
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+<script type='text/javascript'>
+    $(function () {
+        $('#datepicker').datepicker({
+            language: 'ru'
+        });
+    });
+
+</script>

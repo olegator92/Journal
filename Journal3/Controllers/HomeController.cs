@@ -3,6 +3,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -21,8 +23,18 @@ namespace Journal3.Controllers
         }
         public ActionResult Index()
         {
-            //var records = db.Records.Where(x => x.DateRecord.Date == DateTime.Now.Date);
-            return View();
+            
+            DateTime dateNow = DateTime.Now.Date;
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == dateNow).ToList();
+            ViewBag.DateNow = dateNow;
+            return View(records);
+        }
+
+
+        public ActionResult Create()
+        {
+            Record record = new Record();
+            return View(record);
         }
 
         public ActionResult About()
