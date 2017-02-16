@@ -64,7 +64,6 @@ namespace Journal3.Models
 
     public class RegisterViewModel
     {
-        [Required]
         [Display(Name = "Роль")]
         public string UserRoles { get; set; }
 

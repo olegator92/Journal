@@ -7,13 +7,13 @@ namespace Journal3.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class FinalCascade : IMigrationMetadata
+    public sealed partial class RemoveRecord : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(FinalCascade));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(RemoveRecord));
         
         string IMigrationMetadata.Id
         {
-            get { return "201702151003025_FinalCascade"; }
+            get { return "201702151017487_RemoveRecord"; }
         }
         
         string IMigrationMetadata.Source

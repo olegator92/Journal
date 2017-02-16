@@ -244,9 +244,29 @@
     <Compile Include="Migrations\201702150857214_RecordCascade.Designer.cs">
       <DependentUpon>201702150857214_RecordCascade.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201702151003025_FinalCascade.cs" />
-    <Compile Include="Migrations\201702151003025_FinalCascade.Designer.cs">
-      <DependentUpon>201702151003025_FinalCascade.cs</DependentUpon>
+    <Compile Include="Migrations\201702151017487_RemoveRecord.cs" />
+    <Compile Include="Migrations\201702151017487_RemoveRecord.Designer.cs">
+      <DependentUpon>201702151017487_RemoveRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702151031256_ReturnRecord.cs" />
+    <Compile Include="Migrations\201702151031256_ReturnRecord.Designer.cs">
+      <DependentUpon>201702151031256_ReturnRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702151138556_RemoveUserInfo.cs" />
+    <Compile Include="Migrations\201702151138556_RemoveUserInfo.Designer.cs">
+      <DependentUpon>201702151138556_RemoveUserInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702151142062_ReturnUserInfo.cs" />
+    <Compile Include="Migrations\201702151142062_ReturnUserInfo.Designer.cs">
+      <DependentUpon>201702151142062_ReturnUserInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702160221104_DropRecord.cs" />
+    <Compile Include="Migrations\201702160221104_DropRecord.Designer.cs">
+      <DependentUpon>201702160221104_DropRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702160225304_RetirnRecord.cs" />
+    <Compile Include="Migrations\201702160225304_RetirnRecord.Designer.cs">
+      <DependentUpon>201702160225304_RetirnRecord.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -378,8 +398,23 @@
     <EmbeddedResource Include="Migrations\201702150857214_RecordCascade.resx">
       <DependentUpon>201702150857214_RecordCascade.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702151003025_FinalCascade.resx">
-      <DependentUpon>201702151003025_FinalCascade.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201702151017487_RemoveRecord.resx">
+      <DependentUpon>201702151017487_RemoveRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702151031256_ReturnRecord.resx">
+      <DependentUpon>201702151031256_ReturnRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702151138556_RemoveUserInfo.resx">
+      <DependentUpon>201702151138556_RemoveUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702151142062_ReturnUserInfo.resx">
+      <DependentUpon>201702151142062_ReturnUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702160221104_DropRecord.resx">
+      <DependentUpon>201702160221104_DropRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702160225304_RetirnRecord.resx">
+      <DependentUpon>201702160225304_RetirnRecord.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

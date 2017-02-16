@@ -12,7 +12,7 @@ namespace Journal3.Models
     {
         public ApplicationUser()
         {
-            //this.Records = new HashSet<Record>();
+            this.Records = new HashSet<Record>();
         }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -23,7 +23,7 @@ namespace Journal3.Models
         }
 
         public virtual UserInfo UserInfo { get; set; }
-        //public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<Record> Records { get; set; }
         
    
     }
@@ -47,13 +47,19 @@ namespace Journal3.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserInfo>()
-                .HasRequired(x => x.User).WithOptional(x => x.UserInfo)
+                .HasKey(x => x.UserId);
+
+            modelBuilder.Entity<UserInfo>()
+                .HasRequired(x => x.User)
+                .WithOptional(x => x.UserInfo)
                 .WillCascadeOnDelete(true);
 
-            /*modelBuilder.Entity<Record>()
-                .HasRequired(a => a.User).WithMany(x => x.Records)
+ 
+            modelBuilder.Entity<Record>()
+                .HasRequired(a => a.User)
+                .WithMany(x => x.Records)
                 .WillCascadeOnDelete(true);
-                */
+                
             base.OnModelCreating(modelBuilder);
         }
     }

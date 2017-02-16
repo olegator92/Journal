@@ -93,6 +93,7 @@ namespace Journal3.Controllers
                 UserManager.AddToRole(user.Id, model.UserRoles);
 
                 UserInfo userInfo = new UserInfo();
+                userInfo.UserId = user.Id;
                 userInfo.User = db.Users.Find(user.Id);
                 userInfo.Key = model.Key;
                 userInfo.Name = model.UserName;
@@ -154,6 +155,7 @@ namespace Journal3.Controllers
                 UserInfo newUserInfo = new UserInfo
                 {
                     User = user,
+                    UserId = user.Id,
                     Name = model.UserName,
                     WorkSchedule = db.WorkSchedules.FirstOrDefault(x => x.Id == model.WorkSchedules),
                     Key = model.Key
@@ -161,7 +163,7 @@ namespace Journal3.Controllers
                 db.UserInfoes.Add(newUserInfo);
                 db.SaveChanges();
             }
-
+            
             var role = UserManager.GetRoles(user.Id).FirstOrDefault();
             if (role != model.UserRoles)
             {

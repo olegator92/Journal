@@ -21,8 +21,8 @@ namespace Journal3.Controllers
         }
         public ActionResult Index()
         {
-            var records = db.Records.Where(x => x.DateRecord.Date == DateTime.Now.Date);
-            return View(records);
+            //var records = db.Records.Where(x => x.DateRecord.Date == DateTime.Now.Date);
+            return View();
         }
 
         public ActionResult About()
