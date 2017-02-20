@@ -15,9 +15,9 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    @Styles.Render("~/Less/datepicker")
-    @Styles.Render("~/Less/build")
-    @Styles.Render("~/Less/build_standalone")
+    <!--Styles.Render("~/Less/datepicker")
+    Styles.Render("~/Less/build")
+    Styles.Render("~/Less/build_standalone")-->
 
 </head>
 <body>
@@ -46,14 +46,14 @@
     </div>
     <div class="container body-content">
         <div class="jumbotron">
-            <h1>Журнал - @ViewBag.Date.ToString("dd.MM.yyyy")</h1>
+            <h1>Журнал - @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("dd.MM.yyyy") : DateTime.Now.ToString("dd.MM.yyyy"))</h1>
         </div>
         <div class="container" style="background-color:#fff; padding-left: 50px; padding-bottom: 15px;">
         @RenderBody()
         </div>
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - Akforta Copyright</p>
         </footer>
     </div>
 

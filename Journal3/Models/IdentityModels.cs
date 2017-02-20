@@ -54,7 +54,6 @@ namespace Journal3.Models
                 .WithOptional(x => x.UserInfo)
                 .WillCascadeOnDelete(true);
 
- 
             modelBuilder.Entity<Record>()
                 .HasRequired(a => a.User)
                 .WithMany(x => x.Records)

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Journal3.Models.Record>
+﻿@model IEnumerable<Journal3.ViewModels.RecordViewModel>
 @{ 
     int i = 1;
 }
@@ -9,77 +9,86 @@
 
 <br>
 <br>
-
-<form action="/Home/Index" method="post" role="form" class="form-inline">
-    <div class="input-append date" id="datepicker" data-date-format="dd-mm-yyyy">
-        <label class="control-label" for="Date" style="display: inline-block;">Дата:</label>
-        <input class="form-control" size="16" type="text" value="@ViewBag.DateNow" readonly="">
-        <span class="add-on glyphicon glyphicon-calendar"></span>
-    </div>
-</form>
-
-<table class="table table-hover customTheme" style="width:auto;">
-    <thead>
-        <tr class="tabcolor">
-            <th scope="row">№</th>
-            <th scope="row">Дата создания</th>
-            <th scope="row">Время</th>
-            <th scope="row">ФИО</th>
-            <th scope="row">Статус</th>
-            <th scope="row">Примечание</th>
-            <th scope="row">Комментарий</th>
-            <th scope="row">График работы</th>
-            <th scope="row">Система</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @i)
-                </td>
-                <td>
-                    @item.DateCreated
-                </td>
-                <td>
-                    @item.DateRecord
-                </td>
-                <td>
-                    @item.User.UserInfo.Name
-                </td>
-                <td>
-                    @item.Status
-                </td>
-                <td>
-                    @item.Remark
-                </td>
-                <td>
-                    @item.Comment
-                </td>
-                <td>
-                    @item.WorkSchedule.Name
-                </td>
-                <td>
-                    @item.IsSystem
-                </td>
-                <td>
-                    <a href="@Url.Action("Edit", "Users", new {id = item.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                    <a href="@Url.Action("Delete", "Users", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                </td>
+<div class="row">
+    <form action="/Home/Index" method="post" role="form" class="form-inline" id="getByDate">
+        <div class="input-append date" id="datepicker" data-date-format="dd-mm-yyyy">
+            <label class="control-label" for="Date" style="display: inline-block; padding-left: 15px;">Дата:</label>
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd-MM-yyyy")" readonly="">
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+    </form>
+</div>
+<br>
+<div class="row">
+    <a href="@Url.Action("Create", "Home", new {iselectedDate = ViewBag.SelectedDate})">
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span>Запись</a>
+</div>
+    <table class="table table-hover customTheme" style="width:auto;">
+        <thead>
+            <tr class="tabcolor">
+                <th scope="row">№</th>
+                <th scope="row">Время</th>
+                <th scope="row">ФИО</th>
+                <th scope="row">Статус</th>
+                <th scope="row">Примечание</th>
+                <th scope="row">Комментарий</th>
+                <th scope="row">График работы</th>
+                <th scope="row">Дата создания</th>
+                <th scope="row">Система</th>
+                <th></th>
             </tr>
-            i++;
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @i)
+                    </td>
+                    <td>
+                        @item.TimeRecord
+                    </td>
+                    <td>
+                        @item.User.UserInfo.Name
+                    </td>
+                    <td>
+                        @item.StatusName                   
+                    </td>
+                    <td>
+                        @item.RemarkName
+                    </td>
+                    <td>
+                        @item.Comment
+                    </td>
+                    <td>
+                        @item.WorkSchedule.Name
+                    </td>
+                    <td>
+                        @item.DateCreated
+                    </td>
+                    <td>
+                        @item.IsSystem
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Users", new {id = item.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Delete", "Users", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    </td>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
 
 
-<script type='text/javascript'>
-    $(function () {
-        $('#datepicker').datepicker({
-            language: 'ru'
+    <script type='text/javascript'>
+        $(function () {
+            $('#datepicker').datepicker({
+                language: 'ru'
+            });
         });
-    });
-    
-</script>
+
+        $('#selectedDate').change(function () {
+            $('#getByDate').submit();
+        });
+
+    </script>
