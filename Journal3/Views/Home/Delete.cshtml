@@ -1,0 +1,84 @@
+﻿@model Journal3.Models.Record
+@{
+    ViewBag.Title = "Удалить запись из журнала";
+}
+
+@Html.Partial("_HeaderPartial")
+<h3>Вы действительно хотите удалить выбранную запись из журнала?</h3>
+
+<div class="display-label"><b>Сотрудник</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.User.UserInfo.Name)
+</div>
+
+<div class="display-label"><b>Дата создния</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.DateCreated)
+</div>
+
+<div class="display-label"><b>Дата</b></div>
+<div class="display-field">
+    @Model.DateRecord.ToString("dd.MM.yyyy")
+</div>
+
+<div class="display-label"><b>Время</b></div>
+<div class="display-field">
+    @String.Format("{0:hh\\:mm}", Model.TimeRecord)
+</div>
+
+<div class="display-label"><b>Статус</b></div>
+<div class="display-field">
+    @switch(Model.Status)
+    {
+    case 1:
+        <p>Пришел</p>
+        break;
+    case 2:
+        <p>Ушел</p>
+        break;
+    }
+</div>
+
+<div class="display-label"><b>Примечание</b></div>
+<div class="display-field">
+@switch (Model.Remark)
+{
+    case 1:
+        <p>
+            Пришел/Ушел
+        </p>
+        break;
+    case 2:
+        <p>
+            Выезд по работе
+        </p>
+        break;
+    case 3:
+        <p>
+            Отпросился
+        </p>
+        break;
+    case 4:
+        <p>
+            Отработка
+        </p>
+        break;
+}
+</div>
+
+<div class="display-label"><b>Комментарий</b></div>
+<div class="display-field">
+    @Html.DisplayFor(model => model.Comment)
+</div>
+
+<br />
+@using (Html.BeginForm())
+{
+        <input type="submit" value="Удалить" class="btn btn-default" />
+}
+
+<style type="text/css">
+    p {
+        margin: 0px;
+    }
+</style>

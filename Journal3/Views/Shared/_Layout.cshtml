@@ -48,7 +48,7 @@
         <div class="jumbotron">
             <h1>Журнал - @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("dd.MM.yyyy") : DateTime.Now.ToString("dd.MM.yyyy"))</h1>
         </div>
-        <div class="container" style="background-color:#fff; padding-left: 50px; padding-bottom: 15px;">
+        <div class="container" style="background-color:#fff; padding-left: 50px; padding-right: 50px; padding-bottom: 15px;">
         @RenderBody()
         </div>
         <hr />

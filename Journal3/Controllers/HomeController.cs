@@ -127,13 +127,60 @@ namespace Journal3.Controllers
                 }
             }
             
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { selectedDate = model.DateRecord});
         }
 
         public ActionResult Edit(int id)
         {
-            var record = db.Records.Find(id);
+            var record = db.Records.Include(x => x.WorkSchedule).Include(x => x.User).FirstOrDefault(x => x.Id == id);
+
+            if (User.IsInRole("Admin"))
+            {
+                var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
+            }
+            ViewBag.SelectedDate = record.DateRecord;
             return View(record);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(Record record)
+        {
+            var dbRecord = db.Records.Find(record.Id);
+            if (ModelState.IsValid)
+            {
+                UpdateModel(dbRecord);
+                db.SaveChanges();
+                return RedirectToAction("Index", new { selectedDate = record.DateRecord});
+            }
+            ViewBag.SelectedDate = record.DateRecord;
+            return View(record);
+        }
+
+        public ActionResult Delete(int id)
+        {
+            var record = db.Records.Include(x => x.User.UserInfo).Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
+            ViewBag.SelectedDate = record.DateRecord;
+            return View(record);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(int id, FormCollection collection)
+        {
+            var record = db.Records.Find(id);
+            try
+            {
+                db.Records.Remove(record);
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Невозможно удалить запись!");
+                //TempData["Message"] = "Невозможно удалить скидку.";
+                //return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", new { selectedDate = record.DateRecord});
         }
 
         public ActionResult About()

@@ -20,8 +20,8 @@
 </div>
 <br>
 <div class="row">
-    <a href="@Url.Action("Create", "Home", new {iselectedDate = ViewBag.SelectedDate})">
-        <span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span>Запись</a>
+    <a href="@Url.Action("Create", "Home", new {iselectedDate = ViewBag.SelectedDate})" class="btn btn-primary" style="margin-left: 15px;">
+        <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись</a>
 </div>
     <table class="table table-hover customTheme" style="width:auto;">
         <thead>
@@ -31,7 +31,7 @@
                 <th scope="row">ФИО</th>
                 <th scope="row">Статус</th>
                 <th scope="row">Примечание</th>
-                <th scope="row">Комментарий</th>
+                <th scope="row" style="max-width: 100px;">Комментарий</th>
                 <th scope="row">График работы</th>
                 <th scope="row">Дата создания</th>
                 <th scope="row">Система</th>
@@ -46,7 +46,7 @@
                         @i)
                     </td>
                     <td>
-                        @item.TimeRecord
+                        <span style="font-size: 12pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                     </td>
                     <td>
                         @item.User.UserInfo.Name
@@ -57,7 +57,7 @@
                     <td>
                         @item.RemarkName
                     </td>
-                    <td>
+                    <td class="col-md-2">
                         @item.Comment
                     </td>
                     <td>
@@ -70,8 +70,8 @@
                         @item.IsSystem
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Users", new {id = item.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                        <a href="@Url.Action("Delete", "Users", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Edit", "Home", new {id = item.Id, selectedDate = ViewBag.SelectedDate})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Delete", "Home", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
                     </td>
                 </tr>
                 i++;
