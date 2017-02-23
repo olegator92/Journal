@@ -1481,7 +1481,8 @@ th {
 
 .table-striped > tbody > tr:nth-child(odd) > td,
 .table-striped > tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  /**background-color: #f9f9f9;*/
+  background-color: #e6ebee;
 }
 
 .table-hover > tbody > tr:hover > td,
@@ -6833,5 +6834,11 @@ td.visible-print {
     background-color: #5f5e5c;
     border-color: #fbeed5;
     color: #fff;
+}
+
+.notConfirmed {
+    border-right: 3px;
+    border-right-color: #ef7b48;
+    border-right-style: solid;
 }
 

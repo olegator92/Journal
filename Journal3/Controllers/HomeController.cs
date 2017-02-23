@@ -71,6 +71,7 @@ namespace Journal3.Controllers
                             break;
                     }
                     record.Comment = item.Comment;
+                    record.IsLate = item.IsLate;
                     record.IsConfirmed = item.IsConfirmed;
                     record.IsForgiven = item.IsForgiven;
                     record.IsSystem = item.IsSystem;
@@ -86,19 +87,51 @@ namespace Journal3.Controllers
             return View(model);
         }
 
+        public ActionResult DayStats(DateTime? selectedDate)
+        {
+            if (selectedDate == null)
+                selectedDate = DateTime.Now.Date;
+            List<JournalViewModel> model = new List<JournalViewModel>();
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
+                                            .OrderBy(x => x.TimeRecord)
+                                            .ToList();
 
-        public ActionResult Create(DateTime? selectedTime)
+            if (records.Any())
+            {
+                foreach (var user in records.Select(x => x.User).Distinct())
+                {
+                    JournalViewModel journalRow = new JournalViewModel();
+                    journalRow.EmployeeName = user.UserInfo.Name;
+                    var first = records.FirstOrDefault(x => x.User == user && x.Status == (int)Statuses.Come);
+                    if(first != null)
+                        journalRow.ComeTime = first.TimeRecord;
+                    var last = records.LastOrDefault(x => x.User == user && x.Status == (int)Statuses.Gone);
+                    if(last != null)
+                        journalRow.GoneTime = last.TimeRecord;
+
+                    model.Add(journalRow);
+                }
+
+            }
+            ViewBag.SelectedDate = selectedDate;
+            return View(model.OrderBy(x => x.EmployeeName));
+        }
+
+        public ActionResult Create(DateTime? selectedDate)
         {
             Record record = new Record();
-            record.DateRecord = selectedTime ?? DateTime.Now;
+            record.DateRecord = selectedDate ?? DateTime.Now;
             record.TimeRecord = DateTime.Now.TimeOfDay;
-
+            
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
                 var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
                 ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
             }
+            ViewBag.SelectedDate = selectedDate;
             return View(record);
         }
 
@@ -116,17 +149,22 @@ namespace Journal3.Controllers
                     key = dbUser.UserInfo.Key;
                 if (key != "")
                 {
+                    if (User.IsInRole("Admin"))
+                        model.IsConfirmed = true;
+                    else
+                        model.IsConfirmed = false;
+
                     model.DateCreated = DateTime.Now;
                     model.User = dbUser;
-                    model.IsConfirmed = false;
-                    model.IsForgiven = false;
+                    
+                    model.IsForgiven = true;
                     model.IsSystem = false;
                     model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     db.Records.Add(model);
                     db.SaveChanges();
                 }
             }
-            
+            ViewBag.SelectedDate = model.DateRecord;
             return RedirectToAction("Index", new { selectedDate = model.DateRecord});
         }
 
@@ -148,6 +186,9 @@ namespace Journal3.Controllers
         public ActionResult Edit(Record record)
         {
             var dbRecord = db.Records.Find(record.Id);
+            if(!User.IsInRole("Admin"))
+                record.IsConfirmed = false;
+
             if (ModelState.IsValid)
             {
                 UpdateModel(dbRecord);
@@ -181,6 +222,31 @@ namespace Journal3.Controllers
                 //return RedirectToAction("Index");
             }
             return RedirectToAction("Index", new { selectedDate = record.DateRecord});
+        }
+
+
+        public void ConfirmRecord(int recordId)
+        {
+            var record = db.Records.Find(recordId);
+            if (record != null)
+            {
+                if (record.IsConfirmed == false)
+                    record.IsConfirmed = true;
+                else
+                    record.IsConfirmed = false;
+                db.SaveChanges();
+            }
+        }
+
+        public void ConfirmAll(string date)
+        {
+            DateTime selectedDate = Convert.ToDateTime(date);
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsConfirmed == false).ToList();
+            foreach (var record in records)
+            {
+                record.IsConfirmed = true;
+                db.SaveChanges();
+            }
         }
 
         public ActionResult About()

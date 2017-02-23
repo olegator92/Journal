@@ -14,6 +14,7 @@ namespace Journal3.Models
         public int Status { get; set; }
         public int Remark { get; set; }
         public string Comment { get; set; }
+        public bool IsLate{ get; set; }
         public bool IsConfirmed { get; set; }
         public bool IsForgiven { get; set; }
         public bool IsSystem { get; set; }

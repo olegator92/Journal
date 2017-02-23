@@ -1,7 +1,4 @@
 ﻿@model IEnumerable<Journal3.ViewModels.RecordViewModel>
-@{ 
-    int i = 1;
-}
 
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
@@ -11,27 +8,26 @@
 <br>
 <div class="row">
     <form action="/Home/Index" method="post" role="form" class="form-inline" id="getByDate">
-        <div class="input-append date" id="datepicker" data-date-format="dd-mm-yyyy">
+        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
             <label class="control-label" for="Date" style="display: inline-block; padding-left: 15px;">Дата:</label>
-            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd-MM-yyyy")" readonly="">
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;"/>
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
     </form>
 </div>
 <br>
 <div class="row">
-    <a href="@Url.Action("Create", "Home", new {iselectedDate = ViewBag.SelectedDate})" class="btn btn-primary" style="margin-left: 15px;">
+    <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate})" class="btn btn-primary" style="margin-left: 15px;">
         <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись</a>
 </div>
-    <table class="table table-hover customTheme" style="width:auto;">
+    <table class="table table-hover customTheme table-striped" style="width:auto;">
         <thead>
             <tr class="tabcolor">
-                <th scope="row">№</th>
                 <th scope="row">Время</th>
                 <th scope="row">ФИО</th>
                 <th scope="row">Статус</th>
                 <th scope="row">Примечание</th>
-                <th scope="row" style="max-width: 100px;">Комментарий</th>
+                <th scope="row">Комментарий</th>
                 <th scope="row">График работы</th>
                 <th scope="row">Дата создания</th>
                 <th scope="row">Система</th>
@@ -41,10 +37,7 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @i)
-                    </td>
+                <tr class=@(item.IsConfirmed == false ? "notConfirmed" : "")>
                     <td>
                         <span style="font-size: 12pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                     </td>
@@ -52,6 +45,14 @@
                         @item.User.UserInfo.Name
                     </td>
                     <td>
+                        @if (item.Status == 1)
+                        {
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        }
                         @item.StatusName                   
                     </td>
                     <td>
@@ -66,16 +67,46 @@
                     <td>
                         @item.DateCreated
                     </td>
-                    <td>
-                        @item.IsSystem
+                    <td style="text-align: center;">
+                        @if (item.IsSystem)
+                        {
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        }
                     </td>
                     <td>
+                        <input type="hidden" name="recordId" value="@item.Id" />
                         <a href="@Url.Action("Edit", "Home", new {id = item.Id, selectedDate = ViewBag.SelectedDate})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                        <a href="@Url.Action("Delete", "Home", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Delete", "Home", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        @if (item.IsConfirmed)
+                        {
+                            <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                        }
                     </td>
                 </tr>
-                i++;
             }
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button class="btn btn-primary" style="font-size: 8pt;" id="ConfirmAll">
+                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="margin-right: 10px;"></span>Утвердить все
+                    </button>
+                </td>
+            </tr>
         </tbody>
     </table>
 
@@ -90,5 +121,34 @@
         $('#selectedDate').change(function () {
             $('#getByDate').submit();
         });
+
+        $('.confirm').click(GetSingleProductCosts);
+
+        function GetSingleProductCosts(event) {
+            var id = $(this).parent().children("input[name=recordId]").val();
+
+            $.get('/Home/ConfirmRecord', { recordId: id}).done(
+                    function () {
+                    });
+            $(this).toggleClass("glyphicon-thumbs-down");
+            $(this).toggleClass("glyphicon-thumbs-up");
+            $(this).parent().parent().toggleClass("notConfirmed");
+        }
+
+        $('#ConfirmAll').click(ConfirmAllRecords);
+
+        function ConfirmAllRecords(event) {
+            var selectedDate = $("#selectedDate").val();
+
+            $.get('/Home/ConfirmAll', { date:  selectedDate}).done(
+                    function () {
+                    });
+
+            $(".glyphicon-thumbs-down").each(function() {
+                $(this).toggleClass("glyphicon-thumbs-down");
+                $(this).toggleClass("glyphicon-thumbs-up");
+                $(this).parent().parent().toggleClass("notConfirmed");
+            });
+        }
 
     </script>
