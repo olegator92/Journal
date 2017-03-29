@@ -6842,3 +6842,12 @@ td.visible-print {
     border-right-style: solid;
 }
 
+.late {
+    border-left: 3px;
+    border-left-color: red;
+    border-left-style: solid;
+}
+
+.forgiven {
+    border-left-color: green;
+}

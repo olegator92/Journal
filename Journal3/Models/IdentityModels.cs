@@ -39,6 +39,7 @@ namespace Journal3.Models
         public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<Record> Records { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<Setting> Settings { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

@@ -37,14 +37,28 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr class=@(item.IsConfirmed == false ? "notConfirmed" : "")>
+                string itemClass = "";
+                if (item.IsConfirmed == false)
+                {
+                    itemClass += "notConfirmed";
+                }
+                if (item.IsLate == true)
+                {
+                    itemClass += " late";
+                }
+                if (item.IsForgiven == true)
+                {
+                    itemClass += " forgiven";
+                }
+
+                <tr class="@itemClass">
                     <td>
                         <span style="font-size: 12pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                     </td>
                     <td>
                         @item.User.UserInfo.Name
                     </td>
-                    <td>
+                    <td style="white-space: nowrap;">
                         @if (item.Status == 1)
                         {
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
@@ -89,6 +103,12 @@
                         {
                             <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
                         }
+                        @if (item.IsLate)
+                        {
+                            <span class="glyphicon glyphicon-gift btn-link forgive" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
+                        }
+                       
+
                     </td>
                 </tr>
             }
@@ -102,8 +122,12 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <button class="btn btn-primary" style="font-size: 8pt;" id="ConfirmAll">
-                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="margin-right: 10px;"></span>Утвердить все
+                    <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ConfirmAll">
+                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="margin-right: 10px;"></span>Утвердить
+                    </button>
+                    <br>
+                    <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ForgiveAll">
+                        <span class="glyphicon glyphicon-gift" aria-hidden="true" style="margin-right: 10px;"></span>Простить
                     </button>
                 </td>
             </tr>
@@ -122,9 +146,9 @@
             $('#getByDate').submit();
         });
 
-        $('.confirm').click(GetSingleProductCosts);
+        $('.confirm').click(ConfirmRecord);
 
-        function GetSingleProductCosts(event) {
+        function ConfirmRecord(event) {
             var id = $(this).parent().children("input[name=recordId]").val();
 
             $.get('/Home/ConfirmRecord', { recordId: id}).done(
@@ -148,6 +172,31 @@
                 $(this).toggleClass("glyphicon-thumbs-down");
                 $(this).toggleClass("glyphicon-thumbs-up");
                 $(this).parent().parent().toggleClass("notConfirmed");
+            });
+        }
+
+        $('.forgive').click(ForgiveRecord);
+
+        function ForgiveRecord(event) {
+            var id = $(this).parent().children("input[name=recordId]").val();
+
+            $.get('/Home/ForgiveRecord', { recordId: id }).done(
+                    function () {
+                    });
+            $(this).parent().parent().toggleClass("forgiven");
+        }
+
+        $('#ForgiveAll').click(ForgiveAllRecords);
+
+        function ForgiveAllRecords(event) {
+            var selectedDate = $("#selectedDate").val();
+
+            $.get('/Home/ForgiveAll', { date: selectedDate }).done(
+                    function () {
+                    });
+
+            $(".late").each(function () {
+                $(this).toggleClass("forgiven");
             });
         }
 

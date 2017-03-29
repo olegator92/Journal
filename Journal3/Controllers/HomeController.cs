@@ -27,6 +27,9 @@ namespace Journal3.Controllers
         {
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
+
+            UpdateDataFromFile(selectedDate);
+
             var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
@@ -92,7 +95,7 @@ namespace Journal3.Controllers
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
             List<JournalViewModel> model = new List<JournalViewModel>();
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
@@ -175,7 +178,7 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
                 ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
             }
             ViewBag.SelectedDate = record.DateRecord;
@@ -186,14 +189,20 @@ namespace Journal3.Controllers
         public ActionResult Edit(Record record)
         {
             var dbRecord = db.Records.Find(record.Id);
-            if(!User.IsInRole("Admin"))
-                record.IsConfirmed = false;
-
+            
             if (ModelState.IsValid)
             {
                 UpdateModel(dbRecord);
                 db.SaveChanges();
                 return RedirectToAction("Index", new { selectedDate = record.DateRecord});
+            }
+            if (!User.IsInRole("Admin"))
+                record.IsConfirmed = false;
+            else
+            {
+                var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
@@ -249,18 +258,156 @@ namespace Journal3.Controllers
             }
         }
 
-        public ActionResult About()
+        public void ForgiveRecord(int recordId)
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
+            var record = db.Records.Find(recordId);
+            if (record != null)
+            {
+                if (record.IsForgiven == false)
+                    record.IsForgiven = true;
+                else
+                    record.IsForgiven = false;
+                db.SaveChanges();
+            }
         }
 
-        public ActionResult Contact()
+        public void ForgiveAll(string date)
         {
-            ViewBag.Message = "Your contact page.";
+            DateTime selectedDate = Convert.ToDateTime(date);
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsForgiven == false && x.IsLate == true).ToList();
+            foreach (var record in records)
+            {
+                record.IsForgiven = true;
+                db.SaveChanges();
+            }
+        }
 
-            return View();
+        public void UpdateDataFromFile(DateTime? selectedDate)
+        {
+            var setting = db.Settings.FirstOrDefault();
+            if (setting != null)
+            {
+                string path = setting.FilePath;
+                string fileText = System.IO.File.ReadAllText(path);
+                if (fileText != "")
+                {
+
+                    int index = fileText.IndexOf(selectedDate.Value.ToString("dd.MM.yyyy"), 0);
+                    if (index >= 0)
+                    {
+                        string todayFileText = fileText.Remove(0, index).Trim();
+                        List<string> fileStrings = todayFileText.Split('\n').ToList();
+                        if (fileStrings.Any())
+                        {
+                            List<FileRecordViewModel> fileRecords = GetFileRecords(fileStrings, selectedDate);
+
+                            if (fileRecords.Any())
+                            {
+                                var dbRecords = db.Records.Where(x => x.IsSystem == true
+                                                                    && DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+                                                                    .OrderBy(x => x.TimeRecord).ToList();
+
+                                if (fileRecords.Count() > dbRecords.Count())
+                                {
+                                    List<FileRecordViewModel> newRecords = GetNewRecords(dbRecords, fileRecords);
+        
+                                    if (newRecords.Any())
+                                    {
+                                        foreach (var newRecord in newRecords)
+                                        {
+                                            var user = GetUserByKey(newRecord.Key);
+                                            if (user != null)
+                                            {
+                                                Record record = new Record();
+                                                record.DateCreated = newRecord.Date;
+                                                record.DateRecord = newRecord.Date;
+                                                record.TimeRecord = newRecord.Time;
+                                                record.IsConfirmed = true;
+                                                record.IsSystem = true;
+                                                record.IsForgiven = false;
+                                                record.User = user;
+                                                record.WorkSchedule = user.UserInfo.WorkSchedule;
+
+                                                record.Remark = (int)Remarks.ComeGone;
+                                                if (!db.Records.Where(x => x.DateRecord == selectedDate).Any(x => x.User.Id == user.Id))
+                                                    record.Status = (int)Statuses.Come;
+                                                else
+                                                    record.Status = (int)Statuses.Gone;
+
+                                                if (record.Status == (int)Statuses.Come)
+                                                {
+                                                    if ((newRecord.Time - user.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
+                                                        record.IsLate = true;
+                                                    else
+                                                        record.IsLate = false;
+                                                }
+                                                else if(record.Status == (int)Statuses.Gone)
+                                                {
+                                                    if ((user.UserInfo.WorkSchedule.EndWork - newRecord.Time).TotalMinutes > 5)
+                                                        record.IsLate = true;
+                                                    else
+                                                        record.IsLate = false;
+                                                }
+
+                                                db.Records.Add(record);
+                                                db.SaveChanges();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
+
+        public ApplicationUser GetUserByKey(string key)
+        {
+            var user = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.UserInfo.Key == key);
+            return user;
+        }
+
+        List<FileRecordViewModel> GetFileRecords(List<string> fileStrings, DateTime? selectedDate)
+        {
+            List<FileRecordViewModel> fileRecords = new List<FileRecordViewModel>();
+            int j = 0;
+            foreach (string str in fileStrings)
+            {
+                string[] rec = str.Split('\t');
+                if (Convert.ToDateTime(rec[0]) > selectedDate)
+                    break;
+
+                FileRecordViewModel fileRecord = new FileRecordViewModel
+                {
+                    Date = Convert.ToDateTime(rec[0]),
+                    Time = TimeSpan.Parse(rec[1]),
+                    Key = rec[2].Replace("\r", "")
+                };
+
+                if (fileRecords.Count() > 1)
+                {
+                    if (fileRecords[fileRecords.Count - 1].Key == fileRecord.Key && (fileRecords[fileRecords.Count - 1].Time - fileRecord.Time).TotalMinutes < 30)
+                        continue;
+                }
+                fileRecords.Add(fileRecord);
+                j++;
+            }
+
+            return fileRecords;
+        }
+
+        List<FileRecordViewModel> GetNewRecords(List<Record> dbRecords, List<FileRecordViewModel> fileRecords)
+        {
+            List<FileRecordViewModel> newRecords = new List<FileRecordViewModel>();
+            if (!dbRecords.Any())
+                newRecords = fileRecords.ToList();
+            else
+                newRecords = fileRecords.Where(x => !dbRecords.Any(i => i.TimeRecord == x.Time)).ToList();
+
+            return newRecords;
         }
     }
 }

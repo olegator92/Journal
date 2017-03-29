@@ -11,9 +11,9 @@
 <br>
 <div class="row">
     <form action="/Home/DayStats" method="post" role="form" class="form-inline" id="getByDate">
-        <div class="input-append date" id="datepicker" data-date-format="dd-mm-yyyy">
+        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
             <label class="control-label" for="Date" style="display: inline-block; padding-left: 15px;">Дата:</label>
-            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd-MM-yyyy")" readonly="" style="width: 200px;"/>
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;"/>
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
     </form>
