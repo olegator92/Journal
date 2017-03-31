@@ -171,6 +171,7 @@ namespace Journal3.Controllers
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     await this.UserManager.AddToRoleAsync(user.Id, role);
+                    db.SaveChanges();
 
                     UserInfo userInfo = new UserInfo();
                     userInfo.User = db.Users.Find(user.Id);

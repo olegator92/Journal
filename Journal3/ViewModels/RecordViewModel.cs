@@ -11,6 +11,7 @@ namespace Journal3.ViewModels
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateRecord { get; set; }
+        public DateTime? DebtWorkDate { get; set; }
         public TimeSpan TimeRecord { get; set; }
         public int Status { get; set; }
         public string StatusName { get; set; }

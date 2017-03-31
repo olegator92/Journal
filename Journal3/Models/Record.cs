@@ -10,7 +10,7 @@ namespace Journal3.Models
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateRecord { get; set; }
-        public DateTime DebtWorkDate { get; set; } 
+        public DateTime? DebtWorkDate { get; set; } 
         public TimeSpan TimeRecord { get; set; }
         public int Status { get; set; }
         public int Remark { get; set; }

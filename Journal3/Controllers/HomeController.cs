@@ -47,6 +47,7 @@ namespace Journal3.Controllers
                     record.DateRecord = item.DateRecord;
                     record.TimeRecord = item.TimeRecord;
                     record.Status = item.Status;
+                    record.DebtWorkDate = item.DebtWorkDate;
                     switch(item.Status)
                     {
                         case (int)Statuses.Come:
@@ -152,6 +153,9 @@ namespace Journal3.Controllers
                     key = dbUser.UserInfo.Key;
                 if (key != "")
                 {
+                    if (model.Remark == (int)Remarks.DebtWork && model.DebtWorkDate == null)
+                        return View(UserId, model);
+
                     if (User.IsInRole("Admin"))
                         model.IsConfirmed = true;
                     else
@@ -160,9 +164,23 @@ namespace Journal3.Controllers
                     model.DateCreated = DateTime.Now;
                     model.User = dbUser;
                     
-                    model.IsForgiven = true;
+                    model.IsForgiven = false;
                     model.IsSystem = false;
                     model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
+                    if (model.Status == (int)Statuses.Come)
+                    {
+                        if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
+                            model.IsLate = true;
+                        else
+                            model.IsLate = false;
+                    }
+                    else if (model.Status == (int)Statuses.Gone)
+                    {
+                        if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
+                            model.IsLate = true;
+                        else
+                            model.IsLate = false;
+                    }
                     db.Records.Add(model);
                     db.SaveChanges();
                 }
@@ -178,8 +196,9 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
+                var userInfoesId = db.UserInfoes.FirstOrDefault(x => x.UserId == record.User.Id);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoesId.Id);
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
@@ -210,7 +229,7 @@ namespace Journal3.Controllers
 
         public ActionResult Delete(int id)
         {
-            var record = db.Records.Include(x => x.User.UserInfo).Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
+            var record = db.Records/*.Include(x => x.User.UserInfo)*/.Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
         }

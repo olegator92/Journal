@@ -124,7 +124,7 @@ namespace Journal3.Controllers
                 if(userInfo.WorkSchedule != null)
                     model.WorkSchedules = userInfo.WorkSchedule.Id ;
             }
-
+            
             ViewBag.UserId = id;
             ViewBag.UserRole = new SelectList(db.Roles.ToList(), "Name", "Name", UserManager.GetRoles(user.Id).FirstOrDefault());
             if(userInfo != null && userInfo.WorkSchedule != null)
@@ -203,7 +203,7 @@ namespace Journal3.Controllers
                 if (userInfo.WorkSchedule != null)
                     ViewBag.WorkSchedule = db.WorkSchedules.Find(userInfo.WorkSchedule.Id).Name;
             }
-
+            
             ViewBag.UserId = id;
             ViewBag.UserRole = UserManager.GetRoles(user.Id).FirstOrDefault();
 

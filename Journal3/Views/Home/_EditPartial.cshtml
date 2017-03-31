@@ -4,7 +4,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label" for="Comment">Сотрудник</label>
         <div class="col-md-10">
-            @Html.DropDownList("UserId", (SelectList)ViewBag.UserId, new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.User, (SelectList)ViewBag.UserId, new { @class = "form-control" })
         </div>
     </div>
 }
@@ -41,6 +41,14 @@
     </div>
 </div>
 
+<div id="DebtWorkContainer" class=@(Model.Status != 4 ? "hidden" : "")>
+    <div class="input-append date" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+        <label class="control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
+        <input class="form-control" size="16" type="text" name="DebtWorkDate" value="@(Model.DebtWorkDate == null ? Model.DebtWorkDate.ToString("dd.MM.yyyy") : "")" readonly="" style="display: inline-block;" />
+        <span class="add-on glyphicon glyphicon-calendar"></span>
+    </div>
+</div>
+
 <div class="form-group">
     <label class="col-md-2 control-label" for="Comment">Комментарий</label>
     <div class="col-md-10">
@@ -58,5 +66,20 @@
             language: 'ru'
         });
     });
+
+    $(function () {
+        $('#datepickerDebtWorkDate').datepicker( {
+            language: 'ru'
+        });
+    });
+
+    $('#Remark').change(DisplayDebtWork);
+
+    function DisplayDebtWork(event) {
+        if ($('#Remark').val() == 4)
+            $('#DebtWorkContainer').removeClass("hidden");
+        else
+            $('#DebtWorkContainer').addClass("hidden");
+    }
 
 </script>

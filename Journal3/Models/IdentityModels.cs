@@ -47,19 +47,27 @@ namespace Journal3.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserInfo>()
-                .HasKey(x => x.UserId);
 
             modelBuilder.Entity<UserInfo>()
-                .HasRequired(x => x.User)
-                .WithOptional(x => x.UserInfo)
+                        .HasOptional(s => s.WorkSchedule)
+                        .WithRequired(ad => ad.UserInfo)
+                        .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOptional(x => x.UserInfo)
+                .WithRequired(x => x.User)
+                .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<UserInfo>()
+                .HasRequired(x => x.WorkSchedule).WithOptional()
                 .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<Record>()
                 .HasRequired(a => a.User)
                 .WithMany(x => x.Records)
                 .WillCascadeOnDelete(true);
-                
+
+
             base.OnModelCreating(modelBuilder);
         }
     }

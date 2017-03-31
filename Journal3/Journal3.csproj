@@ -299,6 +299,62 @@
     <Compile Include="Migrations\201702230647475_AddSettings2.Designer.cs">
       <DependentUpon>201702230647475_AddSettings2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703290236247_DebtWorkDate.cs" />
+    <Compile Include="Migrations\201703290236247_DebtWorkDate.Designer.cs">
+      <DependentUpon>201703290236247_DebtWorkDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310625276_UserInfoCorrection.cs" />
+    <Compile Include="Migrations\201703310625276_UserInfoCorrection.Designer.cs">
+      <DependentUpon>201703310625276_UserInfoCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310629150_AnotherCorrection.cs" />
+    <Compile Include="Migrations\201703310629150_AnotherCorrection.Designer.cs">
+      <DependentUpon>201703310629150_AnotherCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310630479_UserInfpCorrection.cs" />
+    <Compile Include="Migrations\201703310630479_UserInfpCorrection.Designer.cs">
+      <DependentUpon>201703310630479_UserInfpCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310655228_IdentityUserInfo.cs" />
+    <Compile Include="Migrations\201703310655228_IdentityUserInfo.Designer.cs">
+      <DependentUpon>201703310655228_IdentityUserInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310850396_RemoveUserInfo1.cs" />
+    <Compile Include="Migrations\201703310850396_RemoveUserInfo1.Designer.cs">
+      <DependentUpon>201703310850396_RemoveUserInfo1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310854269_AddUserInfo.cs" />
+    <Compile Include="Migrations\201703310854269_AddUserInfo.Designer.cs">
+      <DependentUpon>201703310854269_AddUserInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310916072_RemoveUserInfo2.cs" />
+    <Compile Include="Migrations\201703310916072_RemoveUserInfo2.Designer.cs">
+      <DependentUpon>201703310916072_RemoveUserInfo2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310922253_AddUserInfo1.cs" />
+    <Compile Include="Migrations\201703310922253_AddUserInfo1.Designer.cs">
+      <DependentUpon>201703310922253_AddUserInfo1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310936420_RemoveUserInfo3.cs" />
+    <Compile Include="Migrations\201703310936420_RemoveUserInfo3.Designer.cs">
+      <DependentUpon>201703310936420_RemoveUserInfo3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310937522_AddUserInfo2.cs" />
+    <Compile Include="Migrations\201703310937522_AddUserInfo2.Designer.cs">
+      <DependentUpon>201703310937522_AddUserInfo2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703310956211_NullableDebtDate.cs" />
+    <Compile Include="Migrations\201703310956211_NullableDebtDate.Designer.cs">
+      <DependentUpon>201703310956211_NullableDebtDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703311045430_RemoveUserInfo4.cs" />
+    <Compile Include="Migrations\201703311045430_RemoveUserInfo4.Designer.cs">
+      <DependentUpon>201703311045430_RemoveUserInfo4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703311114247_AddUserInfo3.cs" />
+    <Compile Include="Migrations\201703311114247_AddUserInfo3.Designer.cs">
+      <DependentUpon>201703311114247_AddUserInfo3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -476,6 +532,48 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702230647475_AddSettings2.resx">
       <DependentUpon>201702230647475_AddSettings2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703290236247_DebtWorkDate.resx">
+      <DependentUpon>201703290236247_DebtWorkDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310625276_UserInfoCorrection.resx">
+      <DependentUpon>201703310625276_UserInfoCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310629150_AnotherCorrection.resx">
+      <DependentUpon>201703310629150_AnotherCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310630479_UserInfpCorrection.resx">
+      <DependentUpon>201703310630479_UserInfpCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310655228_IdentityUserInfo.resx">
+      <DependentUpon>201703310655228_IdentityUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310850396_RemoveUserInfo1.resx">
+      <DependentUpon>201703310850396_RemoveUserInfo1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310854269_AddUserInfo.resx">
+      <DependentUpon>201703310854269_AddUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310916072_RemoveUserInfo2.resx">
+      <DependentUpon>201703310916072_RemoveUserInfo2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310922253_AddUserInfo1.resx">
+      <DependentUpon>201703310922253_AddUserInfo1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310936420_RemoveUserInfo3.resx">
+      <DependentUpon>201703310936420_RemoveUserInfo3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310937522_AddUserInfo2.resx">
+      <DependentUpon>201703310937522_AddUserInfo2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703310956211_NullableDebtDate.resx">
+      <DependentUpon>201703310956211_NullableDebtDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703311045430_RemoveUserInfo4.resx">
+      <DependentUpon>201703311045430_RemoveUserInfo4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703311114247_AddUserInfo3.resx">
+      <DependentUpon>201703311114247_AddUserInfo3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
