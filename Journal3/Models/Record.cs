@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -19,6 +20,9 @@ namespace Journal3.Models
         public bool IsConfirmed { get; set; }
         public bool IsForgiven { get; set; }
         public bool IsSystem { get; set; }
+
+        public string UserId { get; set; }
+        public int WorkScheduleId { get; set; }
 
         public virtual ApplicationUser User { get; set; }
         public virtual WorkSchedule WorkSchedule { get; set; }

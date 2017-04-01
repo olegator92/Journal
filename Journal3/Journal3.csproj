@@ -367,6 +367,30 @@
     <Compile Include="Migrations\201704010507287_ReturnTables.Designer.cs">
       <DependentUpon>201704010507287_ReturnTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704010525533_Corection.cs" />
+    <Compile Include="Migrations\201704010525533_Corection.Designer.cs">
+      <DependentUpon>201704010525533_Corection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704010537449_ForeignKeys.cs" />
+    <Compile Include="Migrations\201704010537449_ForeignKeys.Designer.cs">
+      <DependentUpon>201704010537449_ForeignKeys.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704010549166_Correction.cs" />
+    <Compile Include="Migrations\201704010549166_Correction.Designer.cs">
+      <DependentUpon>201704010549166_Correction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704010757198_RemoveAll.cs" />
+    <Compile Include="Migrations\201704010757198_RemoveAll.Designer.cs">
+      <DependentUpon>201704010757198_RemoveAll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704010758502_ReturnAll.cs" />
+    <Compile Include="Migrations\201704010758502_ReturnAll.Designer.cs">
+      <DependentUpon>201704010758502_ReturnAll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704010801354_RemoveUserInfoId.cs" />
+    <Compile Include="Migrations\201704010801354_RemoveUserInfoId.Designer.cs">
+      <DependentUpon>201704010801354_RemoveUserInfoId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -595,6 +619,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704010507287_ReturnTables.resx">
       <DependentUpon>201704010507287_ReturnTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010525533_Corection.resx">
+      <DependentUpon>201704010525533_Corection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010537449_ForeignKeys.resx">
+      <DependentUpon>201704010537449_ForeignKeys.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010549166_Correction.resx">
+      <DependentUpon>201704010549166_Correction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010757198_RemoveAll.resx">
+      <DependentUpon>201704010757198_RemoveAll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010758502_ReturnAll.resx">
+      <DependentUpon>201704010758502_ReturnAll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704010801354_RemoveUserInfoId.resx">
+      <DependentUpon>201704010801354_RemoveUserInfoId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

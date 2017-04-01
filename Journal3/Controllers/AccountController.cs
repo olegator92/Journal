@@ -173,10 +173,10 @@ namespace Journal3.Controllers
                     await this.UserManager.AddToRoleAsync(user.Id, role);
                     db.SaveChanges();
 
-                    UserInfo userInfo = new UserInfo();
+                    /*UserInfo userInfo = new UserInfo();
                     userInfo.User = db.Users.Find(user.Id);
-                    userInfo.UserId = user.Id;
-                    userInfo.Name = model.UserName;
+                    //userInfo.UserId = user.Id;
+                    userInfo.Name = model.UserName;*/
 
                     TimeSpan startWork = new TimeSpan(8, 0, 0);
                     TimeSpan endWork = new TimeSpan(18, 0, 0);

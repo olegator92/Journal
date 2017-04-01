@@ -35,9 +35,9 @@ namespace Journal3.Models
             Configuration.ProxyCreationEnabled = false;
         }
 
-        //public DbSet<UserInfo> UserInfoes { get; set; }
+        public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<Record> Records { get; set; }
-        //public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public static ApplicationDbContext Create()
         {
@@ -46,14 +46,23 @@ namespace Journal3.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<UserInfo>()
+                .HasKey(e => e.UserId);
+
             modelBuilder.Entity<ApplicationUser>()
                         .HasOptional(s => s.UserInfo)
                         .WithRequired(ad => ad.User)
                         .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<UserInfo>()
-                        .HasOptional(s => s.WorkSchedule) 
-                        .WithRequired(ad => ad.UserInfo)
+                        .HasRequired<WorkSchedule>(s => s.WorkSchedule) 
+                        .WithMany(s => s.UserInfos)
+                        .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<Record>()
+                        .HasRequired<WorkSchedule>(s => s.WorkSchedule)
+                        .WithMany(s => s.Records)
                         .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<Record>()

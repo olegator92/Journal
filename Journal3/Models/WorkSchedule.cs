@@ -9,13 +9,19 @@ namespace Journal3.Models
 {
     public class WorkSchedule
     {
-        [Key, ForeignKey("UserInfo")]
-        public int UserInfoId { get; set; }
-        //public int Id { get; set; }
+
+        public WorkSchedule()
+        {
+            Records = new List<Record>();
+            UserInfos = new List<UserInfo>();
+        }
+
+        public int Id { get; set; }
         public string Name { get; set; }
         public TimeSpan StartWork { get; set; }
         public TimeSpan EndWork { get; set; }
 
-        public virtual UserInfo UserInfo { get; set; }
+        public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<UserInfo> UserInfos { get; set; }
     }
 }

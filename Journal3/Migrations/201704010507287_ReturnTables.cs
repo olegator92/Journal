@@ -12,6 +12,8 @@ namespace Journal3.Migrations
             RenameIndex(table: "dbo.Records", name: "IX_WorkSchedule_Id", newName: "IX_WorkSchedule_UserInfoId");
             DropPrimaryKey("dbo.UserInfoes");
             DropPrimaryKey("dbo.WorkSchedules");
+            DropColumn("dbo.UserInfoes", "Id");
+            DropColumn("dbo.WorkSchedules", "Id");
             AddColumn("dbo.UserInfoes", "UserInfoId", c => c.Int(nullable: false, identity: true));
             AddColumn("dbo.WorkSchedules", "UserInfoId", c => c.Int(nullable: false));
             AddPrimaryKey("dbo.UserInfoes", "UserInfoId");
@@ -19,8 +21,7 @@ namespace Journal3.Migrations
             CreateIndex("dbo.WorkSchedules", "UserInfoId");
             AddForeignKey("dbo.WorkSchedules", "UserInfoId", "dbo.UserInfoes", "UserInfoId", cascadeDelete: true);
             AddForeignKey("dbo.Records", "WorkSchedule_UserInfoId", "dbo.WorkSchedules", "UserInfoId");
-            DropColumn("dbo.UserInfoes", "Id");
-            DropColumn("dbo.WorkSchedules", "Id");
+            
         }
         
         public override void Down()
