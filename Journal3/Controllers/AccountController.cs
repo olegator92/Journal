@@ -180,7 +180,7 @@ namespace Journal3.Controllers
 
                     TimeSpan startWork = new TimeSpan(8, 0, 0);
                     TimeSpan endWork = new TimeSpan(18, 0, 0);
-                    WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
+                    /*WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
                     if (workSchedule != null)
                     {
                         userInfo.WorkSchedule = workSchedule;
@@ -197,9 +197,9 @@ namespace Journal3.Controllers
                         db.SaveChanges();
 
                         userInfo.WorkSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
-                    }
+                    }*/
 
-                    db.UserInfoes.Add(userInfo);
+                    //db.UserInfoes.Add(userInfo);
                     db.SaveChanges();
 
                     return RedirectToAction("Index", "Home");

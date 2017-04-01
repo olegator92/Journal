@@ -32,7 +32,7 @@ namespace Journal3.Controllers
 
             var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
                                             .Include(x => x.WorkSchedule)
-                                            .Include(x => x.User.UserInfo)
+                                            //.Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
                                             .ToList();
 
@@ -98,7 +98,7 @@ namespace Journal3.Controllers
             List<JournalViewModel> model = new List<JournalViewModel>();
             var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
                                             .Include(x => x.WorkSchedule)
-                                            .Include(x => x.User.UserInfo)
+                                            //.Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
                                             .ToList();
 
@@ -107,7 +107,7 @@ namespace Journal3.Controllers
                 foreach (var user in records.Select(x => x.User).Distinct())
                 {
                     JournalViewModel journalRow = new JournalViewModel();
-                    journalRow.EmployeeName = user.UserInfo.Name;
+                    //journalRow.EmployeeName = user.UserInfo.Name;
                     var first = records.FirstOrDefault(x => x.User == user && x.Status == (int)Statuses.Come);
                     if(first != null)
                         journalRow.ComeTime = first.TimeRecord;
@@ -132,8 +132,8 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
+                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");*/
             }
             ViewBag.SelectedDate = selectedDate;
             return View(record);
@@ -145,12 +145,12 @@ namespace Journal3.Controllers
             if(UserId == null)
                UserId = User.Identity.GetUserId();
 
-            var dbUser = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.Id == UserId);
+            var dbUser = db.Users/*.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule)*/.FirstOrDefault(x => x.Id == UserId);
             if (dbUser != null)
             {
                 string key = "";
-                if (dbUser.UserInfo != null)
-                    key = dbUser.UserInfo.Key;
+                /*if (dbUser.UserInfo != null)
+                    key = dbUser.UserInfo.Key*/
                 if (key != "")
                 {
                     if (model.Remark == (int)Remarks.DebtWork && model.DebtWorkDate == null)
@@ -166,20 +166,20 @@ namespace Journal3.Controllers
                     
                     model.IsForgiven = false;
                     model.IsSystem = false;
-                    model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
+                    //model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     if (model.Status == (int)Statuses.Come)
                     {
-                        if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
+                        /*if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
                             model.IsLate = true;
                         else
-                            model.IsLate = false;
+                            model.IsLate = false;*/
                     }
                     else if (model.Status == (int)Statuses.Gone)
                     {
-                        if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
+                        /*if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
                             model.IsLate = true;
                         else
-                            model.IsLate = false;
+                            model.IsLate = false;*/
                     }
                     db.Records.Add(model);
                     db.SaveChanges();
@@ -196,9 +196,9 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
+                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
                 var userInfoesId = db.UserInfoes.FirstOrDefault(x => x.UserId == record.User.Id);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoesId.Id);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoesId.Id);*/
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
@@ -220,8 +220,8 @@ namespace Journal3.Controllers
             else
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
+                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);*/
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
@@ -345,7 +345,7 @@ namespace Journal3.Controllers
                                                 record.IsSystem = true;
                                                 record.IsForgiven = false;
                                                 record.User = user;
-                                                record.WorkSchedule = user.UserInfo.WorkSchedule;
+                                                //record.WorkSchedule = user.UserInfo.WorkSchedule;
 
                                                 record.Remark = (int)Remarks.ComeGone;
                                                 if (!db.Records.Where(x => x.DateRecord == selectedDate).Any(x => x.User.Id == user.Id))
@@ -355,17 +355,17 @@ namespace Journal3.Controllers
 
                                                 if (record.Status == (int)Statuses.Come)
                                                 {
-                                                    if ((newRecord.Time - user.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
+                                                    /*if ((newRecord.Time - user.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
                                                         record.IsLate = true;
                                                     else
-                                                        record.IsLate = false;
+                                                        record.IsLate = false;*/
                                                 }
                                                 else if(record.Status == (int)Statuses.Gone)
                                                 {
-                                                    if ((user.UserInfo.WorkSchedule.EndWork - newRecord.Time).TotalMinutes > 5)
+                                                    /*if ((user.UserInfo.WorkSchedule.EndWork - newRecord.Time).TotalMinutes > 5)
                                                         record.IsLate = true;
                                                     else
-                                                        record.IsLate = false;
+                                                        record.IsLate = false;*/
                                                 }
 
                                                 db.Records.Add(record);
@@ -385,7 +385,7 @@ namespace Journal3.Controllers
 
         public ApplicationUser GetUserByKey(string key)
         {
-            var user = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.UserInfo.Key == key);
+            var user = db.Users/*.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule)*/.FirstOrDefault(/*x => x.UserInfo.Key == key*/);
             return user;
         }
 

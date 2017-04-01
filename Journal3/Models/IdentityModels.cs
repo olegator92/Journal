@@ -25,7 +25,6 @@ namespace Journal3.Models
         public virtual UserInfo UserInfo { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         
-   
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -36,9 +35,9 @@ namespace Journal3.Models
             Configuration.ProxyCreationEnabled = false;
         }
 
-        public DbSet<UserInfo> UserInfoes { get; set; }
+        //public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<Record> Records { get; set; }
-        public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        //public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public static ApplicationDbContext Create()
         {
@@ -47,26 +46,20 @@ namespace Journal3.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ApplicationUser>()
+                        .HasOptional(s => s.UserInfo)
+                        .WithRequired(ad => ad.User)
+                        .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<UserInfo>()
-                        .HasOptional(s => s.WorkSchedule)
+                        .HasOptional(s => s.WorkSchedule) 
                         .WithRequired(ad => ad.UserInfo)
                         .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOptional(x => x.UserInfo)
-                .WithRequired(x => x.User)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<UserInfo>()
-                .HasRequired(x => x.WorkSchedule).WithOptional()
-                .WillCascadeOnDelete(true);
-
             modelBuilder.Entity<Record>()
-                .HasRequired(a => a.User)
-                .WithMany(x => x.Records)
-                .WillCascadeOnDelete(true);
-
+                    .HasRequired<ApplicationUser>(s => s.User)
+                    .WithMany(s => s.Records)
+                    .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }
