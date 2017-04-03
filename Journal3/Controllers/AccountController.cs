@@ -173,14 +173,14 @@ namespace Journal3.Controllers
                     await this.UserManager.AddToRoleAsync(user.Id, role);
                     db.SaveChanges();
 
-                    /*UserInfo userInfo = new UserInfo();
+                    UserInfo userInfo = new UserInfo();
                     userInfo.User = db.Users.Find(user.Id);
-                    //userInfo.UserId = user.Id;
-                    userInfo.Name = model.UserName;*/
+                    userInfo.UserId = user.Id;
+                    userInfo.Name = model.UserName;
 
                     TimeSpan startWork = new TimeSpan(8, 0, 0);
                     TimeSpan endWork = new TimeSpan(18, 0, 0);
-                    /*WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
+                    WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
                     if (workSchedule != null)
                     {
                         userInfo.WorkSchedule = workSchedule;
@@ -197,9 +197,9 @@ namespace Journal3.Controllers
                         db.SaveChanges();
 
                         userInfo.WorkSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
-                    }*/
+                    }
 
-                    //db.UserInfoes.Add(userInfo);
+                    db.UserInfoes.Add(userInfo);
                     db.SaveChanges();
 
                     return RedirectToAction("Index", "Home");

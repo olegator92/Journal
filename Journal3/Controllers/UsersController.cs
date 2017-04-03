@@ -55,13 +55,13 @@ namespace Journal3.Controllers
                     model.UserId = user.Id;
                     model.Email = user.UserName;
                     model.Role = UserManager.GetRoles(user.Id).FirstOrDefault();
-                    /*var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
+                    var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
                     if (userInfo != null)
                     {
                         model.Name = userInfo.Name;
                         model.Key = userInfo.Key;
-                        //model.WorkSchedule = userInfo.WorkSchedule;
-                    }*/
+                        model.WorkSchedule = userInfo.WorkSchedule;
+                    }
                     usersModel.Add(model);
                 }
 
@@ -77,7 +77,7 @@ namespace Journal3.Controllers
         {
             RegisterViewModel model = new RegisterViewModel();
             ViewBag.UserRoles = new SelectList(db.Roles.ToList(), "Name", "Name");
-            //ViewBag.WorkSchedules = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");
+            ViewBag.WorkSchedules = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");
 
             return View(model);
         }
@@ -93,12 +93,12 @@ namespace Journal3.Controllers
                 UserManager.AddToRole(user.Id, model.UserRoles);
 
                 UserInfo userInfo = new UserInfo();
-                //userInfo.UserId = user.Id;
-                //userInfo.User = db.Users.Find(user.Id);
+                userInfo.UserId = user.Id;
+                userInfo.User = db.Users.Find(user.Id);
                 userInfo.Key = model.Key;
                 userInfo.Name = model.UserName;
-                //userInfo.WorkSchedule = db.WorkSchedules.FirstOrDefault(x => x.Id == model.WorkSchedules);
-                //db.UserInfoes.Add(userInfo);
+                userInfo.WorkSchedule = db.WorkSchedules.FirstOrDefault(x => x.Id == model.WorkSchedules);
+                db.UserInfoes.Add(userInfo);
                 db.SaveChanges();
 
                 return RedirectToAction("Index", new { Role = model.UserRoles});
@@ -106,7 +106,7 @@ namespace Journal3.Controllers
             }
             
             ViewBag.UserRoles = new SelectList(db.Roles, "Name", "Name");
-            //ViewBag.WorkSchedules = new SelectList(db.WorkSchedules, "Id", "Name");
+            ViewBag.WorkSchedules = new SelectList(db.WorkSchedules, "Id", "Name");
             return View(model);
         }
 
@@ -116,21 +116,21 @@ namespace Journal3.Controllers
             var user = db.Users.Find(id);
             RegisterViewModel model = new RegisterViewModel();
             model.Email = user.UserName;
-            /*var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
+            var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
             if (userInfo != null)
             {
                 model.UserName = userInfo.Name;
                 model.Key = userInfo.Key;
                 if(userInfo.WorkSchedule != null)
                     model.WorkSchedules = userInfo.WorkSchedule.Id ;
-            }*/
+            }
             
             ViewBag.UserId = id;
             ViewBag.UserRole = new SelectList(db.Roles.ToList(), "Name", "Name", UserManager.GetRoles(user.Id).FirstOrDefault());
-            /*if(userInfo != null && userInfo.WorkSchedule != null)
+            if(userInfo != null && userInfo.WorkSchedule != null)
                 ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name", userInfo.WorkSchedule.Id);
             else
-                ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");*/
+                ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");
             return View(model);
         }
 
@@ -139,7 +139,7 @@ namespace Journal3.Controllers
         public ActionResult Edit(string id, RegisterViewModel model)
         {
             var user = db.Users.Find(id);
-            /*var dbUserInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
+            var dbUserInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
 
             if (dbUserInfo != null)
             {
@@ -157,12 +157,12 @@ namespace Journal3.Controllers
                     User = user,
                     UserId = user.Id,
                     Name = model.UserName,
-                    //WorkSchedule = db.WorkSchedules.FirstOrDefault(x => x.Id == model.WorkSchedules),
+                    WorkSchedule = db.WorkSchedules.FirstOrDefault(x => x.Id == model.WorkSchedules),
                     Key = model.Key
                 };
                 db.UserInfoes.Add(newUserInfo);
                 db.SaveChanges();
-            }*/
+            }
             
             var role = UserManager.GetRoles(user.Id).FirstOrDefault();
             if (role != model.UserRoles)
@@ -180,10 +180,10 @@ namespace Journal3.Controllers
             catch
             {
                 ViewBag.UserId = id;
-                /*if (dbUserInfo.WorkSchedule != null)
+                if (dbUserInfo.WorkSchedule != null)
                     ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name", dbUserInfo.WorkSchedule.Id);
                 else
-                    ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");*/
+                    ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name");
                 return View(model);
             }
 
@@ -195,7 +195,7 @@ namespace Journal3.Controllers
             var user = db.Users.Find(id);
             RegisterViewModel model = new RegisterViewModel();
             model.Email = user.UserName;
-            /*var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
+            var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
             if (userInfo != null)
             {
                 model.UserName = userInfo.Name;
@@ -203,7 +203,7 @@ namespace Journal3.Controllers
                 if (userInfo.WorkSchedule != null)
                     ViewBag.WorkSchedule = db.WorkSchedules.Find(userInfo.WorkSchedule.Id).Name;
             }
-            */
+            
             ViewBag.UserId = id;
             ViewBag.UserRole = UserManager.GetRoles(user.Id).FirstOrDefault();
 

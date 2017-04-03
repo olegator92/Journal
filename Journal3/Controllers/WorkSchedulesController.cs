@@ -20,8 +20,8 @@ namespace Journal3.Controllers
         // GET: WorkSchedules
         public ActionResult Index()
         {
-            //var workSchedules = db.WorkSchedules.ToList();
-            return View(/*workSchedules*/);
+            var workSchedules = db.WorkSchedules.ToList();
+            return View(workSchedules);
         }
 
   
@@ -36,7 +36,7 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Create(WorkSchedule workSchedule)
         {
-            //db.WorkSchedules.Add(workSchedule);
+            db.WorkSchedules.Add(workSchedule);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -44,36 +44,36 @@ namespace Journal3.Controllers
         // GET: WorkSchedules/Edit/5
         public ActionResult Edit(int id)
         {
-            //var workSchedule = db.WorkSchedules.Find(id);
-            return View(/*workSchedule*/);
+            var workSchedule = db.WorkSchedules.Find(id);
+            return View(workSchedule);
         }
 
         // POST: WorkSchedules/Edit/5
         [HttpPost]
         public ActionResult Edit(WorkSchedule workSchedule)
         {
-            /*var dbWorkSchedule = db.WorkSchedules.Find(workSchedule.Id);
+            var dbWorkSchedule = db.WorkSchedules.Find(workSchedule.Id);
             if (ModelState.IsValid)
             {
                 UpdateModel(dbWorkSchedule);
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }*/
+            }
             return View(workSchedule);
         }
 
         // GET: WorkSchedules/Delete/5
         public ActionResult Delete(int id)
         {
-            /*var workSchedule = db.WorkSchedules.Find(id);*/
-            return View(/*workSchedule*/);
+            var workSchedule = db.WorkSchedules.Find(id);
+            return View(workSchedule);
         }
 
         // POST: WorkSchedules/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
-           /* var WorkSchedule = db.WorkSchedules.Find(id);
+            var WorkSchedule = db.WorkSchedules.Find(id);
             try
             {
                 db.WorkSchedules.Remove(WorkSchedule);
@@ -84,7 +84,7 @@ namespace Journal3.Controllers
                 throw new Exception("Невозможно удалить график работы");
                 //TempData["Message"] = "Невозможно удалить скидку.";
                 //return RedirectToAction("Index");
-            }*/
+            }
             return RedirectToAction("Index");
         }
     }

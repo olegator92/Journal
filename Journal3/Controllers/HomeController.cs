@@ -30,14 +30,14 @@ namespace Journal3.Controllers
 
             UpdateDataFromFile(selectedDate);
 
-            /*var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
-                                            //.Include(x => x.WorkSchedule)
-                                            //.Include(x => x.User.UserInfo)
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
-                                            .ToList();*/
+                                            .ToList();
 
             List<RecordViewModel> model = new List<RecordViewModel>();
-            /*if (records.Any())
+            if (records.Any())
             {
                 foreach (var item in records)
                 {
@@ -85,7 +85,7 @@ namespace Journal3.Controllers
                     model.Add(record);
                 }
 
-            }*/
+            }
            
             ViewBag.SelectedDate = selectedDate;
             return View(model);
@@ -96,18 +96,18 @@ namespace Journal3.Controllers
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
             List<JournalViewModel> model = new List<JournalViewModel>();
-            /*var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
-                                            //.Include(x => x.WorkSchedule)
-                                            //.Include(x => x.User.UserInfo)
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
-                                            .ToList();*/
+                                            .ToList();
 
-            /*if (records.Any())
+            if (records.Any())
             {
                 foreach (var user in records.Select(x => x.User).Distinct())
                 {
                     JournalViewModel journalRow = new JournalViewModel();
-                    //journalRow.EmployeeName = user.UserInfo.Name;
+                    journalRow.EmployeeName = user.UserInfo.Name;
                     var first = records.FirstOrDefault(x => x.User == user && x.Status == (int)Statuses.Come);
                     if(first != null)
                         journalRow.ComeTime = first.TimeRecord;
@@ -118,7 +118,7 @@ namespace Journal3.Controllers
                     model.Add(journalRow);
                 }
 
-            }*/
+            }
             ViewBag.SelectedDate = selectedDate;
             return View(model.OrderBy(x => x.EmployeeName));
         }
@@ -132,8 +132,8 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");*/
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
             }
             ViewBag.SelectedDate = selectedDate;
             return View(record);
@@ -145,12 +145,12 @@ namespace Journal3.Controllers
             if(UserId == null)
                UserId = User.Identity.GetUserId();
 
-            var dbUser = db.Users/*.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule)*/.FirstOrDefault(x => x.Id == UserId);
+            var dbUser = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.Id == UserId);
             if (dbUser != null)
             {
                 string key = "";
-                /*if (dbUser.UserInfo != null)
-                    key = dbUser.UserInfo.Key*/
+                if (dbUser.UserInfo != null)
+                    key = dbUser.UserInfo.Key;
                 if (key != "")
                 {
                     if (model.Remark == (int)Remarks.DebtWork && model.DebtWorkDate == null)
@@ -162,26 +162,26 @@ namespace Journal3.Controllers
                         model.IsConfirmed = false;
 
                     model.DateCreated = DateTime.Now;
-                    //model.User = dbUser;
+                    model.User = dbUser;
                     
                     model.IsForgiven = false;
                     model.IsSystem = false;
-                    //model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
+                    model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     if (model.Status == (int)Statuses.Come)
                     {
-                        /*if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
+                        if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
                             model.IsLate = true;
                         else
-                            model.IsLate = false;*/
+                            model.IsLate = false;
                     }
                     else if (model.Status == (int)Statuses.Gone)
                     {
-                        /*if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
+                        if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
                             model.IsLate = true;
                         else
-                            model.IsLate = false;*/
+                            model.IsLate = false;
                     }
-                    //db.Records.Add(model);
+                    db.Records.Add(model);
                     db.SaveChanges();
                 }
             }
@@ -191,27 +191,26 @@ namespace Journal3.Controllers
 
         public ActionResult Edit(int id)
         {
-            //var record = db.Records.Include(x => x.WorkSchedule).Include(x => x.User).FirstOrDefault(x => x.Id == id);
+            var record = db.Records.Include(x => x.WorkSchedule).Include(x => x.User).FirstOrDefault(x => x.Id == id);
 
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
-                var userInfoesId = db.UserInfoes.FirstOrDefault(x => x.UserId == record.User.Id);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoesId.Id);*/
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoes.FirstOrDefault(x => x.UserId == record.UserId));
             }
-            //ViewBag.SelectedDate = record.DateRecord;
-            return View(/*record*/);
+            ViewBag.SelectedDate = record.DateRecord;
+            return View(record);
         }
 
         [HttpPost]
         public ActionResult Edit(Record record)
         {
-            /*var dbRecord = db.Records.Find(record.Id);*/
+            var dbRecord = db.Records.Find(record.Id);
             
             if (ModelState.IsValid)
             {
-                /*UpdateModel(dbRecord);*/
+                UpdateModel(dbRecord);
                 db.SaveChanges();
                 return RedirectToAction("Index", new { selectedDate = record.DateRecord});
             }
@@ -220,8 +219,8 @@ namespace Journal3.Controllers
             else
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                /*var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);*/
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
@@ -229,15 +228,15 @@ namespace Journal3.Controllers
 
         public ActionResult Delete(int id)
         {
-            /*var record = db.Records.Include(x => x.User.UserInfo).Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
-            ViewBag.SelectedDate = record.DateRecord;*/
-            return View(/*record*/);
+            var record = db.Records.Include(x => x.User.UserInfo).Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
+            ViewBag.SelectedDate = record.DateRecord;
+            return View(record);
         }
 
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
-            /*var record = db.Records.Find(id);
+            var record = db.Records.Find(id);
             try
             {
                 db.Records.Remove(record);
@@ -246,16 +245,16 @@ namespace Journal3.Controllers
             catch (Exception e)
             {
                 throw new Exception("Невозможно удалить запись!");
-                //TempData["Message"] = "Невозможно удалить скидку.";
-                //return RedirectToAction("Index");
-            }*/
-            return RedirectToAction("Index", new { /*selectedDate = record.DateRecord*/});
+                TempData["Message"] = "Невозможно удалить скидку.";
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", new { selectedDate = record.DateRecord});
         }
 
 
         public void ConfirmRecord(int recordId)
         {
-            /*var record = db.Records.Find(recordId);
+            var record = db.Records.Find(recordId);
             if (record != null)
             {
                 if (record.IsConfirmed == false)
@@ -263,23 +262,23 @@ namespace Journal3.Controllers
                 else
                     record.IsConfirmed = false;
                 db.SaveChanges();
-            }*/
+            }
         }
 
         public void ConfirmAll(string date)
         {
             DateTime selectedDate = Convert.ToDateTime(date);
-            /*var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsConfirmed == false).ToList();
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsConfirmed == false).ToList();
             foreach (var record in records)
             {
                 record.IsConfirmed = true;
                 db.SaveChanges();
-            }*/
+            }
         }
 
         public void ForgiveRecord(int recordId)
         {
-            /*var record = db.Records.Find(recordId);
+            var record = db.Records.Find(recordId);
             if (record != null)
             {
                 if (record.IsForgiven == false)
@@ -287,18 +286,18 @@ namespace Journal3.Controllers
                 else
                     record.IsForgiven = false;
                 db.SaveChanges();
-            }*/
+            }
         }
 
         public void ForgiveAll(string date)
         {
             DateTime selectedDate = Convert.ToDateTime(date);
-            /*var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsForgiven == false && x.IsLate == true).ToList();
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsForgiven == false && x.IsLate == true).ToList();
             foreach (var record in records)
             {
                 record.IsForgiven = true;
                 db.SaveChanges();
-            }*/
+            }
         }
 
         public void UpdateDataFromFile(DateTime? selectedDate)
@@ -322,7 +321,7 @@ namespace Journal3.Controllers
 
                             if (fileRecords.Any())
                             {
-                                /*var dbRecords = db.Records.Where(x => x.IsSystem == true
+                                var dbRecords = db.Records.Where(x => x.IsSystem == true
                                                                     && DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
                                                                     .OrderBy(x => x.TimeRecord).ToList();
 
@@ -373,7 +372,7 @@ namespace Journal3.Controllers
                                             }
                                         }
                                     }
-                                }*/
+                                }
                             }
                         }
                     }
@@ -385,7 +384,7 @@ namespace Journal3.Controllers
 
         public ApplicationUser GetUserByKey(string key)
         {
-            var user = db.Users/*.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule)*/.FirstOrDefault(/*x => x.UserInfo.Key == key*/);
+            var user = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.UserInfo.Key == key);
             return user;
         }
 
