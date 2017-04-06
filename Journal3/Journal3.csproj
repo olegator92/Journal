@@ -404,6 +404,7 @@
     <Compile Include="ViewModels\FileRecordViewModel.cs" />
     <Compile Include="ViewModels\JournalViewModel.cs" />
     <Compile Include="ViewModels\RecordViewModel.cs" />
+    <Compile Include="ViewModels\StatsViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +494,7 @@
     <Content Include="Views\Home\Delete.cshtml" />
     <Content Include="Views\Home\DayStats.cshtml" />
     <Content Include="Views\Settings\Index.cshtml" />
+    <Content Include="Views\Home\MonthReview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

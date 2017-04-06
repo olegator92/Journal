@@ -93,6 +93,8 @@ namespace Journal3.Controllers
 
         public ActionResult DayStats(DateTime? selectedDate)
         {
+            UpdateDataFromFile(selectedDate);
+
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
             List<JournalViewModel> model = new List<JournalViewModel>();
@@ -104,23 +106,14 @@ namespace Journal3.Controllers
 
             if (records.Any())
             {
-                foreach (var user in records.Select(x => x.User).Distinct())
+                foreach (var user in records.Select(x => x.User).Distinct().ToList())
                 {
-                    JournalViewModel journalRow = new JournalViewModel();
-                    journalRow.EmployeeName = user.UserInfo.Name;
-                    var first = records.FirstOrDefault(x => x.User == user && x.Status == (int)Statuses.Come);
-                    if(first != null)
-                        journalRow.ComeTime = first.TimeRecord;
-                    var last = records.LastOrDefault(x => x.User == user && x.Status == (int)Statuses.Gone);
-                    if(last != null)
-                        journalRow.GoneTime = last.TimeRecord;
-
+                    JournalViewModel journalRow = GetDayStatsByUser(user, records);
                     model.Add(journalRow);
                 }
-
             }
             ViewBag.SelectedDate = selectedDate;
-            return View(model.OrderBy(x => x.EmployeeName));
+            return View(model.OrderBy(x => x.User.UserInfo.Name));
         }
 
         public ActionResult Create(DateTime? selectedDate)
@@ -128,11 +121,12 @@ namespace Journal3.Controllers
             Record record = new Record();
             record.DateRecord = selectedDate ?? DateTime.Now;
             record.TimeRecord = DateTime.Now.TimeOfDay;
-            
+            record.Status = (int)Statuses.Come;
+            record.Remark = (int)Remarks.ComeGone;
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo);
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
                 ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
             }
             ViewBag.SelectedDate = selectedDate;
@@ -142,7 +136,7 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Create(string UserId, Record model)
         {
-            if(UserId == null)
+            if(UserId == "")
                UserId = User.Identity.GetUserId();
 
             var dbUser = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.Id == UserId);
@@ -151,10 +145,14 @@ namespace Journal3.Controllers
                 string key = "";
                 if (dbUser.UserInfo != null)
                     key = dbUser.UserInfo.Key;
+
                 if (key != "")
                 {
                     if (model.Remark == (int)Remarks.DebtWork && model.DebtWorkDate == null)
                         return View(UserId, model);
+
+                    if (model.Remark != (int)Remarks.DebtWork)
+                        model.DebtWorkDate = null;
 
                     if (User.IsInRole("Admin"))
                         model.IsConfirmed = true;
@@ -166,25 +164,30 @@ namespace Journal3.Controllers
                     
                     model.IsForgiven = false;
                     model.IsSystem = false;
+                    model.IsLate = false;
                     model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
-                    if (model.Status == (int)Statuses.Come)
+                    if (model.Status == (int)Statuses.Come && model.Remark == (int)Remarks.ComeGone)
                     {
                         if ((model.TimeRecord - dbUser.UserInfo.WorkSchedule.StartWork).TotalMinutes > 5)
                             model.IsLate = true;
-                        else
-                            model.IsLate = false;
                     }
-                    else if (model.Status == (int)Statuses.Gone)
+                    else if (model.Status == (int)Statuses.Gone && model.Remark == (int)Remarks.ComeGone)
                     {
                         if ((dbUser.UserInfo.WorkSchedule.EndWork - model.TimeRecord).TotalMinutes > 5)
                             model.IsLate = true;
-                        else
-                            model.IsLate = false;
                     }
                     db.Records.Add(model);
                     db.SaveChanges();
                 }
             }
+
+            if (User.IsInRole("Admin"))
+            {
+                var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
+            }
+
             ViewBag.SelectedDate = model.DateRecord;
             return RedirectToAction("Index", new { selectedDate = model.DateRecord});
         }
@@ -196,33 +199,43 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).ToList();
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", userInfoes.FirstOrDefault(x => x.UserId == record.UserId));
+                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
+                ViewBag.UserIds = new SelectList(userInfoes, "UserId", "Name", record.UserId);
+
             }
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
         }
 
         [HttpPost]
-        public ActionResult Edit(Record record)
+        public ActionResult Edit(Record record, DateTime selectedDate)
         {
             var dbRecord = db.Records.Find(record.Id);
-            
-            if (ModelState.IsValid)
-            {
-                UpdateModel(dbRecord);
-                db.SaveChanges();
-                return RedirectToAction("Index", new { selectedDate = record.DateRecord});
-            }
-            if (!User.IsInRole("Admin"))
-                record.IsConfirmed = false;
+            if (User.IsInRole("Admin") || record.IsSystem)
+                record.IsConfirmed = true;
             else
+                record.IsConfirmed = false;
+
+            if (!(record.Remark == (int)Remarks.DebtWork && record.DebtWorkDate == null))
             {
-                var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
-                var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name);
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", record.User.Id);
-            }
-            ViewBag.SelectedDate = record.DateRecord;
+                if (ModelState.IsValid)
+                {
+                    UpdateModel(dbRecord);
+                    db.SaveChanges();
+                    if (record.Remark != (int)Remarks.DebtWork)
+                    {
+                        dbRecord.DebtWorkDate = null;
+                        db.SaveChanges();
+                    }  
+                    return RedirectToAction("Index", new { selectedDate = selectedDate });
+                }
+            } 
+
+            var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
+            var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
+
+            ViewBag.UserIds = new SelectList(userInfoes, "UserId", "Name", record.UserId);
+            ViewBag.SelectedDate = selectedDate;
             return View(record);
         }
 
@@ -426,6 +439,148 @@ namespace Journal3.Controllers
                 newRecords = fileRecords.Where(x => !dbRecords.Any(i => i.TimeRecord == x.Time)).ToList();
 
             return newRecords;
+        }
+
+        public ActionResult MonthReview(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null)
+            {
+                DateTime currentDate = DateTime.Now;
+                startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+                endDate = startDate.Value.AddMonths(1).AddDays(-1);
+            }
+
+            List<StatsViewModel> model = new List<StatsViewModel>();
+            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
+                                            .OrderBy(x => x.TimeRecord)
+                                            .ToList();
+
+            if (records.Any())
+            {
+                foreach (DateTime date in records.OrderBy(x => x.DateRecord).Select(x => x.DateRecord).Distinct().ToList())
+                {
+                    StatsViewModel dateStats = new StatsViewModel();
+                    dateStats.Date = date;
+                    List<JournalViewModel> stats = new List<JournalViewModel>();
+                    foreach (var user in records.Select(x => x.User).Distinct().ToList())
+                    {
+                        JournalViewModel userStats = GetDayStatsByUser(user, records.Where(x => x.DateRecord == date).ToList());
+                        if(userStats.User != null)
+                            stats.Add(userStats);
+                    }
+                    dateStats.DateStats = stats;
+                    model.Add(dateStats);
+                }
+
+            }
+
+            ViewBag.StartDate = startDate;
+            ViewBag.EndDate = endDate;
+            return View(model);
+        }
+
+        JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records)
+        {
+            JournalViewModel journalRow = new JournalViewModel();
+            var filteredRecords = records.Where(x => x.User == user).ToList();
+            if (filteredRecords.Any())
+            {
+                journalRow.User = user;
+                journalRow.WorkSchedule = filteredRecords.FirstOrDefault().WorkSchedule;
+                journalRow.IsSystem = true;
+
+                ComeViewModel come = new ComeViewModel
+                {
+                    IsForgiven = false,
+                    IsProblem = false,
+                    Comment = ""
+                };
+                var firstRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && (x.IsSystem == true || x.IsConfirmed == true));
+                if (firstRecord != null)
+                {
+                    if (!firstRecord.IsSystem)
+                        journalRow.IsSystem = false;
+
+                    if (firstRecord.IsLate)
+                    {
+                        come.IsProblem = true;
+                        come.Comment = "Опоздание";
+                        if (firstRecord.IsForgiven == true)
+                        {
+                            come.IsForgiven = true;
+                            come.Time = firstRecord.WorkSchedule.StartWork;
+                        }
+                        else
+                            come.Time = firstRecord.TimeRecord;
+                    }
+                    else
+                        come.Time = firstRecord.TimeRecord;
+
+                    journalRow.Come = come;
+                }
+                else
+                {
+                    come.IsProblem = true;
+                    come.Comment = "Не указано время прихода";
+                }
+
+                GoneViewModel gone = new GoneViewModel
+                {
+                    IsForgiven = false,
+                    IsProblem = false,
+                    Comment = ""
+                };
+
+                var lastRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && (x.IsSystem == true || x.IsConfirmed == true));
+                if (lastRecord != null)
+                {
+                    if (!lastRecord.IsSystem)
+                        journalRow.IsSystem = false;
+
+                    if (lastRecord.IsLate)
+                    {
+                        gone.IsProblem = true;
+                        gone.Comment = "Уход раньше времени";
+                        if (lastRecord.IsForgiven == true)
+                        {
+                            gone.IsForgiven = true;
+                            gone.Time = lastRecord.WorkSchedule.EndWork;
+                        }
+                        else
+                            gone.Time = lastRecord.TimeRecord;
+                    }
+                    else
+                        gone.Time = lastRecord.TimeRecord;
+                }
+                else
+                {
+                    var outForWorkRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.OutForWork);
+                    if (outForWorkRecord != null)
+                    {
+                        if (!outForWorkRecord.IsSystem)
+                            journalRow.IsSystem = false;
+
+                        gone.IsProblem = true;
+                        gone.IsForgiven = outForWorkRecord.IsForgiven;
+                        gone.Comment = "Ушел по работе";
+                        if (outForWorkRecord.IsForgiven)
+                            gone.Time = outForWorkRecord.WorkSchedule.EndWork;
+                        else
+                            gone.Time = outForWorkRecord.TimeRecord;
+                    }
+                    else
+                    {
+                        gone.IsProblem = true;
+                        gone.Comment = "Не указано время ухода";
+                    }
+                }
+
+                journalRow.Gone = gone;
+            }
+            
+            return journalRow;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Journal3.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -7,8 +8,27 @@ namespace Journal3.ViewModels
 {
     public class JournalViewModel
     {
-        public string EmployeeName { get; set; }
-        public TimeSpan ComeTime { get; set; }
-        public TimeSpan GoneTime { get; set; }
+        public ApplicationUser User { get; set; }
+        public WorkSchedule WorkSchedule { get; set; }
+        public ComeViewModel Come { get; set; }
+        public GoneViewModel Gone { get; set; }
+        public bool IsSystem { get; set; }
     }
+
+    public class ComeViewModel
+    {
+        public TimeSpan Time { get; set; }
+        public bool IsForgiven { get; set; }
+        public bool IsProblem { get; set; }
+        public string Comment { get; set; }
+    }
+
+    public class GoneViewModel
+    {
+        public TimeSpan Time { get; set; }
+        public bool IsForgiven { get; set; }
+        public bool IsProblem { get; set; }
+        public string Comment { get; set; }
+    }
+
 }

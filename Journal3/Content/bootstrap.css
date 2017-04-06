@@ -6851,3 +6851,7 @@ td.visible-print {
 .forgiven {
     border-left-color: green;
 }
+
+.alignCenter .th{
+    text-align: center;
+}

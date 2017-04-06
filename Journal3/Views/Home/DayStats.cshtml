@@ -27,23 +27,81 @@
             <th scope="row">ФИО</th>
             <th scope="row">Пришел</th>
             <th scope="row">Ушел</th>
+            <th scope="row">График работы</th>
+            <th scope="row">Система</th>
+            <th scope="row">Примечание</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
-            {
+        {
             <tr>
                 <td>
                     @i)
                 </td>
                 <td>
-                    @item.EmployeeName
+                    @item.User.UserInfo.Name
                 </td>
                 <td>
-                    <span>@String.Format("{0:hh\\:mm\\:ss}", item.ComeTime)</span>
+                    @{
+                        string comeColor = "";
+                        if (item.Come.IsProblem)
+                        {
+                            if (item.Come.IsForgiven)
+                            {
+                                comeColor = "color: green;";
+                            }
+                            else
+                            {
+                                comeColor = "color: red;";
+                            }
+                        }
+                    }
+                    <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", item.Come.Time)</span>
                 </td>
                 <td>
-                    <span>@String.Format("{0:hh\\:mm\\:ss}", item.GoneTime)</span>
+                    @{
+                        string goneColor = "";
+                        if (item.Gone.IsProblem)
+                        {
+                            if (item.Gone.IsForgiven)
+                            {
+                                goneColor = "color: green;";
+                            }
+                            else
+                            {
+                                goneColor = "color: red;";
+                            }
+                        }
+                    }
+                    <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", item.Gone.Time)</span>
+                </td>
+                <td>
+                    @item.WorkSchedule.Name
+                </td>
+                <td>
+                    @if (item.IsSystem)
+                    {
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    }
+                </td>
+                <td>
+                    @if (item.Come.IsProblem || item.Gone.IsProblem)
+                    {
+                        string colorText = "";
+                        colorText = (item.Come.IsForgiven ? "color: green;" : "color: red;");
+                        <span style="@colorText">@item.Come.Comment</span>
+                        if (item.Come.Comment != "")
+                        {
+                            <br />
+                        }
+                        colorText = (item.Gone.IsForgiven ? "color: green;" : "color: red;");
+                        <span style="@colorText">@item.Gone.Comment</span>
+                    }
                 </td>
             </tr>
             i++;

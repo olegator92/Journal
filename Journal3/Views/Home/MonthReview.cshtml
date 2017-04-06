@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Journal3.ViewModels.StatsViewModel>
+@{
+    int i = 1;
+}
+
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+<br>
+<br>
+<div class="row">
+    <form action="/Home/MonthReview" method="post" role="form" class="form-inline">
+        <div class="input-append date" id="datepicker1" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <label class="control-label" for="StartDate" style="display: inline-block; padding-left: 15px;">Начало:</label>
+            <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+        <div class="input-append date" id="datepicker2" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <label class="control-label" for="EndtDate" style="display: inline-block; padding-left: 15px;">Конец:</label>
+            <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+
+        <div style="display: block; margin-top: 15px; padding-left: 15px;">
+            <input type="submit" value="Показать" class="btn btn-default" />
+        </div>
+
+        
+    </form>
+</div>
+<br>
+
+<table class="table table-hover customTheme table-striped" style="width:auto;">
+    <thead>
+        <tr class="tabcolor">
+            <th scope="row">№</th>
+            <th scope="row">ФИО</th>
+            <th scope="row">Пришел</th>
+            <th scope="row">Ушел</th>
+            <th scope="row">График работы</th>
+            <th scope="row">Система</th>
+            <th scope="row">Примечание</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var date in Model)
+        {
+            i = 1;
+            <tr>
+                <td></td>
+                <td>@date.Date</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            foreach (var dayStats in date.DateStats)
+            {
+                <tr>
+                    <td>
+                        @i)
+                    </td>
+                    <td>
+                        @dayStats.User.UserInfo.Name
+                    </td>
+                    <td>
+                        @{
+                            string comeColor = "";
+                            if (dayStats.Come.IsProblem)
+                            {
+                                if (dayStats.Come.IsForgiven)
+                                {
+                                    comeColor = "color: green;";
+                                }
+                                else
+                                {
+                                    comeColor = "color: red;";
+                                }
+                            }
+                        }
+                        <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
+                    </td>
+                    <td>
+                        @{
+                            string goneColor = "";
+                            if (dayStats.Gone.IsProblem)
+                            {
+                                if (dayStats.Gone.IsForgiven)
+                                {
+                                    goneColor = "color: green;";
+                                }
+                                else
+                                {
+                                    goneColor = "color: red;";
+                                }
+                            }
+                        }
+                        <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
+                    </td>
+                    <td>
+                        @dayStats.WorkSchedule.Name
+                    </td>
+                    <td>
+                        @if (dayStats.IsSystem)
+                    {
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        }
+                    </td>
+                    <td>
+                        @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
+                    {
+                        string colorText = "";
+                        colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
+                            <span style="@colorText">@dayStats.Come.Comment</span>
+                            if (dayStats.Come.Comment != "")
+                            {
+                                <br />
+                            }
+                            colorText = (dayStats.Gone.IsForgiven ? "color: green;" : "color: red;");
+                            <span style="@colorText">@dayStats.Gone.Comment</span>
+                        }
+                    </td>
+                </tr>
+                i++;
+            }
+        }
+    </tbody>
+</table>
+
+<script type='text/javascript'>
+        $(function () {
+            $('#datepicker1').datepicker({
+                language: 'ru'
+            });
+        });
+
+        $(function () {
+            $('#datepicker2').datepicker({
+                language: 'ru'
+            });
+        });
+</script>

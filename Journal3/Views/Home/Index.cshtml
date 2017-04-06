@@ -20,40 +20,48 @@
     <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate})" class="btn btn-primary" style="margin-left: 15px;">
         <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись</a>
 </div>
-    <table class="table table-hover customTheme table-striped" style="width:auto;">
+    <table class="table table-hover customTheme table-striped" style="width:auto; @(User.IsInRole("Admin") ? "font-size:9pt;" : "")">
         <thead>
-            <tr class="tabcolor">
+            <tr class="tabcolor alignCenter">
                 <th scope="row">Время</th>
                 <th scope="row">ФИО</th>
                 <th scope="row">Статус</th>
                 <th scope="row">Примечание</th>
                 <th scope="row">Комментарий</th>
-                <th scope="row">График работы</th>
-                <th scope="row">Дата создания</th>
-                <th scope="row">Система</th>
-                <th></th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th scope="row">График работы</th>
+                    <th scope="row">Дата создания</th>
+                    <th scope="row">Система</th>
+                }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <th></th>
+                }
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 string itemClass = "";
-                if (item.IsConfirmed == false)
+                if (User.IsInRole("Admin"))
                 {
-                    itemClass += "notConfirmed";
+                    if (item.IsConfirmed == false)
+                    {
+                        itemClass += "notConfirmed";
+                    }
+                    if (item.IsLate == true)
+                    {
+                        itemClass += " late";
+                    }
+                    if (item.IsForgiven == true)
+                    {
+                        itemClass += " forgiven";
+                    }
                 }
-                if (item.IsLate == true)
-                {
-                    itemClass += " late";
-                }
-                if (item.IsForgiven == true)
-                {
-                    itemClass += " forgiven";
-                }
-
                 <tr class="@itemClass">
                     <td>
-                        <span style="font-size: 12pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
+                        <span style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                     </td>
                     <td>
                         @item.User.UserInfo.Name
@@ -69,69 +77,88 @@
                         }
                         @item.StatusName                   
                     </td>
-                    <td>
+                    <td  style="white-space: nowrap;">
                         @item.RemarkName
-                        @(item.Remark == 4 ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy"):"")
+                        @(item.Remark == 4 && item.DebtWorkDate  != null ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy"):"")
                     </td>
                     <td class="col-md-2">
                         @item.Comment
                     </td>
-                    <td>
-                        @item.WorkSchedule.Name
-                    </td>
-                    <td>
-                        @item.DateCreated
-                    </td>
-                    <td style="text-align: center;">
-                        @if (item.IsSystem)
-                        {
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        }
-                        else
-                        {
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                        }
-                    </td>
-                    <td>
-                        <input type="hidden" name="recordId" value="@item.Id" />
-                        <a href="@Url.Action("Edit", "Home", new {id = item.Id, selectedDate = ViewBag.SelectedDate})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                        <a href="@Url.Action("Delete", "Home", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                        @if (item.IsConfirmed)
-                        {
-                            <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
-                        }
-                        else
-                        {
-                            <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
-                        }
-                        @if (item.IsLate)
-                        {
-                            <span class="glyphicon glyphicon-gift btn-link forgive" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
-                        }
-                       
 
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td  style="white-space: nowrap;">
+                            @item.WorkSchedule.Name
+                        </td>
+                        <td>
+                            @item.DateCreated
+                        </td>
+                        <td style="text-align: center;">
+                            @if (item.IsSystem)
+                            {
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            }
+                        </td>
+                    }
+                   @if (User.Identity.IsAuthenticated)
+                   {
+                        <td style="font-size: 11pt; white-space: nowrap;">
+                            <input type="hidden" name="recordId" value="@item.Id"/>
+                            @if (User.IsInRole("Admin") || User.Identity.Name == item.User.UserName)
+                            {
+                                <a href="@Url.Action("Edit", "Home", new {id = item.Id, selectedDate = ViewBag.SelectedDate})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                                if (!item.IsSystem)
+                                {
+                                    <a href="@Url.Action("Delete", "Home", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                                }
+                            }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                if (item.IsConfirmed)
+                                {
+                                    <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                                }
+                                else
+                                {
+                                    <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                                }
+                                if (item.IsLate)
+                                {
+                                    <span class="glyphicon glyphicon-gift btn-link forgive" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
+                                }
+                            }
+
+                        </td>
+                   }
+                    
+                </tr>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ConfirmAll">
+                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="margin-right: 10px;"></span>Утвердить
+                        </button>
+                        <br>
+                        <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ForgiveAll">
+                            <span class="glyphicon glyphicon-gift" aria-hidden="true" style="margin-right: 10px;"></span>Простить
+                        </button>
                     </td>
                 </tr>
             }
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ConfirmAll">
-                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="margin-right: 10px;"></span>Утвердить
-                    </button>
-                    <br>
-                    <button class="btn btn-primary" style="font-size: 8pt; margin-bottom: 5px;" id="ForgiveAll">
-                        <span class="glyphicon glyphicon-gift" aria-hidden="true" style="margin-right: 10px;"></span>Простить
-                    </button>
-                </td>
-            </tr>
         </tbody>
     </table>
 

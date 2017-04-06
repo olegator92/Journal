@@ -1,53 +1,70 @@
 ﻿@model Journal3.Models.Record
-@if (User.IsInRole("Admin"))
+
+@{
+    String debtWork = "";
+    if (Model.DebtWorkDate != null)
+    {
+        debtWork = Model.DebtWorkDate.Value.ToString("dd.MM.yyyy");
+    }
+}
+
+<input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate"/>
+@if (!Model.IsSystem)
 {
+    if (User.IsInRole("Admin"))
+    {
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="Comment">Сотрудник</label>
+            <div class="col-md-10">
+                @Html.DropDownList("UserId", (SelectList)ViewBag.UserIds, new { @class = "form-control" })
+            </div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" name="UserId" value="@Model.UserId" />
+    }
+
+    <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+        <label class="control-label" for="Date" style="display: inline-block;  padding-left: 120px; padding-right: 27px;">Дата</label>
+        <input class="form-control" size="16" type="text" name="DateRecord" value="@Model.DateRecord.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;" />
+        <span class="add-on glyphicon glyphicon-calendar"></span>
+    </div>
     <div class="form-group">
-        <label class="col-md-2 control-label" for="Comment">Сотрудник</label>
+        <label class="col-md-2 control-label" for="TimeRecord">Время</label>
         <div class="col-md-10">
-            @Html.DropDownListFor(m => m.User, (SelectList)ViewBag.UserId, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.TimeRecord, String.Format("{0:hh\\:mm\\:ss}", Model.TimeRecord), new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Status">Статус</label>
+        <div class="col-md-10">
+            <select class="form-control" id="Status" name="Status">
+                <option value="1" @(Model.Status == 1 ? "selected='selected'" : "" )>Пришел</option>
+                <option value="2" @(Model.Status == 2 ? "selected='selected'" : "" )>Ушел</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Remark">Примечание</label>
+        <div class="col-md-10">
+            <select class="form-control" id="Remark" name="Remark">
+                <option value="1" @(Model.Remark == 1 ? "selected='selected'" : "" )>Пришел/Ушел</option>
+                <option value="2" @(Model.Remark == 2 ? "selected='selected'" : "" )>Выезд по работе</option>
+                <option value="3" @(Model.Remark == 3 ? "selected='selected'" : "" )>Отпросился</option>
+                <option value="4" @(Model.Remark == 4 ? "selected='selected'" : "" )>Отработка</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="DebtWorkContainer" class=@(Model.Remark != 4 ? "hidden" : "")>
+        <div class="input-append date" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+            <label class="control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
+            <input class="form-control" size="16" type="text" name="DebtWorkDate" value="@debtWork" readonly="" style="display: inline-block;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
     </div>
 }
-
-<div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
-    <label class="control-label" for="Date" style="display: inline-block;  padding-left: 120px; padding-right: 27px;">Дата</label>
-    <input class="form-control" size="16" type="text" name="DateRecord" value="@Model.DateRecord.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;" />
-    <span class="add-on glyphicon glyphicon-calendar"></span>
-</div>
-<div class="form-group">
-    <label class="col-md-2 control-label" for="TimeRecord">Время</label>
-    <div class="col-md-10">
-        @Html.TextBoxFor(m => m.TimeRecord, String.Format("{0:hh\\:mm\\:ss}", Model.TimeRecord), new { @class = "form-control" })
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-md-2 control-label" for="Status">Статус</label>
-    <div class="col-md-10">
-        <select class="form-control" id="Status" name="Status">
-            <option value="1" @(Model.Status == 1 ? "selected='selected'" : "" )>Пришел</option>
-            <option value="2" @(Model.Status == 2 ? "selected='selected'" : "" )>Ушел</option>
-        </select>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-md-2 control-label" for="Remark">Примечание</label>
-    <div class="col-md-10">
-        <select class="form-control" id="Remark" name="Remark">
-            <option value="1" @(Model.Status == 1 ? "selected='selected'" : "" )>Пришел/Ушел</option>
-            <option value="2" @(Model.Status == 2 ? "selected='selected'" : "" )>Выезд по работе</option>
-            <option value="3" @(Model.Status == 3 ? "selected='selected'" : "" )>Отпросился</option>
-            <option value="4" @(Model.Status == 4 ? "selected='selected'" : "" )>Отработка</option>
-        </select>
-    </div>
-</div>
-
-<div id="DebtWorkContainer" class=@(Model.Status != 4 ? "hidden" : "")>
-    <div class="input-append date" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
-        <label class="control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
-        <input class="form-control" size="16" type="text" name="DebtWorkDate" value="@(Model.DebtWorkDate == null ? Model.DebtWorkDate.ToString("dd.MM.yyyy") : "")" readonly="" style="display: inline-block;" />
-        <span class="add-on glyphicon glyphicon-calendar"></span>
-    </div>
-</div>
 
 <div class="form-group">
     <label class="col-md-2 control-label" for="Comment">Комментарий</label>
