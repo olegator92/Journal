@@ -6852,6 +6852,10 @@ td.visible-print {
     border-left-color: green;
 }
 
-.alignCenter .th{
+.alignCenter > .th{
     text-align: center;
+}
+
+.checkSet {
+    margin-left: 10px;
 }

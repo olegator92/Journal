@@ -215,6 +215,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\DaysOfWeekHelper.cs" />
     <Compile Include="Migrations\201701201153291_InitialCreate.cs" />
     <Compile Include="Migrations\201701201153291_InitialCreate.Designer.cs">
       <DependentUpon>201701201153291_InitialCreate.cs</DependentUpon>

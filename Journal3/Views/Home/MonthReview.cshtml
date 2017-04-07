@@ -10,19 +10,49 @@
 <br>
 <br>
 <div class="row">
-    <form action="/Home/MonthReview" method="post" role="form" class="form-inline">
+    <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show">
         <div class="input-append date" id="datepicker1" data-date-format="dd.mm.yyyy" style="display: inline-block;">
             <label class="control-label" for="StartDate" style="display: inline-block; padding-left: 15px;">Начало:</label>
-            <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;" />
+            <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
         <div class="input-append date" id="datepicker2" data-date-format="dd.mm.yyyy" style="display: inline-block;">
             <label class="control-label" for="EndtDate" style="display: inline-block; padding-left: 15px;">Конец:</label>
-            <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;" />
+            <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
 
-        <div style="display: block; margin-top: 15px; padding-left: 15px;">
+        <div class="form-group">
+            <div class="checkSet">
+                <div class="checkbox">
+                    <input id="all" name="all" type="checkbox" value="true" @(ViewBag.All == true ? "checked" : "")>
+                    <input name="all" type="hidden" value="false">
+                    <label>Все</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkSet">
+                <div class="checkbox">
+                    <input id="onlyProblem" name="onlyProblem" type="checkbox" value="true" @(ViewBag.OnlyProblem == true ? "checked" : "")>
+                    <input name="onlyProblem" type="hidden" value="false">
+                    <label>Проблемные</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkSet">
+                <div class="checkbox">
+                    <input id="onlyUser" name="onlyUser" type="checkbox" value="true" @(ViewBag.OnlyUser == true ? "checked" : "")>
+                    <input name="onlyUser" type="hidden" value="false">
+                    <label>Пользовательские</label>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: inline-block; margin-top: 15px; padding-left: 15px;">
             <input type="submit" value="Показать" class="btn btn-default" />
         </div>
 
@@ -30,8 +60,17 @@
     </form>
 </div>
 <br>
+<div class="row">
+    <button class="btn btn-primary" style="margin-left: 15px;" id="update">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true" style="margin-right: 10px;"></span>Обновить данные
+    </button>
 
-<table class="table table-hover customTheme table-striped" style="width:auto;">
+    <a href="@Url.Action("ExportFile", "Home", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate })" class="btn btn-primary" style="margin-left: 15px;">
+        <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" style="margin-right: 10px;"></span>Сохранить файл</a>
+</div>
+
+<fo>
+<table class="table table-hover customTheme table-striped table-fixed" style="width:auto; font-size: 10pt;">
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
@@ -41,94 +80,109 @@
             <th scope="row">График работы</th>
             <th scope="row">Система</th>
             <th scope="row">Примечание</th>
+            <th scope="row"></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var date in Model)
         {
-            i = 1;
-            <tr>
-                <td></td>
-                <td>@date.Date</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            foreach (var dayStats in date.DateStats)
+            if (date.DateStats.Any())
             {
+                i = 1;
                 <tr>
-                    <td>
-                        @i)
-                    </td>
-                    <td>
-                        @dayStats.User.UserInfo.Name
-                    </td>
-                    <td>
-                        @{
-                            string comeColor = "";
-                            if (dayStats.Come.IsProblem)
-                            {
-                                if (dayStats.Come.IsForgiven)
-                                {
-                                    comeColor = "color: green;";
-                                }
-                                else
-                                {
-                                    comeColor = "color: red;";
-                                }
-                            }
-                        }
-                        <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
-                    </td>
-                    <td>
-                        @{
-                            string goneColor = "";
-                            if (dayStats.Gone.IsProblem)
-                            {
-                                if (dayStats.Gone.IsForgiven)
-                                {
-                                    goneColor = "color: green;";
-                                }
-                                else
-                                {
-                                    goneColor = "color: red;";
-                                }
-                            }
-                        }
-                        <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
-                    </td>
-                    <td>
-                        @dayStats.WorkSchedule.Name
-                    </td>
-                    <td>
-                        @if (dayStats.IsSystem)
-                    {
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        }
-                        else
-                        {
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                        }
-                    </td>
-                    <td>
-                        @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
-                    {
-                        string colorText = "";
-                        colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
-                            <span style="@colorText">@dayStats.Come.Comment</span>
-                            if (dayStats.Come.Comment != "")
-                            {
-                                <br />
-                            }
-                            colorText = (dayStats.Gone.IsForgiven ? "color: green;" : "color: red;");
-                            <span style="@colorText">@dayStats.Gone.Comment</span>
-                        }
-                    </td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">@date.DateName</td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                 </tr>
-                i++;
+            
+                foreach (var dayStats in date.DateStats)
+                {
+                    <tr>
+                        <td>
+                            @i)
+                        </td>
+                        <td>
+                            @dayStats.User.UserInfo.Name
+                        </td>
+                        <td>
+                            @{
+                                string comeColor = "";
+                                if (dayStats.Come.IsProblem)
+                                {
+                                    if (dayStats.Come.IsForgiven)
+                                    {
+                                        comeColor = "color: green;";
+                                    }
+                                    else
+                                    {
+                                        comeColor = "color: red;";
+                                    }
+                                }
+                            }
+                            <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
+                        </td>
+                        <td>
+                            @{
+                                string goneColor = "";
+                                if (dayStats.Gone.IsProblem)
+                                {
+                                    if (dayStats.Gone.IsForgiven)
+                                    {
+                                        goneColor = "color: green;";
+                                    }
+                                    else
+                                    {
+                                        goneColor = "color: red;";
+                                    }
+                                }
+                            }
+                            <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
+                        </td>
+                        <td>
+                            @dayStats.WorkSchedule.Name
+                        </td>
+                        <td>
+                            @if (dayStats.IsSystem)
+                            {
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            }
+                        </td>
+                        <td>
+                            @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
+                            {
+                                string colorText = "";
+                                colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
+                                <span style="@colorText">@dayStats.Come.Comment</span>
+                                if (dayStats.Come.Comment != "")
+                                {
+                                    <br />
+                                }
+                                colorText = (dayStats.Gone.IsForgiven ? "color: green;" : "color: red;");
+                                <span style="@colorText">@dayStats.Gone.Comment</span>
+                            }
+                        </td>
+                        <td>
+                            @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
+                            {
+                                <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" style="margin-left: 15px; font-size: 8pt;" target="_blank">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                    i++;
+                }
             }
+
         }
     </tbody>
 </table>
@@ -145,4 +199,57 @@
                 language: 'ru'
             });
         });
+
+        $("#all").click(function () {
+            if ($(this).is(":checked")) {
+                $("#onlyProblem").prop('checked', false);
+                $("#onlyUser").prop('checked', false);
+            }
+            else
+            {
+                $("#onlyProblem").prop('checked', true);
+                $("#onlyUser").prop('checked', true);
+            }
+        });
+
+        $("#onlyProblem").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all").prop('checked', false);;
+            }
+            else {
+                if (!$("#onlyUser").is(":checked"))
+                $("#all").prop('checked', true);;
+            }
+        });
+
+        $("#onlyUser").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all").prop('checked', false);;
+            }
+            else {
+                if (!$("#onlyProblem").is(":checked"))
+                    $("#all").prop('checked', true);;
+            }
+        });
+
+        $('#update').click(UpdateData);
+
+        function UpdateData(event) {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+
+            $.get('/Home/UpdateDataFromFileByPeriod', { startDate: startDate, endDate: endDate }).done(
+                    function () {
+                        $("#show").submit();
+                    });
+        }
+
+        $('#saveFile').click(SaveFile);
+
+        function SaveFile(event) {
+            $.get('/Home/ExportFile', {  }).done(
+                    function () {
+                        alert("File has been saved!");
+                    });
+        }
 </script>

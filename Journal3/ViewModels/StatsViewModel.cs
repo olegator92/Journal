@@ -8,6 +8,7 @@ namespace Journal3.ViewModels
     public class StatsViewModel
     {
         public DateTime Date { get; set; } 
+        public string DateName { get; set; }
         public List<JournalViewModel> DateStats { get; set; }
     }
 }

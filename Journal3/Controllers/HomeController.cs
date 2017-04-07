@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -23,18 +25,32 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
-        public ActionResult Index(DateTime? selectedDate)
+        public ActionResult Index(DateTime? selectedDate, string userId = "")
         {
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
 
             UpdateDataFromFile(selectedDate);
 
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+            List<Record> records = new List<Record>();
+
+            if (userId != "")
+            {
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.UserId == userId)
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
                                             .ToList();
+            }
+            else
+            {
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
+                                            .OrderBy(x => x.TimeRecord)
+                                            .ToList();
+            }
+
 
             List<RecordViewModel> model = new List<RecordViewModel>();
             if (records.Any())
@@ -48,7 +64,7 @@ namespace Journal3.Controllers
                     record.TimeRecord = item.TimeRecord;
                     record.Status = item.Status;
                     record.DebtWorkDate = item.DebtWorkDate;
-                    switch(item.Status)
+                    switch (item.Status)
                     {
                         case (int)Statuses.Come:
                             record.StatusName = "Пришел";
@@ -56,7 +72,7 @@ namespace Journal3.Controllers
                         case (int)Statuses.Gone:
                             record.StatusName = "Ушел";
                             break;
-                        
+
                     }
                     record.Remark = item.Remark;
                     switch (item.Remark)
@@ -81,22 +97,22 @@ namespace Journal3.Controllers
                     record.IsSystem = item.IsSystem;
                     record.User = item.User;
                     record.WorkSchedule = item.WorkSchedule;
-                    
+
                     model.Add(record);
                 }
-
             }
-           
+
             ViewBag.SelectedDate = selectedDate;
             return View(model);
         }
 
         public ActionResult DayStats(DateTime? selectedDate)
         {
-            UpdateDataFromFile(selectedDate);
-
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
+
+            UpdateDataFromFile(selectedDate);
+
             List<JournalViewModel> model = new List<JournalViewModel>();
             var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
                                             .Include(x => x.WorkSchedule)
@@ -136,8 +152,8 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Create(string UserId, Record model)
         {
-            if(UserId == "")
-               UserId = User.Identity.GetUserId();
+            if (UserId == "")
+                UserId = User.Identity.GetUserId();
 
             var dbUser = db.Users.Include(x => x.UserInfo).Include(x => x.UserInfo.WorkSchedule).FirstOrDefault(x => x.Id == UserId);
             if (dbUser != null)
@@ -161,7 +177,7 @@ namespace Journal3.Controllers
 
                     model.DateCreated = DateTime.Now;
                     model.User = dbUser;
-                    
+
                     model.IsForgiven = false;
                     model.IsSystem = false;
                     model.IsLate = false;
@@ -189,7 +205,7 @@ namespace Journal3.Controllers
             }
 
             ViewBag.SelectedDate = model.DateRecord;
-            return RedirectToAction("Index", new { selectedDate = model.DateRecord});
+            return RedirectToAction("Index", new { selectedDate = model.DateRecord });
         }
 
         public ActionResult Edit(int id)
@@ -226,10 +242,10 @@ namespace Journal3.Controllers
                     {
                         dbRecord.DebtWorkDate = null;
                         db.SaveChanges();
-                    }  
+                    }
                     return RedirectToAction("Index", new { selectedDate = selectedDate });
                 }
-            } 
+            }
 
             var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
             var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
@@ -261,7 +277,7 @@ namespace Journal3.Controllers
                 TempData["Message"] = "Невозможно удалить скидку.";
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Index", new { selectedDate = record.DateRecord});
+            return RedirectToAction("Index", new { selectedDate = record.DateRecord });
         }
 
 
@@ -341,7 +357,7 @@ namespace Journal3.Controllers
                                 if (fileRecords.Count() > dbRecords.Count())
                                 {
                                     List<FileRecordViewModel> newRecords = GetNewRecords(dbRecords, fileRecords);
-        
+
                                     if (newRecords.Any())
                                     {
                                         foreach (var newRecord in newRecords)
@@ -361,7 +377,12 @@ namespace Journal3.Controllers
 
                                                 record.Remark = (int)Remarks.ComeGone;
                                                 if (!db.Records.Where(x => x.DateRecord == selectedDate).Any(x => x.User.Id == user.Id))
-                                                    record.Status = (int)Statuses.Come;
+                                                {
+                                                    if ((record.WorkSchedule.EndWork - record.TimeRecord).TotalHours > 1)
+                                                        record.Status = (int)Statuses.Come;
+                                                    else
+                                                        record.Status = (int)Statuses.Gone;
+                                                }
                                                 else
                                                     record.Status = (int)Statuses.Gone;
 
@@ -372,7 +393,7 @@ namespace Journal3.Controllers
                                                     else
                                                         record.IsLate = false;
                                                 }
-                                                else if(record.Status == (int)Statuses.Gone)
+                                                else if (record.Status == (int)Statuses.Gone)
                                                 {
                                                     if ((user.UserInfo.WorkSchedule.EndWork - newRecord.Time).TotalMinutes > 5)
                                                         record.IsLate = true;
@@ -389,9 +410,9 @@ namespace Journal3.Controllers
                             }
                         }
                     }
-                    
+
                 }
-                
+
             }
         }
 
@@ -441,7 +462,7 @@ namespace Journal3.Controllers
             return newRecords;
         }
 
-        public ActionResult MonthReview(DateTime? startDate, DateTime? endDate)
+        public ActionResult MonthReview(DateTime? startDate, DateTime? endDate, bool all = true, bool onlyProblem = false, bool onlyUser = false)
         {
             if (startDate == null || endDate == null)
             {
@@ -450,6 +471,18 @@ namespace Journal3.Controllers
                 endDate = startDate.Value.AddMonths(1).AddDays(-1);
             }
 
+            List<StatsViewModel> model = GetMonthStats(startDate, endDate, all, onlyProblem, onlyUser);
+
+            ViewBag.StartDate = startDate;
+            ViewBag.EndDate = endDate;
+            ViewBag.All = all;
+            ViewBag.OnlyProblem = onlyProblem;
+            ViewBag.OnlyUser = onlyUser;
+            return View(model);
+        }
+
+        List<StatsViewModel> GetMonthStats(DateTime? startDate, DateTime? endDate, bool all, bool onlyProblem, bool onlyUser)
+        {
             List<StatsViewModel> model = new List<StatsViewModel>();
             var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate)
                                             .Include(x => x.WorkSchedule)
@@ -463,22 +496,48 @@ namespace Journal3.Controllers
                 {
                     StatsViewModel dateStats = new StatsViewModel();
                     dateStats.Date = date;
+                    string dateName = Helper.DaysOfWeekHelper.GetDayName((int)date.DayOfWeek);
+                    dateName += " - ";
+                    dateName += date.ToString("dd MMM yyyy");
+
+                    dateStats.DateName = dateName;
                     List<JournalViewModel> stats = new List<JournalViewModel>();
                     foreach (var user in records.Select(x => x.User).Distinct().ToList())
                     {
                         JournalViewModel userStats = GetDayStatsByUser(user, records.Where(x => x.DateRecord == date).ToList());
-                        if(userStats.User != null)
-                            stats.Add(userStats);
+                        if (userStats.User != null)
+                        {
+                            if (all)
+                                stats.Add(userStats);
+                            else
+                            {
+                                if (onlyProblem && onlyUser)
+                                {
+                                    if ((userStats.Come.IsProblem == onlyProblem || userStats.Gone.IsProblem == onlyProblem) || userStats.IsSystem != onlyUser)
+                                        stats.Add(userStats);
+                                }
+                                else
+                                {
+                                    if (onlyProblem)
+                                    {
+                                        if (userStats.Come.IsProblem == onlyProblem || userStats.Gone.IsProblem == onlyProblem)
+                                            stats.Add(userStats);
+                                    }
+                                    else
+                                    {
+                                        if (userStats.IsSystem != onlyUser)
+                                            stats.Add(userStats);
+                                    }
+                                }
+                            }
+                        }
+
                     }
                     dateStats.DateStats = stats;
                     model.Add(dateStats);
                 }
-
             }
-
-            ViewBag.StartDate = startDate;
-            ViewBag.EndDate = endDate;
-            return View(model);
+            return model;
         }
 
         JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records)
@@ -517,14 +576,13 @@ namespace Journal3.Controllers
                     }
                     else
                         come.Time = firstRecord.TimeRecord;
-
-                    journalRow.Come = come;
                 }
                 else
                 {
                     come.IsProblem = true;
                     come.Comment = "Не указано время прихода";
                 }
+                journalRow.Come = come;
 
                 GoneViewModel gone = new GoneViewModel
                 {
@@ -576,11 +634,71 @@ namespace Journal3.Controllers
                         gone.Comment = "Не указано время ухода";
                     }
                 }
-
                 journalRow.Gone = gone;
             }
-            
             return journalRow;
+        }
+
+        public void UpdateDataFromFileByPeriod(string startDate, string endDate)
+        {
+            DateTime stDFate = DateTime.Parse(startDate);
+            DateTime edDate = DateTime.Parse(endDate);
+            for (DateTime date = stDFate; date <= edDate;)
+            {
+                UpdateDataFromFile(date);
+                date = date.AddDays(1);
+            }
+        }
+
+        public ActionResult ExportFile(DateTime startDate, DateTime endDate)
+        {
+            StringBuilder fileText = new StringBuilder();
+            string fileName = "Журнал_";
+            List<StatsViewModel> records = GetMonthStats(startDate, endDate, true, false, false);
+
+            if (records.Any())
+            {
+                List<FileRecordViewModel> fileRecords = new List<FileRecordViewModel>();
+                fileName += records[0].Date.ToString("MM.yyyy");
+
+                foreach (var date in records.OrderBy(x => x.Date))
+                {
+                    foreach (var key in date.DateStats)
+                    {
+                        if (key.Come.Time != new TimeSpan(0,0,0))
+                        {
+                            FileRecordViewModel fileRecordCome = new FileRecordViewModel();
+                            fileRecordCome.Date = date.Date;
+                            fileRecordCome.Time = key.Come.Time;
+                            fileRecordCome.Key = key.User.UserInfo.Key;
+                            fileRecords.Add(fileRecordCome);
+                        }
+
+                        if (key.Gone.Time != new TimeSpan(0, 0, 0))
+                        {
+                            FileRecordViewModel fileRecordGone = new FileRecordViewModel();
+                            fileRecordGone.Date = records[0].Date;
+                            fileRecordGone.Time = key.Gone.Time;
+                            fileRecordGone.Key = key.User.UserInfo.Key;
+                            fileRecords.Add(fileRecordGone);
+                        }
+                    }
+                }
+
+                foreach (var record in fileRecords.OrderBy(x => x.Date).ThenBy(x => x.Time))
+                {
+                    fileText.Append(record.Date.ToString("dd.MM.yyyy"));
+                    fileText.Append('\t');
+                    fileText.Append(record.Time.ToString());
+                    fileText.Append('\t');
+                    fileText.Append(record.Key);
+                    fileText.Append(Environment.NewLine);
+                }
+            }
+            
+            return File(Encoding.UTF8.GetBytes(fileText.ToString()),
+                 "text/plain", string.Format("{0}.txt", fileName));
+
         }
     }
 }
