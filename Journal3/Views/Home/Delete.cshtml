@@ -4,81 +4,87 @@
 }
 
 @Html.Partial("_HeaderPartial")
-<h3>Вы действительно хотите удалить выбранную запись из журнала?</h3>
+<h4>Вы действительно хотите удалить выбранную запись из журнала?</h4>
 
-<div class="display-label"><b>Сотрудник</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.User.UserInfo.Name)
-</div>
+<table class = "table customTheme" style="width:auto;" >
+    <thead>
+        <tr class="tabcolor alignCenter">
+            <th scope="row">Поле</th>
+            <th scope="row">Значение</th>
+        </tr>
+    </thead>
+    <tr>
+        <td style="font-weight:bold;">Сотрудник</td>
+        <td>@Html.DisplayFor(model => model.User.UserInfo.Name)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Дата создния</td>
+        <td>@Html.DisplayFor(model => model.DateCreated)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Дата</td>
+        <td>@Model.DateRecord.ToString("dd.MM.yyyy")</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Время</td>
+        <td>@String.Format("{0:hh\\:mm}", Model.TimeRecord)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Статус</td>
+        <td>
+            @switch (Model.Status)
+            {
+                case 1:
+                    <p>Пришел</p>
+                    break;
+                case 2:
+                    <p>Ушел</p>
+                    break;
+            }
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Примечание</td>
+        <td>
+            @switch (Model.Remark)
+            {
+                case 1:
+                    <p>
+                        Пришел/Ушел
+                    </p>
+                    break;
+                case 2:
+                    <p>
+                        Выезд по работе
+                    </p>
+                    break;
+                case 3:
+                    <p>
+                        Отпросился
+                    </p>
+                    break;
+                case 4:
+                    <p>
+                        Отработка
+                    </p>
+                    break;
+            }
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Комментарий</td>
+        <td>@Html.DisplayFor(model => model.Comment)</td>
+    </tr>
+</table>
 
-<div class="display-label"><b>Дата создния</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.DateCreated)
-</div>
-
-<div class="display-label"><b>Дата</b></div>
-<div class="display-field">
-    @Model.DateRecord.ToString("dd.MM.yyyy")
-</div>
-
-<div class="display-label"><b>Время</b></div>
-<div class="display-field">
-    @String.Format("{0:hh\\:mm}", Model.TimeRecord)
-</div>
-
-<div class="display-label"><b>Статус</b></div>
-<div class="display-field">
-    @switch(Model.Status)
-    {
-    case 1:
-        <p>Пришел</p>
-        break;
-    case 2:
-        <p>Ушел</p>
-        break;
-    }
-</div>
-
-<div class="display-label"><b>Примечание</b></div>
-<div class="display-field">
-@switch (Model.Remark)
-{
-    case 1:
-        <p>
-            Пришел/Ушел
-        </p>
-        break;
-    case 2:
-        <p>
-            Выезд по работе
-        </p>
-        break;
-    case 3:
-        <p>
-            Отпросился
-        </p>
-        break;
-    case 4:
-        <p>
-            Отработка
-        </p>
-        break;
-}
-</div>
-
-<div class="display-label"><b>Комментарий</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.Comment)
-</div>
-
-<br />
 @using (Html.BeginForm())
 {
-        <input type="submit" value="Удалить" class="btn btn-default" />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Удалить" />
+        </div>
+    </div>
 }
 
-<style type="text/css">
-    p {
-        margin: 0px;
-    }
-</style>
+@Html.Partial("_FooterPartial")
+

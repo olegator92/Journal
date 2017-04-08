@@ -10,15 +10,20 @@
 <br>
 <br>
 <div class="row">
-    <form action="/Home/DayStats" method="post" role="form" class="form-inline" id="getByDate">
+    <form action="/Home/DayStats" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
+        
         <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
-            <label class="control-label" for="Date" style="display: inline-block; padding-left: 15px;">Дата:</label>
-            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 200px;"/>
+            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+            </a>
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
             <span class="add-on glyphicon glyphicon-calendar"></span>
+            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+            </a>
         </div>
     </form>
 </div>
-<br>
 
 <table class="table table-hover customTheme table-striped" style="width:auto;">
     <thead>

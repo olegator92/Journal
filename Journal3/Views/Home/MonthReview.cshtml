@@ -10,18 +10,22 @@
 <br>
 <br>
 <div class="row">
-    <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show">
+    <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">
+        <a href="@Url.Action("MonthReview","Home", new {  startDate = ViewBag.PreviousStartDate, endDate = ViewBag.PreviousEndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem,  onlyUser = ViewBag.OnlyUser })" class="btn btn-primary" title="Предыдущий">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+        </a>
         <div class="input-append date" id="datepicker1" data-date-format="dd.mm.yyyy" style="display: inline-block;">
-            <label class="control-label" for="StartDate" style="display: inline-block; padding-left: 15px;">Начало:</label>
             <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
+        <span style="margin: 0 5px;">-</span>
         <div class="input-append date" id="datepicker2" data-date-format="dd.mm.yyyy" style="display: inline-block;">
-            <label class="control-label" for="EndtDate" style="display: inline-block; padding-left: 15px;">Конец:</label>
             <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
-
+        <a href="@Url.Action("MonthReview","Home", new { startDate = ViewBag.NextStartDate, endDate = ViewBag.NextEndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem,  onlyUser = ViewBag.OnlyUser })" class="btn btn-primary" title="Следующий">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+        </a>
         <div class="form-group">
             <div class="checkSet">
                 <div class="checkbox">
@@ -53,7 +57,7 @@
         </div>
 
         <div style="display: inline-block; margin-top: 15px; padding-left: 15px;">
-            <input type="submit" value="Показать" class="btn btn-default" />
+            <input type="submit" value="Показать" class="btn btn-primary" />
         </div>
 
         
@@ -244,12 +248,5 @@
                     });
         }
 
-        $('#saveFile').click(SaveFile);
-
-        function SaveFile(event) {
-            $.get('/Home/ExportFile', {  }).done(
-                    function () {
-                        alert("File has been saved!");
-                    });
-        }
+        
 </script>

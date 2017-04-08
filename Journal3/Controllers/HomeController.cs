@@ -103,6 +103,9 @@ namespace Journal3.Controllers
             }
 
             ViewBag.SelectedDate = selectedDate;
+            ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
+            ViewBag.NextDate = selectedDate.Value.AddDays(1);
+
             return View(model);
         }
 
@@ -129,6 +132,9 @@ namespace Journal3.Controllers
                 }
             }
             ViewBag.SelectedDate = selectedDate;
+            ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
+            ViewBag.NextDate = selectedDate.Value.AddDays(1);
+
             return View(model.OrderBy(x => x.User.UserInfo.Name));
         }
 
@@ -471,10 +477,20 @@ namespace Journal3.Controllers
                 endDate = startDate.Value.AddMonths(1).AddDays(-1);
             }
 
+            DateTime previousStartDate = startDate.Value.AddMonths(-1);
+            DateTime previousEndDate = previousStartDate.AddMonths(1).AddDays(-1);
+
+            DateTime nextStartDate = startDate.Value.AddMonths(1);
+            DateTime nextEndDate = nextStartDate.AddMonths(1).AddDays(-1);
+
             List<StatsViewModel> model = GetMonthStats(startDate, endDate, all, onlyProblem, onlyUser);
 
             ViewBag.StartDate = startDate;
             ViewBag.EndDate = endDate;
+            ViewBag.PreviousStartDate = previousStartDate;
+            ViewBag.PreviousEndDate = previousEndDate;
+            ViewBag.NextStartDate = nextStartDate;
+            ViewBag.NextEndDate = nextEndDate;
             ViewBag.All = all;
             ViewBag.OnlyProblem = onlyProblem;
             ViewBag.OnlyUser = onlyUser;
@@ -533,7 +549,7 @@ namespace Journal3.Controllers
                         }
 
                     }
-                    dateStats.DateStats = stats;
+                    dateStats.DateStats = stats.OrderBy(x => x.User.UserInfo.Name).ToList();
                     model.Add(dateStats);
                 }
             }

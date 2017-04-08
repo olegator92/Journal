@@ -496,6 +496,7 @@
     <Content Include="Views\Home\DayStats.cshtml" />
     <Content Include="Views\Settings\Index.cshtml" />
     <Content Include="Views\Home\MonthReview.cshtml" />
+    <Content Include="Views\Home\_FooterPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

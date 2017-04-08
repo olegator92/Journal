@@ -2094,8 +2094,11 @@ fieldset[disabled] .btn-default.active {
 
 .btn-primary {
   color: #ffffff;
-  background-color: #428bca;
-  border-color: #357ebd;
+  /*background-color: #428bca;*/
+  background-color: #40719a;
+  #2b4861
+  /*border-color: #357ebd;*/
+  border-color: #2b4861;
 }
 
 .btn-primary:hover,
@@ -6859,3 +6862,8 @@ td.visible-print {
 .checkSet {
     margin-left: 10px;
 }
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+

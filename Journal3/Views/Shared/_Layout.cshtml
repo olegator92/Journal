@@ -15,9 +15,6 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    <!--Styles.Render("~/Less/datepicker")
-    Styles.Render("~/Less/build")
-    Styles.Render("~/Less/build_standalone")-->
 
 </head>
 <body>
@@ -29,16 +26,21 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Главная", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Журнал", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Статистика", "DayStats", "Home")</li>
-                    <li>@Html.ActionLink("Статистика за месяц", "MonthReview", "Home")</li>
-                    <li>@Html.ActionLink("Роли", "Index", "Roles")</li>
-                    <li>@Html.ActionLink("График работы", "Index", "WorkSchedules")</li>
-                    <li>@Html.ActionLink("Пользователи", "Index", "Users")</li>
-                    <li>@Html.ActionLink("Файл", "Index", "Settings")</li>
+                    <li>@Html.ActionLink("День", "DayStats", "Home")</li>
+                    <li>@Html.ActionLink("Месяц", "MonthReview", "Home")</li>
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Настройки<b class="caret"></b></a>
+                        <ul class="dropdown-menu" style="background-color: #36393e;">
+                            <li style="color: #fff;"><a href="@Url.Action("Index", "Users")" style="color: #fff;">Пользователи</a></li>
+                            <li style="color: #fff;"><a href="@Url.Action("Index", "WorkSchedules")" style="color: #fff;">График работы</a></li>
+                            <li style="color: #fff;"><a href="@Url.Action("Index", "Settings")" style="color: #fff;">Файл</a></li>
+                            <li style="color: #fff;"><a href="@Url.Action("Index", "Roles")" style="color: #fff;">Роли</a></li>
+                         </ul>
+                    </li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -46,7 +48,7 @@
     </div>
     <div class="container body-content">
         <div class="jumbotron">
-            <h1>Журнал - @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("dd.MM.yyyy") : DateTime.Now.ToString("dd.MM.yyyy"))</h1>
+            <h1>Журнал - @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("d MMMM yyyy") : DateTime.Now.ToString("d MMMM yyyy"))</h1>
         </div>
         <div class="container" style="background-color:#fff; padding-left: 50px; padding-right: 50px; padding-bottom: 15px;">
         @RenderBody()
@@ -57,8 +59,6 @@
         </footer>
     </div>
 
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
 </html>
