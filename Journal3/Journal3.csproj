@@ -404,6 +404,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\FileRecordViewModel.cs" />
     <Compile Include="ViewModels\JournalViewModel.cs" />
+    <Compile Include="ViewModels\MonthHoursViewModel.cs" />
     <Compile Include="ViewModels\RecordViewModel.cs" />
     <Compile Include="ViewModels\StatsViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
@@ -497,6 +498,10 @@
     <Content Include="Views\Settings\Index.cshtml" />
     <Content Include="Views\Home\MonthReview.cshtml" />
     <Content Include="Views\Home\_FooterPartial.cshtml" />
+    <Content Include="Views\Users\_FooterPartial.cshtml" />
+    <Content Include="Views\WorkSchedules\_FooterPartial.cshtml" />
+    <Content Include="Views\Roles\_FooterPartial.cshtml" />
+    <Content Include="Views\Home\MonthHoursReview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

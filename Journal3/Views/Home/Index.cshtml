@@ -8,22 +8,32 @@
 <br>
 <div class="row">
     <form action="/Home/Index" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
-        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
-            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
+        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.PreviousDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Предыдущий">
                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
             </a>
             <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
             <span class="add-on glyphicon glyphicon-calendar"></span>
-            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
+            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.NextDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Следующий">
                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
             </a>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate})" class="btn btn-primary" style="margin-left: 15px;">
-                    <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись
-                </a>
-            }            
+                     
         </div>
+        @if (User.Identity.IsAuthenticated)
+            {
+            <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate, userId = ViewBag.UserId})" class="btn btn-primary" style="margin-left: 15px;">
+                <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись
+            </a>
+        }
+        
+        @if (User.IsInRole("Admin"))
+        {
+            @Html.DropDownList("userId", (SelectList)ViewBag.User, "Все", new { @class = "form-control inlineDropdown" })
+        }
+        else
+        {
+            <input type="hidden" name="userId" value="@ViewBag.UserId" />
+        } 
     </form>
 </div>
 
@@ -74,6 +84,7 @@
                     @item.User.UserInfo.Name
                 </td>
                 <td style="white-space: nowrap;">
+                    
                     @if (item.Status == 1)
                     {
                         <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
@@ -82,11 +93,26 @@
                     {
                         <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
                     }
-                    @item.StatusName                   
+                    @item.StatusName                
                 </td>
                 <td  style="white-space: nowrap;">
-                    @item.RemarkName
-                    @(item.Remark == 4 && item.DebtWorkDate  != null ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy"):"")
+                    @{
+                        string permissionClass = "";
+                        if (item.Remark == 3)
+                        {
+                            if (item.IsForgiven)
+                            {
+                                permissionClass += "permission forgivenPermission";
+                            }
+                            else
+                            {
+                                permissionClass = "permission";
+                            }
+                        }
+                    }
+
+                    <span class="@permissionClass"> @item.RemarkName</span>   
+                        @(item.Remark == 4 && item.DebtWorkDate != null ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy") : "")
                 </td>
                 <td class="col-md-2">
                     @item.Comment
@@ -125,15 +151,19 @@
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                            if (item.IsConfirmed)
+                            if (!item.IsSystem)
                             {
-                                <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                                if (item.IsConfirmed)
+                                {
+                                    <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                                }
+                                else
+                                {
+                                    <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                                }
                             }
-                            else
-                            {
-                                <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
-                            }
-                            if (item.IsLate)
+
+                            if (item.IsLate || item.Remark == 3)
                             {
                                 <span class="glyphicon glyphicon-gift btn-link forgive" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
                             }
@@ -155,7 +185,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>
+                <td style="text-align:right;">
                     <button class="btn btn-primary" id="ConfirmAll" title="Утвердить все">
                         <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
                     </button>
@@ -179,6 +209,10 @@
         $('#getByDate').submit();
     });
 
+    $('#userId').change(function () {
+        $('#getByDate').submit();
+    });
+
     $('.confirm').click(ConfirmRecord);
 
     function ConfirmRecord(event) {
@@ -196,8 +230,9 @@
 
     function ConfirmAllRecords(event) {
         var selectedDate = $("#selectedDate").val();
+        var userId = $("#userId").val();
 
-        $.get('/Home/ConfirmAll', { date:  selectedDate}).done(
+        $.get('/Home/ConfirmAll', { date: selectedDate, userId: userId}).done(
                 function () {
                 });
 
@@ -217,19 +252,25 @@
                 function () {
                 });
         $(this).parent().parent().toggleClass("forgiven");
+        $(this).parent().parent().find(".permission").toggleClass("forgivenPermission");
     }
 
     $('#ForgiveAll').click(ForgiveAllRecords);
 
     function ForgiveAllRecords(event) {
         var selectedDate = $("#selectedDate").val();
+        var userId = $("#userId").val();
 
-        $.get('/Home/ForgiveAll', { date: selectedDate }).done(
+        $.get('/Home/ForgiveAll', { date: selectedDate, userId: userId }).done(
                 function () {
                 });
 
         $(".late").each(function () {
-            $(this).toggleClass("forgiven");
+            $(this).addClass("forgiven");
+        });
+
+        $(".permission").each(function () {
+            $(this).addClass("forgivenPermission");
         });
     }
 

@@ -178,8 +178,8 @@ namespace Journal3.Controllers
                     userInfo.UserId = user.Id;
                     userInfo.Name = model.UserName;
 
-                    TimeSpan startWork = new TimeSpan(8, 0, 0);
-                    TimeSpan endWork = new TimeSpan(18, 0, 0);
+                    TimeSpan startWork = TimeSpan.Zero;
+                    TimeSpan endWork = TimeSpan.Zero;
                     WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
                     if (workSchedule != null)
                     {

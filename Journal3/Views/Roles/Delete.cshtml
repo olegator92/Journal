@@ -5,17 +5,29 @@
 }
 
 @Html.Partial("_HeaderPartial")
-    <h3>Вы уверены, что хотите удалить выбранную роль?</h3>
+    <h4>Вы уверены, что хотите удалить выбранную роль?</h4>
 
-    <div class="display-label"><b>Наименование</b></div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Name)
+<table class="table customTheme" style="width:auto;">
+    <thead>
+        <tr class="tabcolor alignCenter">
+            <th scope="row">Поле</th>
+            <th scope="row">Значение</th>
+        </tr>
+    </thead>
+    <tr>
+        <td style="font-weight:bold;">Наименование</td>
+        <td>@Html.DisplayFor(model => model.Name)</td>
+    </tr>
+ 
+</table>
+ 
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Удалить" />
+        </div>
     </div>
+}
 
-    <br />
-    @using (Html.BeginForm())
-    {
-        <p>
-            <input type="submit" value="Удалить" class="btn btn-default"/>
-        </p>
-    }
+@Html.Partial("_FooterPartial")

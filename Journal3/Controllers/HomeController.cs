@@ -51,7 +51,6 @@ namespace Journal3.Controllers
                                             .ToList();
             }
 
-
             List<RecordViewModel> model = new List<RecordViewModel>();
             if (records.Any())
             {
@@ -105,6 +104,9 @@ namespace Journal3.Controllers
             ViewBag.SelectedDate = selectedDate;
             ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
             ViewBag.NextDate = selectedDate.Value.AddDays(1);
+            if (User.IsInRole("Admin"))
+                ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
+            ViewBag.UserId = userId;
 
             return View(model);
         }
@@ -117,7 +119,7 @@ namespace Journal3.Controllers
             UpdateDataFromFile(selectedDate);
 
             List<JournalViewModel> model = new List<JournalViewModel>();
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate && x.IsConfirmed == true)
+            var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == true)
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
@@ -127,7 +129,7 @@ namespace Journal3.Controllers
             {
                 foreach (var user in records.Select(x => x.User).Distinct().ToList())
                 {
-                    JournalViewModel journalRow = GetDayStatsByUser(user, records);
+                    JournalViewModel journalRow = GetDayStatsByUser(user, records, selectedDate.Value);
                     model.Add(journalRow);
                 }
             }
@@ -138,7 +140,7 @@ namespace Journal3.Controllers
             return View(model.OrderBy(x => x.User.UserInfo.Name));
         }
 
-        public ActionResult Create(DateTime? selectedDate)
+        public ActionResult Create(DateTime? selectedDate, string userId = "")
         {
             Record record = new Record();
             record.DateRecord = selectedDate ?? DateTime.Now;
@@ -149,9 +151,10 @@ namespace Journal3.Controllers
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
                 var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
+                ViewBag.Users = new SelectList(userInfoes, "UserId", "Name", userId);
             }
             ViewBag.SelectedDate = selectedDate;
+            ViewBag.UserId = userId;
             return View(record);
         }
 
@@ -187,6 +190,7 @@ namespace Journal3.Controllers
                     model.IsForgiven = false;
                     model.IsSystem = false;
                     model.IsLate = false;
+
                     model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     if (model.Status == (int)Statuses.Come && model.Remark == (int)Remarks.ComeGone)
                     {
@@ -207,11 +211,12 @@ namespace Journal3.Controllers
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
                 var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
-                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name");
+                ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", UserId);
             }
 
             ViewBag.SelectedDate = model.DateRecord;
-            return RedirectToAction("Index", new { selectedDate = model.DateRecord });
+            ViewBag.UserId = UserId;
+            return RedirectToAction("Index", new { selectedDate = model.DateRecord, model.UserId });
         }
 
         public ActionResult Edit(int id)
@@ -222,9 +227,10 @@ namespace Journal3.Controllers
             {
                 var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
                 var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
-                ViewBag.UserIds = new SelectList(userInfoes, "UserId", "Name", record.UserId);
+                ViewBag.Users = new SelectList(userInfoes, "UserId", "Name", record.UserId);
 
             }
+            ViewBag.UserId = record.UserId;
             ViewBag.SelectedDate = record.DateRecord;
             return View(record);
         }
@@ -234,9 +240,9 @@ namespace Journal3.Controllers
         {
             var dbRecord = db.Records.Find(record.Id);
             if (User.IsInRole("Admin") || record.IsSystem)
-                record.IsConfirmed = true;
+                dbRecord.IsConfirmed = true;
             else
-                record.IsConfirmed = false;
+                dbRecord.IsConfirmed = false;
 
             if (!(record.Remark == (int)Remarks.DebtWork && record.DebtWorkDate == null))
             {
@@ -249,15 +255,16 @@ namespace Journal3.Controllers
                         dbRecord.DebtWorkDate = null;
                         db.SaveChanges();
                     }
-                    return RedirectToAction("Index", new { selectedDate = selectedDate });
+                    return RedirectToAction("Index", new { selectedDate = selectedDate, dbRecord.UserId });
                 }
             }
 
             var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
             var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
 
-            ViewBag.UserIds = new SelectList(userInfoes, "UserId", "Name", record.UserId);
+            ViewBag.Users = new SelectList(userInfoes, "UserId", "Name", record.UserId);
             ViewBag.SelectedDate = selectedDate;
+            ViewBag.UserId = record.UserId;
             return View(record);
         }
 
@@ -265,6 +272,7 @@ namespace Journal3.Controllers
         {
             var record = db.Records.Include(x => x.User.UserInfo).Include(x => x.WorkSchedule).FirstOrDefault(x => x.Id == id);
             ViewBag.SelectedDate = record.DateRecord;
+            ViewBag.UserId = record.UserId;
             return View(record);
         }
 
@@ -272,6 +280,8 @@ namespace Journal3.Controllers
         public ActionResult Delete(int id, FormCollection collection)
         {
             var record = db.Records.Find(id);
+            string userId = record.UserId;
+            ViewBag.UserId = userId;
             try
             {
                 db.Records.Remove(record);
@@ -283,7 +293,7 @@ namespace Journal3.Controllers
                 TempData["Message"] = "Невозможно удалить скидку.";
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Index", new { selectedDate = record.DateRecord });
+            return RedirectToAction("Index", new { selectedDate = record.DateRecord, userId = userId });
         }
 
 
@@ -300,10 +310,19 @@ namespace Journal3.Controllers
             }
         }
 
-        public void ConfirmAll(string date)
+        public void ConfirmAll(string date, string userId = "")
         {
             DateTime selectedDate = Convert.ToDateTime(date);
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsConfirmed == false).ToList();
+            var records = new List<Record>();
+            if (userId != "")
+            {
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsConfirmed == false && x.UserId == userId).ToList();
+            }
+            else
+            {
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsConfirmed == false).ToList();
+            }
+
             foreach (var record in records)
             {
                 record.IsConfirmed = true;
@@ -324,15 +343,34 @@ namespace Journal3.Controllers
             }
         }
 
-        public void ForgiveAll(string date)
+        public void ForgiveAll(string date, string userId = "")
         {
             DateTime selectedDate = Convert.ToDateTime(date);
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date && x.IsSystem == false && x.IsForgiven == false && x.IsLate == true).ToList();
+            var records = new List<Record>();
+            if (userId != "")
+            {
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date
+                                                               && x.IsForgiven == false
+                                                               && x.UserId == userId
+                                                               && (x.IsLate == true
+                                                               || x.Remark == (int)Remarks.ByPermission))
+                                                               .ToList();
+            }
+            else
+            {
+
+                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate.Date
+                                                                    && x.IsForgiven == false
+                                                                    && (x.IsLate == true
+                                                                    || x.Remark == (int)Remarks.ByPermission))
+                                                                    .ToList();
+            }
+
             foreach (var record in records)
             {
                 record.IsForgiven = true;
-                db.SaveChanges();
             }
+            db.SaveChanges();
         }
 
         public void UpdateDataFromFile(DateTime? selectedDate)
@@ -344,7 +382,6 @@ namespace Journal3.Controllers
                 string fileText = System.IO.File.ReadAllText(path);
                 if (fileText != "")
                 {
-
                     int index = fileText.IndexOf(selectedDate.Value.ToString("dd.MM.yyyy"), 0);
                     if (index >= 0)
                     {
@@ -382,7 +419,7 @@ namespace Journal3.Controllers
                                                 record.WorkSchedule = user.UserInfo.WorkSchedule;
 
                                                 record.Remark = (int)Remarks.ComeGone;
-                                                if (!db.Records.Where(x => x.DateRecord == selectedDate).Any(x => x.User.Id == user.Id))
+                                                if (!db.Records.Where(x => x.DateRecord == selectedDate && x.IsSystem).Any(x => x.User.Id == user.Id))
                                                 {
                                                     if ((record.WorkSchedule.EndWork - record.TimeRecord).TotalHours > 1)
                                                         record.Status = (int)Statuses.Come;
@@ -468,6 +505,144 @@ namespace Journal3.Controllers
             return newRecords;
         }
 
+        public ActionResult MonthHoursReview(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null)
+            {
+                DateTime currentDate = DateTime.Now;
+                startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+                endDate = startDate.Value.AddMonths(1).AddDays(-1);
+            }
+
+            DateTime previousStartDate = startDate.Value.AddMonths(-1);
+            DateTime previousEndDate = previousStartDate.AddMonths(1).AddDays(-1);
+
+            DateTime nextStartDate = startDate.Value.AddMonths(1);
+            DateTime nextEndDate = nextStartDate.AddMonths(1).AddDays(-1);
+
+            List<MonthHoursViewModel> model = GetMonthHours(startDate, endDate);
+
+            ViewBag.StartDate = startDate;
+            ViewBag.EndDate = endDate;
+            ViewBag.PreviousStartDate = previousStartDate;
+            ViewBag.PreviousEndDate = previousEndDate;
+            ViewBag.NextStartDate = nextStartDate;
+            ViewBag.NextEndDate = nextEndDate;
+
+            return View(model);
+        }
+
+        List<MonthHoursViewModel> GetMonthHours(DateTime? startDate, DateTime? endDate)
+        {
+            List<MonthHoursViewModel> model = new List<MonthHoursViewModel>();
+
+            List<StatsViewModel> monthStats = new List<StatsViewModel>();
+            var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate)
+                                            || (DbFunctions.TruncateTime(x.DebtWorkDate) >= startDate && DbFunctions.TruncateTime(x.DebtWorkDate) <= endDate))
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
+                                            .OrderBy(x => x.TimeRecord)
+                                            .ToList();
+
+            if (records.Any())
+            {
+                List<DateTime> debtWorkList = records.Where(x => x.DebtWorkDate != null).Select(x => x.DebtWorkDate.Value).ToList();
+                foreach (DateTime date in records.Select(x => x.DateRecord).Union(debtWorkList).Distinct().OrderBy(x => x.Date).ToList())
+                {
+                    StatsViewModel dateStats = new StatsViewModel();
+                    dateStats.Date = date;
+                    string dateName = Helper.DaysOfWeekHelper.GetDayName((int)date.DayOfWeek);
+                    dateName += " - ";
+                    dateName += date.ToString("dd MMM yyyy");
+
+                    dateStats.DateName = dateName;
+                    List<JournalViewModel> stats = new List<JournalViewModel>();
+                    foreach (var user in records.Select(x => x.User).Distinct().ToList())
+                    {
+                        var filteredRecords = records.Where(x => x.DateRecord == date || x.DebtWorkDate == date).ToList();
+                        JournalViewModel userStats = GetDayStatsByUser(user, filteredRecords, date);
+                        if (userStats.User != null)
+                            stats.Add(userStats);
+
+                    }
+                    dateStats.DateStats = stats.OrderBy(x => x.User.UserInfo.Name).ToList();
+                    monthStats.Add(dateStats);
+                }
+                if (monthStats.Any())
+                {
+                    var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
+                    var users = db.UserInfoes.Where(x => x.User.Roles.Any(i => i.RoleId == roleId)).OrderBy(x => x.Name).ToList();
+                    if (users.Any())
+                    {
+                        int lateHours;
+                        int lateForgivenHours;
+                        int earlyGoneHours;
+                        int earlyGoneForgivenHours;
+                        TimeSpan outForWorkHours;
+                        TimeSpan byPermissionHours;
+                        TimeSpan byPermissionForgivenkHours;
+                        TimeSpan debtWorkHours;
+                        TimeSpan totalHours;
+
+                        foreach (var user in users)
+                        {
+                            MonthHoursViewModel monthHours = new MonthHoursViewModel();
+                            monthHours.Name = user.Name;
+
+                            lateHours = 0;
+                            lateForgivenHours = 0;
+                            earlyGoneHours = 0;
+                            earlyGoneForgivenHours = 0;
+                            outForWorkHours = TimeSpan.Zero;
+                            byPermissionHours = TimeSpan.Zero;
+                            byPermissionForgivenkHours = TimeSpan.Zero;
+                            debtWorkHours = TimeSpan.Zero;
+                            totalHours = TimeSpan.Zero;
+
+                            foreach (var date in monthStats)
+                            {
+                                foreach (var stats in date.DateStats.Where(x => x.User == user.User))
+                                {
+                                    if (stats.Come.IsLate)
+                                    {
+                                        lateHours++;
+                                        if (stats.Come.IsForgiven)
+                                            lateForgivenHours++;
+                                    }
+                                    if (stats.Gone.IsEarlyGone)
+                                    {
+                                        earlyGoneHours++;
+                                        if (stats.Gone.IsForgiven)
+                                            earlyGoneForgivenHours++;
+                                    }
+                                    outForWorkHours += stats.OutForWorkTime;
+                                    byPermissionHours += stats.ByPermissionTime;
+                                    byPermissionForgivenkHours += stats.ByPermissionForgivenTime;
+                                    debtWorkHours += stats.PlusDebtWorkTime;
+                                    totalHours += stats.TotalTime;
+                                }
+                            }
+
+                            monthHours.LateHours = lateHours;
+                            monthHours.LateForgivenHours = lateForgivenHours;
+                            monthHours.EarlyGoneHours = earlyGoneHours;
+                            monthHours.EarlyGoneForgivenHours = earlyGoneForgivenHours;
+                            monthHours.OutForWorkHours = Math.Round(outForWorkHours.TotalHours, 2);
+                            monthHours.ByPermissionHours = Math.Round(byPermissionHours.TotalHours, 2);
+                            monthHours.ByPermissionForgivenHours = Math.Round(byPermissionForgivenkHours.TotalHours, 2);
+                            monthHours.DebtWorkHours = Math.Round(debtWorkHours.TotalHours, 2);
+                            monthHours.TotalHours = Math.Round(totalHours.TotalHours, 2);
+
+                            model.Add(monthHours);
+                        }
+
+                    }
+
+                }
+            }
+            return model;
+        }
+
         public ActionResult MonthReview(DateTime? startDate, DateTime? endDate, bool all = true, bool onlyProblem = false, bool onlyUser = false)
         {
             if (startDate == null || endDate == null)
@@ -497,10 +672,13 @@ namespace Journal3.Controllers
             return View(model);
         }
 
+        
+
         List<StatsViewModel> GetMonthStats(DateTime? startDate, DateTime? endDate, bool all, bool onlyProblem, bool onlyUser)
         {
             List<StatsViewModel> model = new List<StatsViewModel>();
-            var records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate)
+            var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate) 
+                                            || (DbFunctions.TruncateTime(x.DebtWorkDate) >= startDate && DbFunctions.TruncateTime(x.DebtWorkDate) <= endDate))
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
@@ -520,7 +698,8 @@ namespace Journal3.Controllers
                     List<JournalViewModel> stats = new List<JournalViewModel>();
                     foreach (var user in records.Select(x => x.User).Distinct().ToList())
                     {
-                        JournalViewModel userStats = GetDayStatsByUser(user, records.Where(x => x.DateRecord == date).ToList());
+                        var filteredRecords = records.Where(x => x.DateRecord == date || x.DebtWorkDate == date).ToList();
+                        JournalViewModel userStats = GetDayStatsByUser(user, filteredRecords, date);
                         if (userStats.User != null)
                         {
                             if (all)
@@ -556,7 +735,7 @@ namespace Journal3.Controllers
             return model;
         }
 
-        JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records)
+        JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records, DateTime date)
         {
             JournalViewModel journalRow = new JournalViewModel();
             var filteredRecords = records.Where(x => x.User == user).ToList();
@@ -566,93 +745,284 @@ namespace Journal3.Controllers
                 journalRow.WorkSchedule = filteredRecords.FirstOrDefault().WorkSchedule;
                 journalRow.IsSystem = true;
 
-                ComeViewModel come = new ComeViewModel
-                {
-                    IsForgiven = false,
-                    IsProblem = false,
-                    Comment = ""
-                };
-                var firstRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && (x.IsSystem == true || x.IsConfirmed == true));
-                if (firstRecord != null)
-                {
-                    if (!firstRecord.IsSystem)
-                        journalRow.IsSystem = false;
+                journalRow.Come = GetJournalCome(filteredRecords, journalRow);
+                journalRow.Gone = GetJournalGone(filteredRecords, journalRow);
 
-                    if (firstRecord.IsLate)
+                CountTime(filteredRecords, journalRow, date);
+            }
+
+            return journalRow;
+        }
+
+        public ComeViewModel GetJournalCome(List<Record> filteredRecords, JournalViewModel journalRow)
+        {
+            ComeViewModel come = new ComeViewModel
+            {
+                IsForgiven = false,
+                IsProblem = false,
+                Comment = ""
+            };
+            var firstRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.ComeGone && (x.IsSystem == true || x.IsConfirmed == true));
+            if (firstRecord != null)
+            {
+                if (!firstRecord.IsSystem)
+                    journalRow.IsSystem = false;
+
+                if (firstRecord.IsLate)
+                {
+                    come.IsProblem = true;
+                    come.IsLate = true;
+                    come.Comment = "Опоздание";
+                    if (firstRecord.IsForgiven == true)
                     {
-                        come.IsProblem = true;
-                        come.Comment = "Опоздание";
-                        if (firstRecord.IsForgiven == true)
-                        {
-                            come.IsForgiven = true;
-                            come.Time = firstRecord.WorkSchedule.StartWork;
-                        }
-                        else
-                            come.Time = firstRecord.TimeRecord;
+                        come.IsForgiven = true;
+                        come.Time = firstRecord.WorkSchedule.StartWork;
                     }
                     else
                         come.Time = firstRecord.TimeRecord;
                 }
                 else
-                {
-                    come.IsProblem = true;
-                    come.Comment = "Не указано время прихода";
-                }
-                journalRow.Come = come;
+                    come.Time = firstRecord.TimeRecord;
+            }
+            else
+            {
+                come.IsProblem = true;
+                come.Comment = "Не указано время прихода";
+            }
 
-                GoneViewModel gone = new GoneViewModel
-                {
-                    IsForgiven = false,
-                    IsProblem = false,
-                    Comment = ""
-                };
+            return come;
+        }
 
-                var lastRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && (x.IsSystem == true || x.IsConfirmed == true));
-                if (lastRecord != null)
-                {
-                    if (!lastRecord.IsSystem)
-                        journalRow.IsSystem = false;
+        public GoneViewModel GetJournalGone(List<Record> filteredRecords, JournalViewModel journalRow)
+        {
+            GoneViewModel gone = new GoneViewModel
+            {
+                IsForgiven = false,
+                IsProblem = false,
+                Comment = ""
+            };
 
-                    if (lastRecord.IsLate)
+            var lastRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.ComeGone && (x.IsSystem == true || x.IsConfirmed == true));
+            if (lastRecord != null)
+            {
+                if (!lastRecord.IsSystem)
+                    journalRow.IsSystem = false;
+
+                if (lastRecord.IsLate)
+                {
+                    gone.IsProblem = true;
+                    gone.IsEarlyGone = true;
+                    gone.Comment = "Уход раньше времени";
+                    if (lastRecord.IsForgiven == true)
                     {
-                        gone.IsProblem = true;
-                        gone.Comment = "Уход раньше времени";
-                        if (lastRecord.IsForgiven == true)
-                        {
-                            gone.IsForgiven = true;
-                            gone.Time = lastRecord.WorkSchedule.EndWork;
-                        }
-                        else
-                            gone.Time = lastRecord.TimeRecord;
+                        gone.IsForgiven = true;
+                        gone.Time = lastRecord.WorkSchedule.EndWork;
                     }
                     else
                         gone.Time = lastRecord.TimeRecord;
                 }
                 else
+                    gone.Time = lastRecord.TimeRecord;
+            }
+            else
+            {
+                var outForWorkRecordGone = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.OutForWork);
+                if (outForWorkRecordGone != null)
                 {
-                    var outForWorkRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.OutForWork);
-                    if (outForWorkRecord != null)
+                    var outForWorkRecordCome = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.OutForWork);
+                    if (outForWorkRecordCome == null)
                     {
-                        if (!outForWorkRecord.IsSystem)
+                        if (!outForWorkRecordGone.IsSystem)
                             journalRow.IsSystem = false;
 
                         gone.IsProblem = true;
-                        gone.IsForgiven = outForWorkRecord.IsForgiven;
+                        gone.IsForgiven = true;
                         gone.Comment = "Ушел по работе";
-                        if (outForWorkRecord.IsForgiven)
-                            gone.Time = outForWorkRecord.WorkSchedule.EndWork;
-                        else
-                            gone.Time = outForWorkRecord.TimeRecord;
+                        gone.Time = outForWorkRecordGone.WorkSchedule.EndWork;
                     }
                     else
                     {
                         gone.IsProblem = true;
                         gone.Comment = "Не указано время ухода";
                     }
+
                 }
-                journalRow.Gone = gone;
+                else
+                {
+                    gone.IsProblem = true;
+                    gone.Comment = "Не указано время ухода";
+                }
             }
-            return journalRow;
+            return gone;
+        }
+
+        public void CountTime(List<Record> filteredRecords, JournalViewModel journalRow, DateTime date)
+        {
+            journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, journalRow.WorkSchedule);
+            journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, journalRow.WorkSchedule);
+            journalRow.ByPermissionForgivenTime = CountByPermissionForgivenTime(filteredRecords, journalRow.WorkSchedule);
+            journalRow.MinusDebtWorkTime = CountMinusDebtWorkTime(filteredRecords, journalRow.WorkSchedule, date);
+            journalRow.PlusDebtWorkTime = CountPlusDebtWorkTime(filteredRecords, journalRow.WorkSchedule, date);
+            journalRow.TotalTime = CountTotalTime(journalRow) - journalRow.ByPermissionTime /*- journalRow.MinusDebtWorkTime*/ + journalRow.PlusDebtWorkTime;
+        }
+
+        public TimeSpan CountOutForWorkTime(List<Record> filteredRecords, WorkSchedule workSchedule)
+        {
+            var outForWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.OutForWork && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
+            TimeSpan outForWorkTime = TimeSpan.Zero;
+            if (outForWorkRecords.Any())
+            {
+                foreach (var goneOutForWork in outForWorkRecords.Where(x => x.Status == (int)Statuses.Gone))
+                {
+                    TimeSpan goneOutForWorkTime = goneOutForWork.TimeRecord;
+                    var comeOutForWork = outForWorkRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.TimeRecord > goneOutForWorkTime);
+                    if (comeOutForWork != null)
+                        outForWorkTime += GetTotalTime(goneOutForWorkTime, comeOutForWork.TimeRecord);
+                    else
+                        outForWorkTime += GetTotalTime(goneOutForWorkTime, workSchedule.EndWork);
+                }
+            }
+            return outForWorkTime;
+        }
+
+        public TimeSpan CountByPermissionTime(List<Record> filteredRecords, WorkSchedule workSchedule)
+        {
+            var byPermissionRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && !x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+            TimeSpan byPermissionTime = TimeSpan.Zero;
+            if (byPermissionRecords.Any())
+            {
+                foreach (var goneByPermission in byPermissionRecords.Where(x => x.Status == (int)Statuses.Gone))
+                {
+                    TimeSpan goneByPermissionTime = goneByPermission.TimeRecord;
+                    var comeByPermission = byPermissionRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.TimeRecord > goneByPermissionTime);
+                    if (comeByPermission != null)
+                        byPermissionTime += GetTotalTime(goneByPermissionTime, comeByPermission.TimeRecord);
+                    else
+                        byPermissionTime += GetTotalTime(goneByPermissionTime, workSchedule.EndWork);
+                }
+            }
+            return byPermissionTime;
+        }
+
+        public TimeSpan CountByPermissionForgivenTime(List<Record> filteredRecords, WorkSchedule workSchedule)
+        {
+            var byPermissionForgivenRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+            TimeSpan byPermissionForgivenTime = TimeSpan.Zero;
+            if (byPermissionForgivenRecords.Any())
+            {
+                foreach (var goneByPermissionForgiven in byPermissionForgivenRecords.Where(x => x.Status == (int)Statuses.Gone))
+                {
+                    TimeSpan goneByPermissionForgivenTime = goneByPermissionForgiven.TimeRecord;
+                    var comeByPermissionForgiven = byPermissionForgivenRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.TimeRecord > goneByPermissionForgivenTime);
+                    if (comeByPermissionForgiven != null)
+                        byPermissionForgivenTime += GetTotalTime(goneByPermissionForgivenTime, comeByPermissionForgiven.TimeRecord);
+                    else
+                        byPermissionForgivenTime += GetTotalTime(goneByPermissionForgivenTime, workSchedule.EndWork);
+                }
+            }
+            return byPermissionForgivenTime;
+        }
+
+        public TimeSpan CountMinusDebtWorkTime(List<Record> filteredRecords, WorkSchedule workSchedule, DateTime date)
+        {
+            var debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate != date).OrderBy(x => x.TimeRecord).ToList();
+            TimeSpan debtWorkTime = TimeSpan.Zero;
+            if (debtWorkRecords.Any())
+            {
+                foreach (var debtWork in debtWorkRecords.Where(x => x.Status == (int)Statuses.Come))
+                {
+                    TimeSpan comeDebtWorkTime = debtWork.TimeRecord;
+                    var goneDebtWork = debtWorkRecords.FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.TimeRecord > comeDebtWorkTime);
+                    if (goneDebtWork != null)
+                        debtWorkTime += GetTotalTime(comeDebtWorkTime, goneDebtWork.TimeRecord);
+                    else
+                        debtWorkTime += GetTotalTime(comeDebtWorkTime, workSchedule.EndWork);
+                }
+            }
+            return debtWorkTime;
+        }
+
+        public TimeSpan CountPlusDebtWorkTime(List<Record> filteredRecords, WorkSchedule workSchedule, DateTime date)
+        {
+            var debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate == date).OrderBy(x => x.TimeRecord).ToList();
+            TimeSpan debtWorkTime = TimeSpan.Zero;
+            if (debtWorkRecords.Any())
+            {
+                foreach (var debtWork in debtWorkRecords.Where(x => x.Status == (int)Statuses.Come))
+                {
+                    TimeSpan comeDebtWorkTime = debtWork.TimeRecord;
+                    var goneDebtWork = debtWorkRecords.FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.TimeRecord > comeDebtWorkTime);
+                    if (goneDebtWork != null)
+                        debtWorkTime += GetTotalTime(comeDebtWorkTime, goneDebtWork.TimeRecord);
+                    else
+                        debtWorkTime += GetTotalTime(comeDebtWorkTime, workSchedule.EndWork);
+                }
+            }
+            return debtWorkTime;
+        }
+
+        public TimeSpan CountTotalTime(JournalViewModel journalRow)
+        {
+            TimeSpan startTime = TimeSpan.Zero;
+            TimeSpan endTime = TimeSpan.Zero;
+
+            if (journalRow.Come != null)
+            {
+                if (journalRow.Come.Time <= journalRow.WorkSchedule.StartWork)
+                    startTime = journalRow.WorkSchedule.StartWork;
+                else
+                {
+                    if ((journalRow.Come.Time - journalRow.WorkSchedule.StartWork).TotalMinutes < 5)
+                        startTime = journalRow.WorkSchedule.StartWork;
+                    else
+                        startTime = journalRow.Come.Time;
+                }
+            }
+
+            if (journalRow.Gone != null)
+            {
+                if (journalRow.Gone.Time >= journalRow.WorkSchedule.EndWork)
+                    endTime = journalRow.WorkSchedule.EndWork;
+                else
+                {
+                    if ((journalRow.WorkSchedule.EndWork - journalRow.Gone.Time).TotalMinutes < 5)
+                        endTime = journalRow.WorkSchedule.EndWork;
+                    else
+                        endTime = journalRow.Gone.Time;
+                }
+            }
+            return GetTotalTime(startTime, endTime);
+        }
+
+        public TimeSpan GetTotalTime(TimeSpan startTime, TimeSpan endTime, bool breakTime = true)
+        {
+            TimeSpan totalTime = TimeSpan.Zero;
+            if (startTime != totalTime && endTime != totalTime && startTime < endTime)
+            {
+                if (breakTime)
+                {
+                    TimeSpan startBreakTime = new TimeSpan(13, 0, 0);
+                    TimeSpan endBreakTime = new TimeSpan(14, 0, 0);
+
+                    if (startTime < startBreakTime && endTime > endBreakTime)
+                    {
+                        totalTime += (startBreakTime - startTime);
+                        totalTime += (endTime - endBreakTime);
+                    }
+                    else if (startTime < startBreakTime && endTime < startBreakTime)
+                        totalTime = endTime - startTime;
+                    else if (startTime < startBreakTime && endTime > startBreakTime && endTime < endBreakTime)
+                        totalTime = startBreakTime - startTime;
+                    else if (startTime > startBreakTime && startTime < endBreakTime)
+                        totalTime = endTime - endBreakTime;
+                    else if (startTime > endBreakTime)
+                        totalTime = endTime - startTime;
+                }
+                else
+                    totalTime = endTime - startTime;
+            }
+            
+            return totalTime;
         }
 
         public void UpdateDataFromFileByPeriod(string startDate, string endDate)
@@ -681,7 +1051,7 @@ namespace Journal3.Controllers
                 {
                     foreach (var key in date.DateStats)
                     {
-                        if (key.Come.Time != new TimeSpan(0,0,0))
+                        if (key.Come.Time != TimeSpan.Zero)
                         {
                             FileRecordViewModel fileRecordCome = new FileRecordViewModel();
                             fileRecordCome.Date = date.Date;
@@ -690,10 +1060,10 @@ namespace Journal3.Controllers
                             fileRecords.Add(fileRecordCome);
                         }
 
-                        if (key.Gone.Time != new TimeSpan(0, 0, 0))
+                        if (key.Gone.Time != TimeSpan.Zero)
                         {
                             FileRecordViewModel fileRecordGone = new FileRecordViewModel();
-                            fileRecordGone.Date = records[0].Date;
+                            fileRecordGone.Date = date.Date;
                             fileRecordGone.Time = key.Gone.Time;
                             fileRecordGone.Key = key.User.UserInfo.Key;
                             fileRecords.Add(fileRecordGone);

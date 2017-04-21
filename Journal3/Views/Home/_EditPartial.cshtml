@@ -16,7 +16,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label" for="Comment">Сотрудник</label>
             <div class="col-md-10">
-                @Html.DropDownList("UserId", (SelectList)ViewBag.UserIds, new { @class = "form-control" })
+                @Html.DropDownList("UserId", (SelectList)ViewBag.Users, new { @class = "form-control" })
             </div>
         </div>
     }
@@ -45,6 +45,7 @@
             </select>
         </div>
     </div>
+}
     <div class="form-group">
         <label class="col-md-2 control-label" for="Remark">Примечание</label>
         <div class="col-md-10">
@@ -64,7 +65,7 @@
             <span class="add-on glyphicon glyphicon-calendar"></span>
         </div>
     </div>
-}
+
 
 <div class="form-group">
     <label class="col-md-2 control-label" for="Comment">Комментарий</label>

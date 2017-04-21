@@ -31,16 +31,20 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("День", "DayStats", "Home")</li>
-                    <li>@Html.ActionLink("Месяц", "MonthReview", "Home")</li>
-                    <li class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Настройки<b class="caret"></b></a>
-                        <ul class="dropdown-menu" style="background-color: #36393e;">
-                            <li style="color: #fff;"><a href="@Url.Action("Index", "Users")" style="color: #fff;">Пользователи</a></li>
-                            <li style="color: #fff;"><a href="@Url.Action("Index", "WorkSchedules")" style="color: #fff;">График работы</a></li>
-                            <li style="color: #fff;"><a href="@Url.Action("Index", "Settings")" style="color: #fff;">Файл</a></li>
-                            <li style="color: #fff;"><a href="@Url.Action("Index", "Roles")" style="color: #fff;">Роли</a></li>
-                         </ul>
-                    </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>@Html.ActionLink("Месяц", "MonthReview", "Home")</li>
+                        <li>@Html.ActionLink("Часы", "MonthHoursReview", "Home")</li>
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">Настройки<b class="caret"></b></a>
+                            <ul class="dropdown-menu" style="background-color: #36393e;">
+                                <li style="color: #fff;"><a href="@Url.Action("Index", "Users")" style="color: #fff;">Пользователи</a></li>
+                                <li style="color: #fff;"><a href="@Url.Action("Index", "WorkSchedules")" style="color: #fff;">График работы</a></li>
+                                <li style="color: #fff;"><a href="@Url.Action("Index", "Settings")" style="color: #fff;">Файл</a></li>
+                                <li style="color: #fff;"><a href="@Url.Action("Index", "Roles")" style="color: #fff;">Роли</a></li>
+                            </ul>
+                        </li>
+                    }                    
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

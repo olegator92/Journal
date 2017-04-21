@@ -4,38 +4,46 @@
 }
 
 @Html.Partial("_HeaderPartial")
-<h3>Вы уверены, что хотите удалить пользователя @Model.UserName?</h3>
+<h4>Вы уверены, что хотите удалить пользователя @Model.UserName?</h4>
 
-<div class="display-label"><b>ФИО</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.UserName)
-</div>
+<table class="table customTheme" style="width:auto;">
+    <thead>
+        <tr class="tabcolor alignCenter">
+            <th scope="row">Поле</th>
+            <th scope="row">Значение</th>
+        </tr>
+    </thead>
+    <tr>
+        <td style="font-weight:bold;">ФИО</td>
+        <td>@Html.DisplayFor(model => model.UserName)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Роль</td>
+        <td>@ViewBag.UserRole</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">График работы</td>
+        <td>@ViewBag.WorkSchedule</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Ключ</td>
+        <td>@Html.DisplayFor(model => model.Key)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Электронный адрес</td>
+        <td>@Html.DisplayFor(model => model.Email)</td>
+    </tr>
+</table>
 
-<div class="display-label"><b>Роль</b></div>
-<div class="display-field">
-    <p class="control-label">@ViewBag.UserRole</p>
-</div>
-
-<div class="display-label"><b>График работы</b></div>
-<div class="display-field">
-    <p class="control-label">@ViewBag.WorkSchedule</p>
-</div>
-
-<div class="display-label"><b>Ключ</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.Key)
-</div>
-
-<div class="display-label"><b>Электронный адрес</b></div>
-<div class="display-field">
-    @Html.DisplayFor(model => model.Email)
-</div>
-
-<br />
 @using (Html.BeginForm())
 {
     @Html.Hidden("id", (string)ViewBag.UserId, new { @class = "form-control" });
-    <p>
-        <input type="submit" value="Удалить" class="btn btn-default"/>
-    </p>
+    
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Удалить" />
+        </div>
+    </div>
 }
+
+@Html.Partial("_FooterPartial")

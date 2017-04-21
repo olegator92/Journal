@@ -12,16 +12,17 @@
 <div class="row">
     <form action="/Home/DayStats" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
         
-        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
-            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
-            </a>
-            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
-            <span class="add-on glyphicon glyphicon-calendar"></span>
-            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
-            </a>
-        </div>
+            <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
+                <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+                </a>
+                <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
+                <span class="add-on glyphicon glyphicon-calendar"></span>
+                <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+                </a>
+            </div>
+        
     </form>
 </div>
 
@@ -32,9 +33,18 @@
             <th scope="row">ФИО</th>
             <th scope="row">Пришел</th>
             <th scope="row">Ушел</th>
-            <th scope="row">График работы</th>
-            <th scope="row">Система</th>
-            <th scope="row">Примечание</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th scope="row">График работы</th>
+                <th scope="row">Выезды</th>
+                <th scope="row">Отпр.</th>
+                <th scope="row">Отраб.</th>
+                <th scope="row">Итого часов</th>
+                <th scope="row">Система</th>
+                <th scope="row">Примечание</th>
+                <th scope="row"></th>
+            }
+            
         </tr>
     </thead>
     <tbody>
@@ -81,33 +91,68 @@
                     }
                     <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", item.Gone.Time)</span>
                 </td>
-                <td>
-                    @item.WorkSchedule.Name
-                </td>
-                <td>
-                    @if (item.IsSystem)
-                    {
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                    }
-                    else
-                    {
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                    }
-                </td>
-                <td>
-                    @if (item.Come.IsProblem || item.Gone.IsProblem)
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        @item.WorkSchedule.Name
+                    </td>
+                    <td>
+                        @if (item.OutForWorkTime != TimeSpan.Zero)
+                        {
+                            <span>@String.Format("{0:h\\:mm}", item.OutForWorkTime)</span>
+                        }
+                    </td>
+                    <td style="white-space: nowrap;">
+                        @if (item.ByPermissionTime != TimeSpan.Zero || item.ByPermissionForgivenTime != TimeSpan.Zero)
+                        {
+                            <span style="color: red;">@String.Format("{0:h\\:mm}", item.ByPermissionTime)</span><span> / </span>
+                            <span>@String.Format("{0:h\\:mm}", item.ByPermissionForgivenTime)</span>
+                        }
+                    </td>
+                    <td style="white-space: nowrap;">
+                        @if (item.MinusDebtWorkTime != TimeSpan.Zero || item.PlusDebtWorkTime != TimeSpan.Zero)
+                        {
+                            <span style="color: red;">-@String.Format("{0:h\\:mm}", item.MinusDebtWorkTime)</span><span> / </span>
+                            <span style="color: green;">+@String.Format("{0:h\\:mm}", item.PlusDebtWorkTime)</span>
+                        }
+                    </td>
+                    <td style="font-weight: bold;">
+                        @if (item.TotalTime != TimeSpan.Zero)
+                        {
+                            <span>@(item.TotalTime > TimeSpan.Zero ? "" : " - ")@String.Format("{0:h\\:mm}", item.TotalTime)</span>
+                        }
+                        
+                    </td>
+                    <td>
+                        @if (item.IsSystem)
+                        {
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.Come.IsProblem || item.Gone.IsProblem)
                     {
                         string colorText = "";
                         colorText = (item.Come.IsForgiven ? "color: green;" : "color: red;");
-                        <span style="@colorText">@item.Come.Comment</span>
-                        if (item.Come.Comment != "")
-                        {
-                            <br />
+                            <span style="@colorText">@item.Come.Comment</span>
+                            if (item.Come.Comment != "")
+                            {
+                                <br />
+                            }
+                            colorText = (item.Gone.IsForgiven ? "color: green;" : "color: red;");
+                            <span style="@colorText">@item.Gone.Comment</span>
                         }
-                        colorText = (item.Gone.IsForgiven ? "color: green;" : "color: red;");
-                        <span style="@colorText">@item.Gone.Comment</span>
-                    }
-                </td>
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Index", "Home", new {selectedDate = @ViewBag.SelectedDate, userId = item.User.Id})" class="btn" style="margin-left: 15px;" target="_blank">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                        </a>
+                    </td>
+                }
             </tr>
             i++;
         }

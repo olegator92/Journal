@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Journal3.ViewModels.MonthHoursViewModel>
+@{
+    int i = 1;
+}
+
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+<br>
+<br>
+<div class="row">
+    <form action="/Home/MonthHoursReview" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">
+        <a href="@Url.Action("MonthHoursReview","Home", new {  startDate = ViewBag.PreviousStartDate, endDate = ViewBag.PreviousEndDate })" class="btn btn-primary" title="Предыдущий">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+        </a>
+        <div class="input-append date" id="datepicker1" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+        <span style="margin: 0 5px;">-</span>
+        <div class="input-append date" id="datepicker2" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+        <a href="@Url.Action("MonthHoursReview","Home", new { startDate = ViewBag.NextStartDate, endDate = ViewBag.NextEndDate })" class="btn btn-primary" title="Следующий">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+        </a>
+
+        <div style="display: inline-block; margin-top: 15px; padding-left: 15px;">
+            <input type="submit" value="Показать" class="btn btn-primary" />
+        </div>
+
+
+    </form>
+</div>
+<br>
+
+
+    <table class="table table-hover table-striped table-fixed customTheme" style="width:auto; font-size: 10pt;">
+        <thead>
+            <tr class="tabcolor">
+                <th scope="row">№</th>
+                <th scope="row">ФИО</th>
+                <th scope="row">Опоздания (кол-во)</th>
+                <th scope="row">Прощенные опоздания (кол-во)</th>
+                <th scope="row">Уходы раньше времени (кол-во)</th>
+                <th scope="row">Прощенные уходы раньше времени (кол-во)</th>
+                <th scope="row">Выезды</th>
+                <th scope="row">Отпрашивания (лич.)</th>
+                <th scope="row">Отпрашивания (уваж.)</th>
+                <th scope="row">Отработка</th>
+                <th scope="row">Итого часов</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @i)
+                    </td>
+                    <td style="white-space: nowrap;">
+                        @item.Name
+                    </td>
+                    <td class="alignCenter">
+                        @(item.LateHours != 0 ? item.LateHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.LateForgivenHours != 0 ? item.LateForgivenHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.EarlyGoneHours != 0 ? item.EarlyGoneHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.EarlyGoneForgivenHours != 0 ? item.EarlyGoneForgivenHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.OutForWorkHours != 0 ? item.OutForWorkHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.ByPermissionHours != 0 ? item.ByPermissionHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.ByPermissionForgivenHours != 0 ? item.ByPermissionForgivenHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter">
+                        @(item.DebtWorkHours != 0 ? item.DebtWorkHours.ToString() : "")
+                    </td>     
+                    <td style="font-weight: bold;">
+                        @item.TotalHours
+                    </td>  
+                </tr>
+                i++;
+            }
+                    
+        </tbody>
+    </table>
+
+    <script type='text/javascript'>
+        $(function () {
+            $('#datepicker1').datepicker({
+                language: 'ru'
+            });
+        });
+
+        $(function () {
+            $('#datepicker2').datepicker({
+                language: 'ru'
+            });
+        });
+
+
+    </script>

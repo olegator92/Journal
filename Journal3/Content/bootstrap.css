@@ -1410,7 +1410,7 @@ table {
 }
 
 th {
-  text-align: left;
+  text-align: center;
 }
 
 .table {
@@ -6839,6 +6839,10 @@ td.visible-print {
     color: #fff;
 }
 
+.customTheme th {
+    text-align: center !important;
+}
+
 .notConfirmed {
     border-right: 3px;
     border-right-color: #ef7b48;
@@ -6855,7 +6859,8 @@ td.visible-print {
     border-left-color: green;
 }
 
-.alignCenter > .th{
+.alignCenter {
+    max-width: 100px;
     text-align: center;
 }
 
@@ -6867,3 +6872,14 @@ td.visible-print {
     display: block;
 }
 
+.inlineDropdown {
+   margin-left: 15px;
+}
+
+.permission {
+    color: red;
+}
+
+.forgivenPermission {
+    color: green;
+}

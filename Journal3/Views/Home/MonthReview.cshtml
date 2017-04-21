@@ -73,7 +73,7 @@
         <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" style="margin-right: 10px;"></span>Сохранить файл</a>
 </div>
 
-<fo>
+
 <table class="table table-hover customTheme table-striped table-fixed" style="width:auto; font-size: 10pt;">
     <thead>
         <tr class="tabcolor">
@@ -82,7 +82,11 @@
             <th scope="row">Пришел</th>
             <th scope="row">Ушел</th>
             <th scope="row">График работы</th>
-            <th scope="row">Система</th>
+            <th scope="row">Выезды</th>
+            <th scope="row">Отпр.</th>
+            <th scope="row">Отраб.</th>
+            <th scope="row">Итого часов</th>
+            <th scope="row">Сист.</th>
             <th scope="row">Примечание</th>
             <th scope="row"></th>
         </tr>
@@ -102,6 +106,10 @@
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                 </tr>
             
                 foreach (var dayStats in date.DateStats)
@@ -110,7 +118,7 @@
                         <td>
                             @i)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap;">
                             @dayStats.User.UserInfo.Name
                         </td>
                         <td>
@@ -147,10 +155,37 @@
                             }
                             <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
                         </td>
-                        <td>
+                        <td style="white-space: nowrap;">
                             @dayStats.WorkSchedule.Name
                         </td>
-                        <td>
+                        <td class="alignCenter">
+                            @if (dayStats.OutForWorkTime != TimeSpan.Zero)
+                        {
+                                <span>@String.Format("{0:h\\:mm}", dayStats.OutForWorkTime)</span>
+                            }
+                        </td>
+                        <td style="white-space: nowrap;" class="alignCenter">
+                            @if (dayStats.ByPermissionTime != TimeSpan.Zero || dayStats.ByPermissionForgivenTime != TimeSpan.Zero)
+                        {
+                                <span style="color: red;">@String.Format("{0:h\\:mm}", dayStats.ByPermissionTime)</span><span> / </span>
+                                <span>@String.Format("{0:h\\:mm}", dayStats.ByPermissionForgivenTime)</span>
+                            }
+                        </td>
+                        <td style="white-space: nowrap;" class="alignCenter">
+                            @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
+                        {
+                                <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
+                                <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                            }
+                        </td>
+                        <td style="font-weight: bold;" class="alignCenter">
+                            @if (dayStats.TotalTime != TimeSpan.Zero)
+                            {
+                                <span>@(dayStats.TotalTime > TimeSpan.Zero ? "" : " - ")</span><span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                            }
+
+                        </td>
+                        <td class="alignCenter">
                             @if (dayStats.IsSystem)
                             {
                                 <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
@@ -175,12 +210,9 @@
                             }
                         </td>
                         <td>
-                            @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
-                            {
-                                <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" style="margin-left: 15px; font-size: 8pt;" target="_blank">
-                                    <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
-                                </a>
-                            }
+                            <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" style="margin-left: 15px; font-size: 8pt;" target="_blank">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                            </a>
                         </td>
                     </tr>
                     i++;
