@@ -37,7 +37,7 @@
     </form>
 </div>
 
-<table class="table table-hover customTheme table-striped" style="width:auto; @(User.IsInRole("Admin") ? "font-size:9pt;" : "")">
+<table class="table table-hover customTheme table-striped table-bordered" style="width:auto; @(User.IsInRole("Admin") ? "font-size:9pt;" : "")">
     <thead>
         <tr class="tabcolor alignCenter">
             <th scope="row">Время</th>
@@ -45,6 +45,7 @@
             <th scope="row">Статус</th>
             <th scope="row">Примечание</th>
             <th scope="row">Комментарий</th>
+            <th scope="row">Без обеда</th>
             @if (User.IsInRole("Admin"))
             {
                 <th scope="row">График работы</th>
@@ -61,6 +62,7 @@
         @foreach (var item in Model)
         {
             string itemClass = "";
+            string timeColor = "";
             if (User.IsInRole("Admin"))
             {
                 if (item.IsConfirmed == false)
@@ -69,16 +71,16 @@
                 }
                 if (item.IsLate == true)
                 {
-                    itemClass += " late";
+                    timeColor += " late";
                 }
                 if (item.IsForgiven == true)
                 {
-                    itemClass += " forgiven";
+                    timeColor += " forgiven";
                 }
             }
             <tr class="@itemClass">
                 <td>
-                    <span style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
+                    <span class="@timeColor" style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                 </td>
                 <td>
                     @item.User.UserInfo.Name
@@ -98,7 +100,7 @@
                 <td  style="white-space: nowrap;">
                     @{
                         string permissionClass = "";
-                        if (item.Remark == 3)
+                        if (User.IsInRole("Admin") && item.Remark == 3)
                         {
                             if (item.IsForgiven)
                             {
@@ -117,6 +119,18 @@
                 <td class="col-md-2">
                     @item.Comment
                 </td>
+                <td style="text-align: center;">
+                    @if (item.WithoutTimebreak)
+                    {
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    }
+                </td>
+
+
 
                 @if (User.IsInRole("Admin"))
                 {
@@ -151,21 +165,19 @@
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                            if (!item.IsSystem)
+                            
+                            if (item.IsConfirmed)
                             {
-                                if (item.IsConfirmed)
-                                {
-                                    <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
-                                }
+                                <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
                             }
-
+                            else
+                            {
+                                <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
+                            }
+                            
                             if (item.IsLate || item.Remark == 3)
                             {
-                                <span class="glyphicon glyphicon-gift btn-link forgive" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
+                                <span class="glyphicon glyphicon-gift btn-link forgive @timeColor" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
                             }
                         }
 
@@ -177,6 +189,7 @@
         @if (User.IsInRole("Admin"))
         {
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -251,7 +264,7 @@
         $.get('/Home/ForgiveRecord', { recordId: id }).done(
                 function () {
                 });
-        $(this).parent().parent().toggleClass("forgiven");
+        $(this).parent().parent().find(".late").toggleClass("forgiven");
         $(this).parent().parent().find(".permission").toggleClass("forgivenPermission");
     }
 

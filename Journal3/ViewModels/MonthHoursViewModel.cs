@@ -16,6 +16,7 @@ namespace Journal3.ViewModels
         public double ByPermissionHours { get; set; }
         public double ByPermissionForgivenHours { get; set; }
         public double DebtWorkHours { get; set; }
+        public double OverWorkHours { get; set; }
         public double TotalHours { get; set; }
 
     }

@@ -10,6 +10,7 @@ namespace Journal3.Enums
         ComeGone = 1,
         OutForWork = 2,
         ByPermission = 3,
-        DebtWork = 4
+        DebtWork = 4,
+        OverWork = 5
     }
 }

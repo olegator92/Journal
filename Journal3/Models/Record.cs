@@ -20,6 +20,7 @@ namespace Journal3.Models
         public bool IsConfirmed { get; set; }
         public bool IsForgiven { get; set; }
         public bool IsSystem { get; set; }
+        public bool WithoutTimebreak { get; set; }
 
         public string UserId { get; set; }
         public int WorkScheduleId { get; set; }

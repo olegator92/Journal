@@ -38,7 +38,9 @@ namespace Journal3.Models
         public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<Record> Records { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<SpecialSchedule> SpecialSchedules { get; set; }
         public DbSet<Setting> Settings { get; set; }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
@@ -69,6 +71,10 @@ namespace Journal3.Models
                     .HasRequired<ApplicationUser>(s => s.User)
                     .WithMany(s => s.Records)
                     .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<SpecialSchedule>()
+                    .HasRequired<WorkSchedule>(s => s.WorkSchedule)
+                    .WithMany(s => s.SpecialSchedules); 
 
             base.OnModelCreating(modelBuilder);
         }

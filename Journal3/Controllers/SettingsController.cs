@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace Journal3.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class SettingsController : Controller
     {
         private ApplicationDbContext db = null;

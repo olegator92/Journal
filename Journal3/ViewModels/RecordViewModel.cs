@@ -18,6 +18,7 @@ namespace Journal3.ViewModels
         public int Remark { get; set; }
         public string RemarkName { get; set; }
         public string Comment { get; set; }
+        public bool WithoutTimebreak { get; set; }
         public bool IsLate { get; set; }
         public bool IsConfirmed { get; set; }
         public bool IsForgiven { get; set; }

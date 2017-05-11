@@ -14,14 +14,18 @@ namespace Journal3.Models
         {
             Records = new List<Record>();
             UserInfos = new List<UserInfo>();
+            SpecialSchedules = new List<SpecialSchedule>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public TimeSpan StartWork { get; set; }
         public TimeSpan EndWork { get; set; }
+        public bool IsSpecial { get; set; }
 
+        public virtual ICollection<SpecialSchedule> SpecialSchedules { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<UserInfo> UserInfos { get; set; }
+
     }
 }

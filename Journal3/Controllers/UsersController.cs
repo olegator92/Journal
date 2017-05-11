@@ -14,7 +14,7 @@ using System.Net;
 
 namespace Journal3.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private ApplicationDbContext db = null;

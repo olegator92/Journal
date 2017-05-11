@@ -392,12 +392,37 @@
     <Compile Include="Migrations\201704010801354_RemoveUserInfoId.Designer.cs">
       <DependentUpon>201704010801354_RemoveUserInfoId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704210533116_SpecialWorkSchedule.cs" />
+    <Compile Include="Migrations\201704210533116_SpecialWorkSchedule.Designer.cs">
+      <DependentUpon>201704210533116_SpecialWorkSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704210535001_CorrectIsSpecial.cs" />
+    <Compile Include="Migrations\201704210535001_CorrectIsSpecial.Designer.cs">
+      <DependentUpon>201704210535001_CorrectIsSpecial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704210552340_SpecSched.cs" />
+    <Compile Include="Migrations\201704210552340_SpecSched.Designer.cs">
+      <DependentUpon>201704210552340_SpecSched.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704210646429_CorrectSchedule1.cs" />
+    <Compile Include="Migrations\201704210646429_CorrectSchedule1.Designer.cs">
+      <DependentUpon>201704210646429_CorrectSchedule1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704240427169_ScheduleReform.cs" />
+    <Compile Include="Migrations\201704240427169_ScheduleReform.Designer.cs">
+      <DependentUpon>201704240427169_ScheduleReform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705030302427_RecordWithoutTimebreak.cs" />
+    <Compile Include="Migrations\201705030302427_RecordWithoutTimebreak.Designer.cs">
+      <DependentUpon>201705030302427_RecordWithoutTimebreak.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Record.cs" />
     <Compile Include="Models\Setting.cs" />
+    <Compile Include="Models\SpecialSchedule.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\WorkSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -408,6 +433,7 @@
     <Compile Include="ViewModels\RecordViewModel.cs" />
     <Compile Include="ViewModels\StatsViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
+    <Compile Include="ViewModels\WorkScheduleViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -502,6 +528,7 @@
     <Content Include="Views\WorkSchedules\_FooterPartial.cshtml" />
     <Content Include="Views\Roles\_FooterPartial.cshtml" />
     <Content Include="Views\Home\MonthHoursReview.cshtml" />
+    <Content Include="Views\WorkSchedules\_SpecialSchedulePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -646,6 +673,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704010801354_RemoveUserInfoId.resx">
       <DependentUpon>201704010801354_RemoveUserInfoId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704210533116_SpecialWorkSchedule.resx">
+      <DependentUpon>201704210533116_SpecialWorkSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704210535001_CorrectIsSpecial.resx">
+      <DependentUpon>201704210535001_CorrectIsSpecial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704210552340_SpecSched.resx">
+      <DependentUpon>201704210552340_SpecSched.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704210646429_CorrectSchedule1.resx">
+      <DependentUpon>201704210646429_CorrectSchedule1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704240427169_ScheduleReform.resx">
+      <DependentUpon>201704240427169_ScheduleReform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705030302427_RecordWithoutTimebreak.resx">
+      <DependentUpon>201705030302427_RecordWithoutTimebreak.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

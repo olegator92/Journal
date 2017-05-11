@@ -18,6 +18,7 @@ namespace Journal3.ViewModels
         public TimeSpan ByPermissionForgivenTime { get; set; }
         public TimeSpan PlusDebtWorkTime { get; set; }
         public TimeSpan MinusDebtWorkTime { get; set; }
+        public TimeSpan OverWorkTime { get; set; }
         public TimeSpan TotalTime { get; set; }
     }
 

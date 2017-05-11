@@ -74,7 +74,7 @@
 </div>
 
 
-<table class="table table-hover customTheme table-striped table-fixed" style="width:auto; font-size: 10pt;">
+<table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 10pt;">
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
@@ -85,6 +85,7 @@
             <th scope="row">Выезды</th>
             <th scope="row">Отпр.</th>
             <th scope="row">Отраб.</th>
+            <th scope="row">Перераб.</th>
             <th scope="row">Итого часов</th>
             <th scope="row">Сист.</th>
             <th scope="row">Примечание</th>
@@ -110,6 +111,7 @@
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                 </tr>
             
                 foreach (var dayStats in date.DateStats)
@@ -118,7 +120,7 @@
                         <td>
                             @i)
                         </td>
-                        <td style="white-space: nowrap;">
+                        <td>
                             @dayStats.User.UserInfo.Name
                         </td>
                         <td>
@@ -160,7 +162,7 @@
                         </td>
                         <td class="alignCenter">
                             @if (dayStats.OutForWorkTime != TimeSpan.Zero)
-                        {
+                            {
                                 <span>@String.Format("{0:h\\:mm}", dayStats.OutForWorkTime)</span>
                             }
                         </td>
@@ -173,9 +175,15 @@
                         </td>
                         <td style="white-space: nowrap;" class="alignCenter">
                             @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
-                        {
+                            {
                                 <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
                                 <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                            }
+                        </td>
+                        <td class="alignCenter">
+                            @if (dayStats.OverWorkTime != TimeSpan.Zero)
+                            {
+                                <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
                             }
                         </td>
                         <td style="font-weight: bold;" class="alignCenter">
@@ -210,8 +218,8 @@
                             }
                         </td>
                         <td>
-                            <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" style="margin-left: 15px; font-size: 8pt;" target="_blank">
-                                <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                            <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" target="_blank" title="Перейти">
+                                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                             </a>
                         </td>
                     </tr>

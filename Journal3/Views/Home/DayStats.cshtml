@@ -26,7 +26,7 @@
     </form>
 </div>
 
-<table class="table table-hover customTheme table-striped" style="width:auto;">
+<table class="table table-hover customTheme table-striped table-bordered" style="width:auto;">
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
@@ -39,6 +39,7 @@
                 <th scope="row">Выезды</th>
                 <th scope="row">Отпр.</th>
                 <th scope="row">Отраб.</th>
+                <th scope="row">Переработ.</th>
                 <th scope="row">Итого часов</th>
                 <th scope="row">Система</th>
                 <th scope="row">Примечание</th>
@@ -60,7 +61,7 @@
                 <td>
                     @{
                         string comeColor = "";
-                        if (item.Come.IsProblem)
+                        if (User.IsInRole("Admin") && item.Come.IsProblem)
                         {
                             if (item.Come.IsForgiven)
                             {
@@ -77,7 +78,7 @@
                 <td>
                     @{
                         string goneColor = "";
-                        if (item.Gone.IsProblem)
+                        if (User.IsInRole("Admin") && item.Gone.IsProblem)
                         {
                             if (item.Gone.IsForgiven)
                             {
@@ -116,6 +117,12 @@
                             <span style="color: green;">+@String.Format("{0:h\\:mm}", item.PlusDebtWorkTime)</span>
                         }
                     </td>
+                    <td>
+                        @if (item.OverWorkTime != TimeSpan.Zero)
+                        {
+                            <span>@String.Format("{0:h\\:mm}", item.OverWorkTime)</span>
+                        }
+                    </td>
                     <td style="font-weight: bold;">
                         @if (item.TotalTime != TimeSpan.Zero)
                         {
@@ -123,7 +130,7 @@
                         }
                         
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         @if (item.IsSystem)
                         {
                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
@@ -135,9 +142,9 @@
                     </td>
                     <td>
                         @if (item.Come.IsProblem || item.Gone.IsProblem)
-                    {
-                        string colorText = "";
-                        colorText = (item.Come.IsForgiven ? "color: green;" : "color: red;");
+                        {
+                            string colorText = "";
+                            colorText = (item.Come.IsForgiven ? "color: green;" : "color: red;");
                             <span style="@colorText">@item.Come.Comment</span>
                             if (item.Come.Comment != "")
                             {
@@ -148,8 +155,8 @@
                         }
                     </td>
                     <td>
-                        <a href="@Url.Action("Index", "Home", new {selectedDate = @ViewBag.SelectedDate, userId = item.User.Id})" class="btn" style="margin-left: 15px;" target="_blank">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                        <a href="@Url.Action("Index", "Home", new {selectedDate = @ViewBag.SelectedDate, userId = item.User.Id})" class="btn" style="margin-left: 15px; font-size: 10pt;" target="_blank">
+                            <span class="glyphicon glyphicon-th-list" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
                         </a>
                     </td>
                 }

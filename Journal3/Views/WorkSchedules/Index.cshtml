@@ -1,6 +1,7 @@
-﻿@model IEnumerable<Journal3.Models.WorkSchedule>
+﻿@model IEnumerable<Journal3.ViewModels.WorkScheduleViewModel>
 @{
     ViewBag.Title = "График работы";
+    var i = 1;
 }
 <h2>@ViewBag.Title </h2>
 
@@ -9,12 +10,14 @@
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
     Добавить график работы
 </a>
-<table class="table table-hover customTheme" style="width:auto;">
+<table class="table table-hover table-striped table-bordered customTheme" style="width:auto;">
     <thead>
         <tr class="tabcolor">
+            <th scope="row">№</th>
             <th scope="row">Наименование</th>
             <th scope="row">Начало</th>
             <th scope="row">Конец</th>
+            <th scope="row">Дополнительно</th>
             <th></th>
         </tr>
     </thead>
@@ -22,20 +25,43 @@
         @foreach (var item in Model)
             {
             <tr>
+                <td>@i)</td>
                 <td>
-                    @item.Name
+                    @item.WorkSchedule.Name
                 </td>
                 <td>
-                    @item.StartWork
+                    @item.WorkSchedule.StartWork
                 </td>
                 <td>
-                    @item.EndWork
+                    @item.WorkSchedule.EndWork
                 </td>
                 <td>
-                    <a href="@Url.Action("Edit", "WorkSchedules", new {id = item.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                    <a href="@Url.Action("Delete", "WorkSchedules", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    @if (item.SpecialSchedules != null && item.SpecialSchedules.Any())
+                    {
+                        foreach (var special in item.SpecialSchedules)
+                        {
+                            string dayOfWeek = "";
+                            switch (special.DayOfWeek)
+                            {
+                                case 1: dayOfWeek = "Понедельник"; break;
+                                case 2: dayOfWeek = "Вторник"; break;
+                                case 3: dayOfWeek = "Среда"; break;
+                                case 4: dayOfWeek = "Четверг"; break;
+                                case 5: dayOfWeek = "Пятница"; break;
+                                case 6: dayOfWeek = "Суббота"; break;
+                                case 0: dayOfWeek = "Воскресенье"; break;
+                                default: dayOfWeek = ""; break;
+                            }
+                            <span style="display: block;">@dayOfWeek @special.StartTime - @special.EndTime</span>
+                        }
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "WorkSchedules", new {id = item.WorkSchedule.Id})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    <a href="@Url.Action("Delete", "WorkSchedules", new {id = item.WorkSchedule.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
                 </td>
             </tr>
+            i++;
         }
     </tbody>
 </table>

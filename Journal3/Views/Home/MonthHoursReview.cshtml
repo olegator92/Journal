@@ -37,7 +37,7 @@
 <br>
 
 
-    <table class="table table-hover table-striped table-fixed customTheme" style="width:auto; font-size: 10pt;">
+    <table class="table table-hover table-striped table-fixed table-bordered customTheme" style="width:auto; font-size: 10pt;">
         <thead>
             <tr class="tabcolor">
                 <th scope="row">№</th>
@@ -47,9 +47,10 @@
                 <th scope="row">Уходы раньше времени (кол-во)</th>
                 <th scope="row">Прощенные уходы раньше времени (кол-во)</th>
                 <th scope="row">Выезды</th>
-                <th scope="row">Отпрашивания (лич.)</th>
-                <th scope="row">Отпрашивания (уваж.)</th>
+                <th scope="row">Отпр. (лич.)</th>
+                <th scope="row">Отпр. (уваж.)</th>
                 <th scope="row">Отработка</th>
+                <th scope="row">Переработка</th>
                 <th scope="row">Итого часов</th>
             </tr>
         </thead>
@@ -88,6 +89,9 @@
                     <td class="alignCenter">
                         @(item.DebtWorkHours != 0 ? item.DebtWorkHours.ToString() : "")
                     </td>     
+                    <td class="alignCenter">
+                        @(item.OverWorkHours != 0 ? item.OverWorkHours.ToString() : "")
+                    </td>    
                     <td style="font-weight: bold;">
                         @item.TotalHours
                     </td>  

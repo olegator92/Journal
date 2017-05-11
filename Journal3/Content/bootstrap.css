@@ -6850,13 +6850,15 @@ td.visible-print {
 }
 
 .late {
-    border-left: 3px;
+    /*border-left: 3px;
     border-left-color: red;
-    border-left-style: solid;
+    border-left-style: solid;*/
+    color: red;
 }
 
 .forgiven {
-    border-left-color: green;
+    //border-left-color: green;
+    color: green;
 }
 
 .alignCenter {
@@ -6882,4 +6884,8 @@ td.visible-print {
 
 .forgivenPermission {
     color: green;
+}
+
+.specialSchedule {
+    margin-bottom: 25px;
 }

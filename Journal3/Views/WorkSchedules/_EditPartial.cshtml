@@ -1,21 +1,182 @@
-﻿@model Journal3.Models.WorkSchedule
+﻿@model Journal3.ViewModels.WorkScheduleViewModel
+
+@{
+    var countSpecials = 0;
+    if (Model.SpecialSchedules != null)
+    {
+        countSpecials = Model.SpecialSchedules.Count;
+    }
+}
+<input type="hidden" id="WorkSchedule_Id" name="WorkSchedule.Id" value="@Model.WorkSchedule.Id"/> 
+<div class="form-group">
+    <label class="col-md-2 control-label" for="Name">Наименование</label>
+    <div class="col-md-10">
+        @Html.TextBoxFor(m => m.WorkSchedule.Name, new { @class = "form-control" })
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-md-2 control-label" for="Name">Начало</label>
+    <div class="col-md-10">
+        @Html.TextBoxFor(m => m.WorkSchedule.StartWork, new { @class = "form-control" })
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-md-2 control-label" for="Name">Конец</label>
+    <div class="col-md-10">
+        @Html.TextBoxFor(m => m.WorkSchedule.EndWork, new { @class = "form-control" })
+    </div>
+</div>
 
 <div class="form-group">
-    <label class="col-md-2 control-label" for="Name">Наименование:</label>
+    <label class="col-md-2 control-label" for=""></label>
     <div class="col-md-10">
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-md-2 control-label" for="Name">Начало:</label>
-    <div class="col-md-10">
-        @Html.TextBoxFor(m => m.StartWork, new { @class = "form-control" })
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-md-2 control-label" for="Name">Конец:</label>
-    <div class="col-md-10">
-        @Html.TextBoxFor(m => m.EndWork, new { @class = "form-control" })
+        @Html.CheckBoxFor(m => m.WorkSchedule.IsSpecial, new { @id = "IsSpecial" })
+        <label for="IsSpecial" style="cursor: pointer;">Особенный</label>
+        <button type="button" class="btn btn-primary @(Model.WorkSchedule.IsSpecial ? "" : " hidden")" id="AddButton" title="Добавить день" style="margin-left: 15px;">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
     </div>
 </div>
 
+<input type="hidden" id="index" value="@countSpecials" />
+<div id="specialScheduleContainer">
+    @if (countSpecials > 0)
+    {
+        for (int i = 0; i < countSpecials; i++)
+        {
+            <div class="specialSchedule">
+                    <input type="hidden" name="SpecialSchedules[@i].WorkScheduleId" value="@Model.WorkSchedule.Id"/>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="">День недели</label>
+                        <div class="col-md-10">
+                            <select class="form-control dayOfWeek" name="SpecialSchedules[@i].DayOfWeek" style="display: inline-block;">
+                                <option value="1" @(Model.SpecialSchedules[i].DayOfWeek == 1 ? "selected='selected'":"")>Понедельник</option>
+                                <option value="2" @(Model.SpecialSchedules[i].DayOfWeek == 2 ? "selected='selected'":"")>Вторник</option>
+                                <option value="3" @(Model.SpecialSchedules[i].DayOfWeek == 3 ? "selected='selected'":"")>Среда</option>
+                                <option value="4" @(Model.SpecialSchedules[i].DayOfWeek == 4 ? "selected='selected'":"")>Четверг</option>
+                                <option value="5" @(Model.SpecialSchedules[i].DayOfWeek == 5 ? "selected='selected'":"")>Пятница</option>
+                                <option value="6" @(Model.SpecialSchedules[i].DayOfWeek == 6 ? "selected='selected'":"")>Суббота</option>
+                                <option value="0" @(Model.SpecialSchedules[i].DayOfWeek == 0 ? "selected='selected'":"")>Воскресенье</option>
+                            </select>
+                            <button type="button" class="btn btn-primary RemoveButton" title="Убрать день" style="margin-left: 10px;">
+                                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="">Начало</label>
+                        <div class="col-md-10">
+                            <input class="form-control startTime" data-val="true" name="SpecialSchedules[@i].StartTime" type="text" value="@Model.SpecialSchedules[@i].StartTime">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Name">Конец</label>
+                        <div class="col-md-10">
+                            <input class="form-control endTime" data-val="true" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
+                        </div>
+                    </div>
+            </div>
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    $("#IsSpecial").click(SpecialSchedule);
+    function SpecialSchedule()
+    {
+        $("#AddButton").toggleClass("hidden");
+
+        if ($(this).is(":checked") == false)
+        {
+            $("#specialScheduleContainer").empty();
+            $("#index").val(0);
+        }
+    }
+
+    //This WTF snippet is needed to add special workschedules dynamically without lose of selected values
+    $('body').on('change', '.dayOfWeek', function () {
+        var optionSelected = $("option:selected", this);
+        $(this).find('option').each(function () {
+            $(this).removeAttr("selected");
+        });
+        optionSelected.attr("selected", "selected");
+        $(this).val(optionSelected.val());
+    });
+
+    $('body').on('change', '.startTime', function () {
+        $(this).attr("value", $(this).val());
+    });
+
+    $('body').on('change', '.endTime', function () {
+        $(this).attr("value", $(this).val());
+    });
+    ////////////////
+
+    $("#AddButton").click(AddSpecialSchedule);
+    function AddSpecialSchedule()
+    {
+        var index = Number($("#index").val());
+        var workScheduleId = $("#WorkSchedule_Id").val();
+        var html = $("#specialScheduleContainer").html();
+
+        var newHtml = "<div class='specialSchedule'>" +
+                        "<input type='hidden' name='SpecialSchedules[" + index + "].WorkScheduleId' value='" + workScheduleId + "'/>" +
+                        "<div class='form-group'>" +
+                            "<label class='col-md-2 control-label'>День недели</label>" +
+                            "<div class='col-md-10'>" +
+                                "<select class='form-control dayOfWeek' name='SpecialSchedules[" + index + "].DayOfWeek' style='display: inline-block;'>" +
+                                    "<option value='1'>Понедельник</option>" +
+                                    "<option value='2'>Вторник</option>" +
+                                    "<option value='3'>Среда</option>" +
+                                    "<option value='4'>Четверг</option>" +
+                                    "<option value='5'>Пятница</option>" +
+                                    "<option value='6'>Суббота</option>" +
+                                    "<option value='0'>Воскресенье</option>" +
+                                "</select>" +
+                                "<button type='button' class='btn btn-primary RemoveButton' title='Убрать день' style='margin-left: 10px;'>" +
+                                "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>" +
+                            "</button>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div class='form-group'>" +
+                            "<label class='col-md-2 control-label'>Начало</label>" +
+                            "<div class='col-md-10'>" +
+                                "<input class='form-control startTime' data-val='true' name='SpecialSchedules[" + index + "].StartTime' type='text' value='00:00:00'>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div class='form-group'>" +
+                            "<label class='col-md-2 control-label'>Конец</label>" +
+                            "<div class='col-md-10'>" +
+                                "<input class='form-control endTime' data-val='true' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
+                            "</div>" +
+                        "</div>" +
+                 "</div>";
+
+        document.getElementById('specialScheduleContainer').innerHTML = (html + newHtml);
+
+        $("#index").val(index+1);
+    }
+
+    $('body').on('click', '.RemoveButton', function () {
+        $(this).parent().parent().parent(".specialSchedule").remove();
+        var index = Number($("#index").val());
+        $("#index").val(index - 1);
+        var i = 0;
+        $("#specialScheduleContainer").find(".specialSchedule").each(function () {
+            var dayOfWeek = "SpecialSchedules[" + i + "].DayOfWeek";
+            var startTime = "SpecialSchedules[" + i + "].StartTime";
+            var endTime = "SpecialSchedules[" + i + "].EndTime";
+            var workScheduleId = "SpecialSchedules[" + i + "].WorkScheduleId";
+
+            $(this).find(".dayOfWeek").attr("name", dayOfWeek);
+            $(this).find(".startTime").attr("name", startTime);
+            $(this).find(".endTime").attr("name", endTime);
+            $(this).find(".workScheduleId").attr("name", workScheduleId);
+
+            i++;
+        })
+    });
+
+</script>

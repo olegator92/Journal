@@ -7,7 +7,17 @@
 
 @using (Html.BeginForm("Edit", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
+    if (User.IsInRole("Admin"))
+    {
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="WorkSchedule">График работы</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.WorkScheduleId, (SelectList)ViewBag.WorkSchedule, new { @class = "form-control" })
+            </div>
+        </div>
+    }
     @Html.Partial("_EditPartial")
+    
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
