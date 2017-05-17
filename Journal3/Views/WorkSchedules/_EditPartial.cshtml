@@ -1,4 +1,10 @@
 ﻿@model Journal3.ViewModels.WorkScheduleViewModel
+<link href="/Content/mdDateTimePicker.css" rel="stylesheet">
+<script src="/Scripts/moment.min.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+<script src="/Scripts/mdDateTimePicker.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+
 
 @{
     var countSpecials = 0;
@@ -7,7 +13,8 @@
         countSpecials = Model.SpecialSchedules.Count;
     }
 }
-<input type="hidden" id="WorkSchedule_Id" name="WorkSchedule.Id" value="@Model.WorkSchedule.Id"/> 
+<input type="hidden" id="WorkSchedule_Id" name="WorkSchedule.Id" value="@Model.WorkSchedule.Id"/>
+
 <div class="form-group">
     <label class="col-md-2 control-label" for="Name">Наименование</label>
     <div class="col-md-10">
@@ -67,14 +74,14 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="">Начало</label>
                         <div class="col-md-10">
-                            <input class="form-control startTime" data-val="true" name="SpecialSchedules[@i].StartTime" type="text" value="@Model.SpecialSchedules[@i].StartTime">
+                            <input class="form-control startTime" data-val="true"  id="WorkSchedule_StartWork@(i)" name="SpecialSchedules[@i].StartTime" type="text" value="@Model.SpecialSchedules[@i].StartTime">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="Name">Конец</label>
                         <div class="col-md-10">
-                            <input class="form-control endTime" data-val="true" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
+                            <input class="form-control endTime" data-val="true" id="WorkSchedule_EndWork@(i)" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
                         </div>
                     </div>
             </div>
@@ -103,14 +110,6 @@
         });
         optionSelected.attr("selected", "selected");
         $(this).val(optionSelected.val());
-    });
-
-    $('body').on('change', '.startTime', function () {
-        $(this).attr("value", $(this).val());
-    });
-
-    $('body').on('change', '.endTime', function () {
-        $(this).attr("value", $(this).val());
     });
     ////////////////
 
@@ -143,13 +142,13 @@
                         "<div class='form-group'>" +
                             "<label class='col-md-2 control-label'>Начало</label>" +
                             "<div class='col-md-10'>" +
-                                "<input class='form-control startTime' data-val='true' name='SpecialSchedules[" + index + "].StartTime' type='text' value='00:00:00'>" +
+                                "<input class='form-control startTime' data-val='true' id='WorkSchedule_StartWork" + index + "' name='SpecialSchedules[" + index + "].StartTime' type='text' value='00:00:00'>" +
                             "</div>" +
                         "</div>" +
                         "<div class='form-group'>" +
                             "<label class='col-md-2 control-label'>Конец</label>" +
                             "<div class='col-md-10'>" +
-                                "<input class='form-control endTime' data-val='true' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
+                                "<input class='form-control endTime' data-val='true' id='WorkSchedule_EndWork" + index + "' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
                             "</div>" +
                         "</div>" +
                  "</div>";
@@ -179,4 +178,32 @@
         })
     });
 
+</script>
+
+<script type="text/javascript">
+  (function() {
+    var a = new mdDateTimePicker.default({
+        type: 'time'
+    });
+    
+    var id = "";
+
+    $('input[name="WorkSchedule.StartWork"]').on('click', setTime);
+    $('input[name="WorkSchedule.EndWork"]').on('click', setTime);
+    $('body').on('click', 'input[name*="SpecialSchedules"]', setTime);
+    
+    function setTime()
+    {
+        id = $(this).attr('id');
+
+        a.time = moment($(this).val(), 'H:m');
+        a.toggle();
+        a.trigger = document.getElementById(id);
+
+        document.getElementById(id).addEventListener('onOk', function () {
+            $(this).attr("value", a.time.format("HH:mm:ss"));
+        });
+    }
+
+  }).call(this);
 </script>

@@ -12,6 +12,7 @@ namespace Journal3.ViewModels
         public WorkSchedule WorkSchedule { get; set; }
         public ComeViewModel Come { get; set; }
         public GoneViewModel Gone { get; set; }
+        public bool WithoutTimebreak { get; set; }
         public bool IsSystem { get; set; }
         public TimeSpan OutForWorkTime { get; set; }
         public TimeSpan ByPermissionTime { get; set; }

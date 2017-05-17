@@ -4,5 +4,6 @@
     <label class="col-md-2 control-label" for="Name">Наименование:</label>
     <div class="col-md-10">
         @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
     </div>
 </div>

@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -31,7 +32,11 @@ namespace Journal3.Controllers
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
 
-            UpdateDataFromFile(selectedDate);
+            bool fileStatus = UpdateDataFromFile(selectedDate);
+            if (!fileStatus)
+                ViewBag.FileStatus = "Проблемы с чтением файла!";
+            else
+                ViewBag.FileStatus = "";
 
             List<Record> records = new List<Record>();
 
@@ -125,7 +130,11 @@ namespace Journal3.Controllers
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
 
-            UpdateDataFromFile(selectedDate);
+            bool fileStatus = UpdateDataFromFile(selectedDate);
+            if (!fileStatus)
+                ViewBag.FileStatus = "Проблемы с чтением файла!";
+            else
+                ViewBag.FileStatus = "";
 
             List<JournalViewModel> model = new List<JournalViewModel>();
             var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == true)
@@ -408,13 +417,31 @@ namespace Journal3.Controllers
             db.SaveChanges();
         }
 
-        public void UpdateDataFromFile(DateTime? selectedDate)
+        public bool UpdateDataFromFile(DateTime? selectedDate)
         {
             var setting = db.Settings.FirstOrDefault();
             if (setting != null)
             {
                 string path = setting.FilePath;
-                string fileText = System.IO.File.ReadAllText(path);
+                string fileText = "";
+                try
+                {
+                    /*using (StreamReader reader = new StreamReader(System.IO.File.Open(Path.Combine(path, "reader_t.log"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                    {
+                        fileText = reader.ReadToEnd();
+                    }*/
+                    WebClient request = new WebClient();
+                    string url = "";
+                    request.Credentials = new NetworkCredential("anonymous", "anonymous@example.com");
+                    byte[] newFileData = request.DownloadData(path);
+                    fileText = System.Text.Encoding.UTF8.GetString(newFileData);
+ 
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+
                 if (fileText != "")
                 {
                     int index = fileText.IndexOf(selectedDate.Value.ToString("dd.MM.yyyy"), 0);
@@ -515,6 +542,7 @@ namespace Journal3.Controllers
                 }
 
             }
+            return true;
         }
 
         public ApplicationUser GetUserByKey(string key)
@@ -829,6 +857,8 @@ namespace Journal3.Controllers
             {
                 if (!firstRecord.IsSystem)
                     journalRow.IsSystem = false;
+                if (firstRecord.WithoutTimebreak)
+                    journalRow.WithoutTimebreak = true;
 
                 if (firstRecord.IsLate)
                 {
@@ -883,6 +913,8 @@ namespace Journal3.Controllers
             {
                 if (!lastRecord.IsSystem)
                     journalRow.IsSystem = false;
+                if (lastRecord.WithoutTimebreak)
+                    journalRow.WithoutTimebreak = true;
 
                 if (lastRecord.IsLate)
                 {
@@ -1138,7 +1170,7 @@ namespace Journal3.Controllers
                         endTime = journalRow.Gone.Time;
                 }
             }
-            return GetTotalTime(startTime, endTime);
+            return GetTotalTime(startTime, endTime, journalRow.WithoutTimebreak);
         }
 
         public TimeSpan GetTotalTime(TimeSpan startTime, TimeSpan endTime, bool timeBreak = false)
@@ -1176,9 +1208,10 @@ namespace Journal3.Controllers
         {
             DateTime stDFate = DateTime.Parse(startDate);
             DateTime edDate = DateTime.Parse(endDate);
+            bool fileStatus = true;
             for (DateTime date = stDFate; date <= edDate;)
             {
-                UpdateDataFromFile(date);
+                fileStatus = UpdateDataFromFile(date);
                 date = date.AddDays(1);
             }
         }

@@ -116,6 +116,7 @@ namespace Journal3.Controllers
             var user = db.Users.Find(id);
             RegisterViewModel model = new RegisterViewModel();
             model.Email = user.UserName;
+            model.UserId = user.Id;
             var userInfo = db.UserInfoes.Where(x => x.User.Id == user.Id).Include(x => x.WorkSchedule).FirstOrDefault();
             if (userInfo != null)
             {

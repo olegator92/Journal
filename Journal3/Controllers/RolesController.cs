@@ -40,9 +40,15 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Create(IdentityRole Role)
         {
-            db.Roles.Add(Role);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            ApplicationDbContext context = new ApplicationDbContext();
+            if (!context.Roles.Any(x => x.Name == Role.Name))
+            {
+                var store = new RoleStore<IdentityRole>(context);
+                var manager = new RoleManager<IdentityRole>(store);
+                manager.Create(Role);
+                return RedirectToAction("Index");
+            }
+            return View(Role);
         }
 
         // GET: Roles/Edit/5

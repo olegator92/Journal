@@ -1,5 +1,9 @@
-﻿using System;
+﻿
+using Journal3.Migrations;
+using Journal3.Models;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +20,10 @@ namespace Journal3
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            Configuration conf = new Configuration();
+            ApplicationDbContext context = new ApplicationDbContext();
+            conf.PubSeed(context);
         }
     }
 }

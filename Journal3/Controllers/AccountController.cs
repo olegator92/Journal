@@ -9,6 +9,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Journal3.Models;
+using System.Net.Mail;
+using Journal3.ViewModels;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Journal3.Controllers
 {
@@ -154,15 +157,23 @@ namespace Journal3.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 string role = "Employee";
                 if (!db.Users.Any())
                     role = "Admin";
+
+                /*if (!db.Roles.Any(x => x.Name == role))
+                {
+                    var store = new RoleStore<IdentityRole>(db);
+                    var manager = new RoleManager<IdentityRole>(store);
+                    manager.Create(new IdentityRole { Name = role });
+                }*/
 
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -172,13 +183,14 @@ namespace Journal3.Controllers
 
                     await this.UserManager.AddToRoleAsync(user.Id, role);
                     db.SaveChanges();
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     UserInfo userInfo = new UserInfo();
                     userInfo.User = db.Users.Find(user.Id);
                     userInfo.UserId = user.Id;
                     userInfo.Name = model.UserName;
 
-                    TimeSpan startWork = TimeSpan.Zero;
+                    /*TimeSpan startWork = TimeSpan.Zero;
                     TimeSpan endWork = TimeSpan.Zero;
                     WorkSchedule workSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
                     if (workSchedule != null)
@@ -197,7 +209,7 @@ namespace Journal3.Controllers
                         db.SaveChanges();
 
                         userInfo.WorkSchedule = db.WorkSchedules.Where(x => x.StartWork == startWork && x.EndWork == endWork).FirstOrDefault();
-                    }
+                    }*/
 
                     db.UserInfoes.Add(userInfo);
                     db.SaveChanges();
@@ -280,7 +292,7 @@ namespace Journal3.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<ActionResult> ResetPassword(ResetPassViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -519,5 +531,43 @@ namespace Journal3.Controllers
             }
         }
         #endregion
+
+        // GET: /Account/ResetPassword
+        [Authorize(Roles = "Admin")]
+        public ActionResult ResetPasswordMail(string userId)
+        {
+
+            ResetPasswordViewModel model = new ResetPasswordViewModel();
+            var token = UserManager.GeneratePasswordResetToken(userId);
+            model.ReturnToken = token;
+            model.UserId = userId;
+            var user = db.UserInfoes.FirstOrDefault(x => x.UserId == userId);
+            if (user != null)
+            {
+                model.UserName = user.Name;
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPasswordMail(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    UserManager.ResetPassword(model.UserId, model.ReturnToken, model.Password);
+                    ViewBag.Message = "Пароль изменен!";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = "Возникла ошибка!";
+                }
+            }
+            return View(model);
+        }
+
     }
 }

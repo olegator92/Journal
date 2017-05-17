@@ -5,6 +5,9 @@
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 
 <br>
+<div>
+    <span class="fileStatus">@ViewBag.FileStatus</span>
+</div>
 <br>
 <div class="row">
     <form action="/Home/Index" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
@@ -80,7 +83,7 @@
             }
             <tr class="@itemClass">
                 <td>
-                    <span class="@timeColor" style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
+                    <span class="@(item.Remark == 1 ? timeColor : "")" style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                 </td>
                 <td>
                     @item.User.UserInfo.Name

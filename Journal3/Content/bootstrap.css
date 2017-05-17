@@ -6889,3 +6889,12 @@ td.visible-print {
 .specialSchedule {
     margin-bottom: 25px;
 }
+
+.fileStatus {
+    color: red;
+}
+
+.message {
+    color: darkorange;
+    margin-left: 10px;
+}

@@ -1,5 +1,11 @@
 ﻿@model Journal3.Models.Record
 
+<link href="/Content/mdDateTimePicker.css" rel="stylesheet">
+<script src="/Scripts/moment.min.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+<script src="/Scripts/mdDateTimePicker.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+
 @{
     String debtWork = "";
     if (Model.DebtWorkDate != null)
@@ -110,4 +116,30 @@
             $('#DebtWorkContainer').addClass("hidden");
     }
 
+</script>
+
+<script type="text/javascript">
+  (function() {
+    var a = new mdDateTimePicker.default({
+        type: 'time'
+    });
+
+    var id = "";
+
+    $('input[name="TimeRecord"]').on('click', setTime);
+
+    function setTime()
+    {
+        id = $(this).attr('id');
+
+        a.time = moment($(this).val(), 'H:m');
+        a.toggle();
+        a.trigger = document.getElementById(id);
+
+        document.getElementById(id).addEventListener('onOk', function () {
+            $(this).attr("value", a.time.format("HH:mm:ss"));
+        });
+    }
+
+  }).call(this);
 </script>

@@ -17,14 +17,15 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
         }
         // GET: Settings
-        public ActionResult Index()
+        public ActionResult Index(string message = "")
         {
             var setting = db.Settings.FirstOrDefault();
+            ViewBag.Message = message;
             return View(setting);
         }
 
         [HttpPost]
-        public ActionResult Index(string filePath)
+        public ActionResult Index(string filePath, string message = "")
         {
             if (filePath != "")
             {
@@ -42,9 +43,10 @@ namespace Journal3.Controllers
                     db.Settings.Add(newSetting);
                 }
                 db.SaveChanges();
+                message = "Путь сохранен!";
             }
-            return RedirectToAction("Index");
-        }
+            return RedirectToAction("Index", new { message = message });
+            }
 
         // GET: Settings/Details/5
         public ActionResult Details(int id)

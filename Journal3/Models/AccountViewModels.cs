@@ -64,6 +64,9 @@ namespace Journal3.Models
 
     public class RegisterViewModel
     {
+        [Display(Name = "ID")]
+        public string UserId { get; set; }
+
         [Display(Name = "Роль")]
         public string UserRoles { get; set; }
 
@@ -84,7 +87,7 @@ namespace Journal3.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0} должен содержать как минимум {2} знаков.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
@@ -95,7 +98,7 @@ namespace Journal3.Models
         public string ConfirmPassword { get; set; }
     }
 
-    public class ResetPasswordViewModel
+    public class ResetPassViewModel
     {
         [Required]
         [EmailAddress]
@@ -103,7 +106,7 @@ namespace Journal3.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0} должен содержать как минимумt {2} знаков.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }

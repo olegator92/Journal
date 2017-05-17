@@ -12,9 +12,16 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            <p class="col-md-1 control-label">@Model.Email</p>
+            <p class="col-md-1 control-label" style="display: block;">@Model.Email</p>
         </div>
     </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <a href="@Url.Action("ResetPasswordMail", "Account", new { userId = Model.UserId})" target="_blank">Новый пароль</a>
+        </div>
+    </div>
+
 
     @Html.Hidden("id", (string)ViewBag.UserId);
 

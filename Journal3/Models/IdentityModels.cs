@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace Journal3.Models
 {
@@ -58,9 +59,10 @@ namespace Journal3.Models
                         .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<UserInfo>()
-                        .HasRequired<WorkSchedule>(s => s.WorkSchedule) 
+                        .HasOptional<WorkSchedule>(s => s.WorkSchedule) 
                         .WithMany(s => s.UserInfos)
-                        .WillCascadeOnDelete(true);
+                        .HasForeignKey(x => x.WorkScheduleId)
+                        .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Record>()
                         .HasRequired<WorkSchedule>(s => s.WorkSchedule)
