@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
@@ -15,6 +16,7 @@ namespace Journal3.Models
         public TimeSpan TimeRecord { get; set; }
         public int Status { get; set; }
         public int Remark { get; set; }
+        [StringLength(250, ErrorMessage = "Длина строки должна быть не больше 250 символов")]
         public string Comment { get; set; }
         public bool IsLate{ get; set; }
         public bool IsConfirmed { get; set; }

@@ -13,7 +13,7 @@ namespace Journal3.Models
         public string Key { get; set; }
 
         public string UserId { get; set; }
-        public int WorkScheduleId { get; set; }
+        public int? WorkScheduleId { get; set; }
 
         public virtual ApplicationUser User { get; set; }
         public virtual WorkSchedule WorkSchedule { get; set; }

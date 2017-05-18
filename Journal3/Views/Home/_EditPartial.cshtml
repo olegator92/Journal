@@ -138,6 +138,7 @@
 
         document.getElementById(id).addEventListener('onOk', function () {
             $(this).attr("value", a.time.format("HH:mm:ss"));
+            this.value = a.time.format("HH:mm:ss");
         });
     }
 

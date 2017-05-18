@@ -27,7 +27,7 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
-        public ActionResult Index(DateTime? selectedDate, string userId = "")
+        public ActionResult Index(DateTime? selectedDate, string userId = "", string sortOrder = "time")
         {
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
@@ -122,10 +122,44 @@ namespace Journal3.Controllers
                 ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
             ViewBag.UserId = userId;
 
+            switch (sortOrder)
+            {
+                case "time":
+                    model = model.OrderBy(s => s.TimeRecord).ToList();
+                    break;
+                case "name":
+                    model = model.OrderBy(s => s.User.UserInfo.Name).ToList();
+                    break;
+                case "status":
+                    model = model.OrderBy(s => s.StatusName).ToList();
+                    break;
+                case "remark":
+                    model = model.OrderBy(s => s.RemarkName).ToList();
+                    break;
+                case "comment":
+                    model = model.OrderBy(s => s.Comment).ToList();
+                    break;
+                case "withoutTimebreak":
+                    model = model.OrderBy(s => s.WithoutTimebreak).ToList();
+                    break;
+                case "workschedule":
+                    model = model.OrderBy(s => s.WorkSchedule.Name).ToList();
+                    break;
+                case "dateCreated":
+                    model = model.OrderBy(s => s.DateCreated).ToList();
+                    break;
+                case "isSystem":
+                    model = model.OrderBy(s => s.IsSystem).ToList();
+                    break;
+                default:
+                    model = model.OrderBy(s => s.TimeRecord).ToList();
+                    break;
+            }
+
             return View(model);
         }
 
-        public ActionResult DayStats(DateTime? selectedDate)
+        public ActionResult DayStats(DateTime? selectedDate, string sortOrder = "name")
         {
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
@@ -155,7 +189,44 @@ namespace Journal3.Controllers
             ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
             ViewBag.NextDate = selectedDate.Value.AddDays(1);
 
-            return View(model.OrderBy(x => x.User.UserInfo.Name));
+            switch (sortOrder)
+            {
+                case "name":
+                    model = model.OrderBy(s => s.User.UserInfo.Name).ToList();
+                    break;
+                case "come":
+                    model = model.OrderBy(s => s.Come.Time).ToList();
+                    break;
+                case "gone":
+                    model = model.OrderBy(s => s.Gone.Time).ToList();
+                    break;
+                case "workschedule":
+                    model = model.OrderBy(s => s.WorkSchedule.Name).ToList();
+                    break;
+                case "outForWork":
+                    model = model.OrderBy(s => s.OutForWorkTime).ToList();
+                    break;
+                case "byPermission":
+                    model = model.OrderBy(s => s.ByPermissionTime).ToList();
+                    break;
+                case "debthWork":
+                    model = model.OrderBy(s => s.PlusDebtWorkTime).ToList();
+                    break;
+                case "overWork":
+                    model = model.OrderBy(s => s.OverWorkTime).ToList();
+                    break;
+                case "totalTime":
+                    model = model.OrderBy(s => s.TotalTime).ToList();
+                    break;
+                case "isSystem":
+                    model = model.OrderBy(s => s.IsSystem).ToList();
+                    break;
+                default:
+                    model = model.OrderBy(s => s.User.UserInfo.Name).ToList();
+                    break;
+            }
+
+            return View(model);
         }
 
         public ActionResult Create(DateTime? selectedDate, string userId = "")
@@ -468,7 +539,7 @@ namespace Journal3.Controllers
                                         foreach (var newRecord in newRecords)
                                         {
                                             var user = GetUserByKey(newRecord.Key);
-                                            if (user != null)
+                                            if (user != null && user.UserInfo.WorkSchedule != null)
                                             {
                                                 Record record = new Record();
                                                 record.DateCreated = newRecord.Date;
@@ -591,7 +662,7 @@ namespace Journal3.Controllers
             return newRecords;
         }
 
-        public ActionResult MonthHoursReview(DateTime? startDate, DateTime? endDate)
+        public ActionResult MonthHoursReview(DateTime? startDate, DateTime? endDate, string sortOrder = "name")
         {
             if (startDate == null || endDate == null)
             {
@@ -614,6 +685,46 @@ namespace Journal3.Controllers
             ViewBag.PreviousEndDate = previousEndDate;
             ViewBag.NextStartDate = nextStartDate;
             ViewBag.NextEndDate = nextEndDate;
+
+            switch (sortOrder)
+            {
+                case "name":
+                    model = model.OrderBy(s => s.Name).ToList();
+                    break;
+                case "late":
+                    model = model.OrderBy(s => s.LateHours).ToList();
+                    break;
+                case "forgivenLate":
+                    model = model.OrderBy(s => s.LateForgivenHours).ToList();
+                    break;
+                case "earlyGone":
+                    model = model.OrderBy(s => s.EarlyGoneHours).ToList();
+                    break;
+                case "forgivenEarlyGone":
+                    model = model.OrderBy(s => s.EarlyGoneForgivenHours).ToList();
+                    break;
+                case "outForwork":
+                    model = model.OrderBy(s => s.OutForWorkHours).ToList();
+                    break;
+                case "byPermission":
+                    model = model.OrderBy(s => s.ByPermissionHours).ToList();
+                    break;
+                case "byPermissionForgiven":
+                    model = model.OrderBy(s => s.ByPermissionForgivenHours).ToList();
+                    break;
+                case "debtWork":
+                    model = model.OrderBy(s => s.DebtWorkHours).ToList();
+                    break;
+                case "overWork":
+                    model = model.OrderBy(s => s.OverWorkHours).ToList();
+                    break;
+                case "totalHours":
+                    model = model.OrderBy(s => s.TotalHours).ToList();
+                    break;
+                default:
+                    model = model.OrderBy(s => s.Name).ToList();
+                    break;
+            }
 
             return View(model);
         }
@@ -733,7 +844,7 @@ namespace Journal3.Controllers
             return model;
         }
 
-        public ActionResult MonthReview(DateTime? startDate, DateTime? endDate, bool all = true, bool onlyProblem = false, bool onlyUser = false)
+        public ActionResult MonthReview(DateTime? startDate, DateTime? endDate, bool all = true, bool onlyProblem = false, bool onlyUser = false, string sortOrder = "name")
         {
             if (startDate == null || endDate == null)
             {
@@ -748,7 +859,7 @@ namespace Journal3.Controllers
             DateTime nextStartDate = startDate.Value.AddMonths(1);
             DateTime nextEndDate = nextStartDate.AddMonths(1).AddDays(-1);
 
-            List<StatsViewModel> model = GetMonthStats(startDate, endDate, all, onlyProblem, onlyUser);
+            List<StatsViewModel> model = GetMonthStats(startDate, endDate, all, onlyProblem, onlyUser, sortOrder);
 
             ViewBag.StartDate = startDate;
             ViewBag.EndDate = endDate;
@@ -759,12 +870,13 @@ namespace Journal3.Controllers
             ViewBag.All = all;
             ViewBag.OnlyProblem = onlyProblem;
             ViewBag.OnlyUser = onlyUser;
+
             return View(model);
         }
 
         
 
-        List<StatsViewModel> GetMonthStats(DateTime? startDate, DateTime? endDate, bool all, bool onlyProblem, bool onlyUser)
+        List<StatsViewModel> GetMonthStats(DateTime? startDate, DateTime? endDate, bool all, bool onlyProblem, bool onlyUser, string sortOrder = "name")
         {
             List<StatsViewModel> model = new List<StatsViewModel>();
             var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) >= startDate && DbFunctions.TruncateTime(x.DateRecord) <= endDate) 
@@ -818,7 +930,45 @@ namespace Journal3.Controllers
                         }
 
                     }
-                    dateStats.DateStats = stats.OrderBy(x => x.User.UserInfo.Name).ToList();
+
+
+                    switch (sortOrder)
+                    {
+                        case "name":
+                            dateStats.DateStats = stats.OrderBy(x => x.User.UserInfo.Name).ToList();
+                            break;
+                        case "come":
+                            dateStats.DateStats = stats.OrderBy(x => x.Come.Time).ToList();
+                            break;
+                        case "gone":
+                            dateStats.DateStats = stats.OrderBy(x => x.Gone.Time).ToList();
+                            break;
+                        case "workschedule":
+                            dateStats.DateStats = stats.OrderBy(x => x.WorkSchedule.Name).ToList();
+                            break;
+                        case "outForWork":
+                            dateStats.DateStats = stats.OrderBy(x => x.OutForWorkTime).ToList();
+                            break;
+                        case "byPermission":
+                            dateStats.DateStats = stats.OrderBy(x => x.ByPermissionTime).ToList();
+                            break;
+                        case "debthWork":
+                            dateStats.DateStats = stats.OrderBy(x => x.PlusDebtWorkTime).ToList();
+                            break;
+                        case "overWork":
+                            dateStats.DateStats = stats.OrderBy(x => x.OverWorkTime).ToList();
+                            break;
+                        case "totalTime":
+                            dateStats.DateStats = stats.OrderBy(x => x.TotalTime).ToList();
+                            break;
+                        case "isSystem":
+                            dateStats.DateStats = stats.OrderBy(x => x.IsSystem).ToList();
+                            break;
+                        default:
+                            dateStats.DateStats = stats.OrderBy(x => x.User.UserInfo.Name).ToList();
+                            break;
+                    }
+
                     model.Add(dateStats);
                 }
             }

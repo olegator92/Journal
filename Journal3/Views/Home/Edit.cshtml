@@ -7,6 +7,7 @@
 
 @using (Html.BeginForm("Edit", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
+    @Html.ValidationSummary("", new { @class = "text-danger" })
     if (User.IsInRole("Admin"))
     {
         <div class="form-group">
@@ -27,3 +28,7 @@
 }
 
 @Html.Partial("_FooterPartial")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

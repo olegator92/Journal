@@ -19,7 +19,9 @@ namespace Journal3.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        [RegularExpression(@"^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$", ErrorMessage = "Неверный формат времени")]
         public TimeSpan StartWork { get; set; }
+        [RegularExpression(@"^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$", ErrorMessage = "Неверный формат времени")]
         public TimeSpan EndWork { get; set; }
         public bool IsSpecial { get; set; }
 

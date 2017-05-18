@@ -6898,3 +6898,11 @@ td.visible-print {
     color: darkorange;
     margin-left: 10px;
 }
+
+.whiteText {
+    color: #fff;
+}
+
+    .whiteText:hover {
+        color: #fff;
+    }

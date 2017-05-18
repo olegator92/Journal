@@ -41,17 +41,17 @@
         <thead>
             <tr class="tabcolor">
                 <th scope="row">№</th>
-                <th scope="row">ФИО</th>
-                <th scope="row">Опоздания (кол-во)</th>
-                <th scope="row">Прощенные опоздания (кол-во)</th>
-                <th scope="row">Уходы раньше времени (кол-во)</th>
-                <th scope="row">Прощенные уходы раньше времени (кол-во)</th>
-                <th scope="row">Выезды</th>
-                <th scope="row">Отпр. (лич.)</th>
-                <th scope="row">Отпр. (уваж.)</th>
-                <th scope="row">Отработка</th>
-                <th scope="row">Переработка</th>
-                <th scope="row">Итого часов</th>
+                <th scope="row">@Html.ActionLink("ФИО", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "name" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Опоздания (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "late" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Прощенные опоздания (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenLate" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Уходы раньше времени (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "earlyGone" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Прощенные уходы раньше времени (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenEarlyGone" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Выезды", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отпр. (лич.)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отпр. (уваж.)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenByPermission" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "debtWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Переработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Итого часов", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "totalHours" }, new { @class = "whiteText" })</th>
             </tr>
         </thead>
         <tbody>

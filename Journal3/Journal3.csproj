@@ -416,6 +416,14 @@
     <Compile Include="Migrations\201705030302427_RecordWithoutTimebreak.Designer.cs">
       <DependentUpon>201705030302427_RecordWithoutTimebreak.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705170639307_NullableWorkschedule.cs" />
+    <Compile Include="Migrations\201705170639307_NullableWorkschedule.Designer.cs">
+      <DependentUpon>201705170639307_NullableWorkschedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705171145355_CommentLength.cs" />
+    <Compile Include="Migrations\201705171145355_CommentLength.Designer.cs">
+      <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
@@ -730,6 +738,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705030302427_RecordWithoutTimebreak.resx">
       <DependentUpon>201705030302427_RecordWithoutTimebreak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705170639307_NullableWorkschedule.resx">
+      <DependentUpon>201705170639307_NullableWorkschedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705171145355_CommentLength.resx">
+      <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

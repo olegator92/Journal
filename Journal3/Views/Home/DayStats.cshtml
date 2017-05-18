@@ -33,18 +33,18 @@
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
-            <th scope="row">ФИО</th>
-            <th scope="row">Пришел</th>
-            <th scope="row">Ушел</th>
+            <th scope="row">@Html.ActionLink("ФИО", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "name" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Пришел", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "come" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Ушел", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "gone" }, new { @class = "whiteText" })</th>
             @if (User.IsInRole("Admin"))
             {
-                <th scope="row">График работы</th>
-                <th scope="row">Выезды</th>
-                <th scope="row">Отпр.</th>
-                <th scope="row">Отраб.</th>
-                <th scope="row">Переработ.</th>
-                <th scope="row">Итого часов</th>
-                <th scope="row">Система</th>
+                <th scope="row">@Html.ActionLink("График работы", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Выезды", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отпр.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отраб.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Переработ.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Итого часов", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Система", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
                 <th scope="row">Примечание</th>
                 <th scope="row"></th>
             }
