@@ -1,31 +1,35 @@
-﻿@model IEnumerable<Journal3.ViewModels.JournalViewModel>
+﻿@model Journal3.ViewModels.StatsViewModel
 @{
     int i = 1;
+    ViewBag.Title = "Отчет за день";
 }
 
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 
-<br>
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
 <div>
     <span class="fileStatus">@ViewBag.FileStatus</span>
 </div>
 <br>
 <div class="row">
     <form action="/Home/DayStats" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
-        
-            <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
-                <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
-                </a>
-                <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
-                <span class="add-on glyphicon glyphicon-calendar"></span>
-                <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
-                </a>
-            </div>
-        
+
+        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy">
+            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.PreviousDate })" class="btn btn-primary" title="Предыдущий">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+            </a>
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+            <a href="@Url.Action("DayStats","Home", new { selectedDate = ViewBag.NextDate })" class="btn btn-primary" title="Следующий">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+            </a>
+        </div>
+
     </form>
 </div>
 
@@ -42,19 +46,28 @@
             <th scope="row">@Html.ActionLink("Отраб.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Переработ.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Итого часов", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
-            
+
             @if (User.IsInRole("Admin"))
             {
                 <th scope="row">@Html.ActionLink("Система", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
                 <th scope="row">Примечание</th>
-                <th scope="row">
-                </th>
+                if (Model.IsNotConfirmeds)
+                {
+                    <th style="background-color: red; color: #fff; padding: 0;">
+                        <a href="@Url.Action("Index", "Home", new { selectedDate = ViewBag.SelectedDate, notConfirmed = true })" class="btn" target="_blank" title="Есть неподтвержденные записи!">
+                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" style="color: #fff; font-size: 20pt;"></span>
+                        </a>
+                    </th>
+                }
+                else
+                {
+                    <th scope="row"></th>
+                }
             }
-            
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.DateStats)
         {
             <tr>
                 <td>
@@ -131,9 +144,9 @@
                     {
                         <span>@(item.TotalTime > TimeSpan.Zero ? "" : " - ")@String.Format("{0:h\\:mm}", item.TotalTime)</span>
                     }
-                        
+
                 </td>
-                 @if (User.IsInRole("Admin"))
+                @if (User.IsInRole("Admin"))
                 {
                     <td style="text-align: center;">
                         @if (item.IsSystem)
@@ -166,8 +179,8 @@
                     </td>
                 }
             </tr>
-            i++;
-        }
+                            i++;
+                        }
     </tbody>
 </table>
 

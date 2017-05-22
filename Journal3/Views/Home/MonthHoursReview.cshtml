@@ -1,14 +1,16 @@
 ﻿@model IEnumerable<Journal3.ViewModels.MonthHoursViewModel>
 @{
     int i = 1;
+    ViewBag.Title = "Итоги по часам";
 }
 
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 
-<br>
-<br>
+<h2>@ViewBag.Title</h2>
+
+<hr />
 <div class="row">
     <form action="/Home/MonthHoursReview" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">
         <a href="@Url.Action("MonthHoursReview","Home", new {  startDate = ViewBag.PreviousStartDate, endDate = ViewBag.PreviousEndDate })" class="btn btn-primary" title="Предыдущий">

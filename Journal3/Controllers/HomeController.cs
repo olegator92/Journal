@@ -172,9 +172,13 @@ namespace Journal3.Controllers
                 ViewBag.FileStatus = "Проблемы с чтением файла!";
             else
                 ViewBag.FileStatus = "";
-
-            List<JournalViewModel> model = new List<JournalViewModel>();
+            StatsViewModel model = new StatsViewModel();
+            List<JournalViewModel> dayStats = new List<JournalViewModel>();
             var records = new List<Record>();
+
+            if(db.Records.Any(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == false))
+                    model.IsNotConfirmeds = true;
+
             if (User.IsInRole("Employee"))
             {
                 string userId = User.Identity.GetUserId();
@@ -198,50 +202,53 @@ namespace Journal3.Controllers
                 foreach (var user in records.Select(x => x.User).Distinct().ToList())
                 {
                     JournalViewModel journalRow = GetDayStatsByUser(user, records, selectedDate.Value);
-                    model.Add(journalRow);
+                    dayStats.Add(journalRow);
                 }
             }
-            ViewBag.SelectedDate = selectedDate;
-            ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
-            ViewBag.NextDate = selectedDate.Value.AddDays(1);
 
             switch (sortOrder)
             {
                 case "name":
-                    model = model.OrderBy(s => s.User.UserInfo.Name).ToList();
+                    dayStats = dayStats.OrderBy(s => s.User.UserInfo.Name).ToList();
                     break;
                 case "come":
-                    model = model.OrderBy(s => s.Come.Time).ToList();
+                    dayStats = dayStats.OrderBy(s => s.Come.Time).ToList();
                     break;
                 case "gone":
-                    model = model.OrderBy(s => s.Gone.Time).ToList();
+                    dayStats = dayStats.OrderBy(s => s.Gone.Time).ToList();
                     break;
                 case "workschedule":
-                    model = model.OrderBy(s => s.WorkSchedule.Name).ToList();
+                    dayStats = dayStats.OrderBy(s => s.WorkSchedule.Name).ToList();
                     break;
                 case "outForWork":
-                    model = model.OrderBy(s => s.OutForWorkTime).ToList();
+                    dayStats = dayStats.OrderBy(s => s.OutForWorkTime).ToList();
                     break;
                 case "byPermission":
-                    model = model.OrderBy(s => s.ByPermissionTime).ToList();
+                    dayStats = dayStats.OrderBy(s => s.ByPermissionTime).ToList();
                     break;
                 case "debthWork":
-                    model = model.OrderBy(s => s.PlusDebtWorkTime).ToList();
+                    dayStats = dayStats.OrderBy(s => s.PlusDebtWorkTime).ToList();
                     break;
                 case "overWork":
-                    model = model.OrderBy(s => s.OverWorkTime).ToList();
+                    dayStats = dayStats.OrderBy(s => s.OverWorkTime).ToList();
                     break;
                 case "totalTime":
-                    model = model.OrderBy(s => s.TotalTime).ToList();
+                    dayStats = dayStats.OrderBy(s => s.TotalTime).ToList();
                     break;
                 case "isSystem":
-                    model = model.OrderBy(s => s.IsSystem).ToList();
+                    dayStats = dayStats.OrderBy(s => s.IsSystem).ToList();
                     break;
                 default:
-                    model = model.OrderBy(s => s.User.UserInfo.Name).ToList();
+                    dayStats = dayStats.OrderBy(s => s.User.UserInfo.Name).ToList();
                     break;
             }
 
+            model.DateStats = dayStats;
+            ViewBag.SelectedDate = selectedDate;
+            ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
+            ViewBag.NextDate = selectedDate.Value.AddDays(1);
+
+            
             return View(model);
         }
 

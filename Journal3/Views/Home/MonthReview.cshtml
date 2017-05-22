@@ -1,14 +1,16 @@
 ﻿@model IEnumerable<Journal3.ViewModels.StatsViewModel>
 @{
     int i = 1;
+    ViewBag.Title = "Отчет за месяц";
 }
 
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 
-<br>
-<br>
+<h2>@ViewBag.Title</h2>
+
+<hr />
 
 
 <div class="row">
@@ -111,10 +113,13 @@
                     }
                     else
                     {
-                        <td style="background-color: rgb(245, 221, 155); padding:0;"></td>
+                        <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     }
-
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">@date.DateName</td>
+                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">
+                        <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date })" class="btn" target="_blank" title="Перейти к журналу" style="color: #000;">
+                            @date.DateName
+                        </a>
+                    </td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
