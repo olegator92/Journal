@@ -37,6 +37,14 @@
 <div class="form-group">
     <label class="col-md-2 control-label" for=""></label>
     <div class="col-md-10">
+        @Html.CheckBoxFor(m => m.WorkSchedule.WithoutTimeBreak, new {@id = "WithoutTimeBreak" })
+        <label for="WithoutTimebreak">Без обеда</label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-md-2 control-label" for=""></label>
+    <div class="col-md-10">
         @Html.CheckBoxFor(m => m.WorkSchedule.IsSpecial, new { @id = "IsSpecial" })
         <label for="IsSpecial" style="cursor: pointer;">Особенный</label>
         <button type="button" class="btn btn-primary @(Model.WorkSchedule.IsSpecial ? "" : " hidden")" id="AddButton" title="Добавить день" style="margin-left: 15px;">
@@ -84,6 +92,13 @@
                             <input class="form-control endTime" data-val="true" data-val-regex="Неверный формат времени" data-val-regex-pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$" data-val-required="Требуется поле Конец"  id="WorkSchedule_EndWork@(i)" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for=""></label>
+                        <div class="col-md-10">
+                            @Html.CheckBoxFor(m => m.SpecialSchedules[i].WithoutTimeBreak, new { @class = "withoutTimeBreak" })
+                            <label for="WithoutTimeBreak">Без обеда</label>
+                        </div>
+                    </div>
             </div>
         }
     }
@@ -110,6 +125,17 @@
         });
         optionSelected.attr("selected", "selected");
         $(this).val(optionSelected.val());
+    });
+
+    $('body').on('change', '.withoutTimeBreak', function () {
+        if ($(this).is(":checked") == false) {
+            $(this).attr("checked", false);
+        }
+        else
+        {
+            $(this).attr("checked", true);
+        }
+        
     });
     ////////////////
 
@@ -151,6 +177,14 @@
                                 "<input class='form-control endTime' data-val='true' data-val-regex='Неверный формат времени' data-val-regex-pattern='^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$' data-val-required='Требуется поле Конец' id='WorkSchedule_EndWork" + index + "' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
                             "</div>" +
                         "</div>" +
+                        "<div class='form-group'>" +
+                        "<label class='col-md-2 control-label' for=''></label>" + 
+                        "<div class='col-md-10'>" +
+                            "<input class = 'withoutTimeBreak' data-val='true' data-val-required='Требуется поле WithoutTimeBreak.' id='SpecialSchedules_" + index + "__WithoutTimeBreak' name='SpecialSchedules[" + index + "].WithoutTimeBreak' type='checkbox' value='true'>" +
+                            "<input name='SpecialSchedules[" + index + "].WithoutTimeBreak' type='hidden' value='false'>" +
+                            "<label for='WithoutTimeBreak' style='margin-left: 5px;'>Без обеда</label>" +
+                        "</div>" +
+                    "</div>" +
                  "</div>";
 
         document.getElementById('specialScheduleContainer').innerHTML = (html + newHtml);
@@ -167,11 +201,13 @@
             var dayOfWeek = "SpecialSchedules[" + i + "].DayOfWeek";
             var startTime = "SpecialSchedules[" + i + "].StartTime";
             var endTime = "SpecialSchedules[" + i + "].EndTime";
+            var withoutTimeBreak = "SpecialSchedules[" + i + "].WithoutTimeBreak";
             var workScheduleId = "SpecialSchedules[" + i + "].WorkScheduleId";
 
             $(this).find(".dayOfWeek").attr("name", dayOfWeek);
             $(this).find(".startTime").attr("name", startTime);
             $(this).find(".endTime").attr("name", endTime);
+            $(this).find(".withoutTimeBreak").attr("name", withoutTimeBreak);
             $(this).find(".workScheduleId").attr("name", workScheduleId);
 
             i++;
@@ -190,7 +226,8 @@
 
     $('input[name="WorkSchedule.StartWork"]').on('click', setTime);
     $('input[name="WorkSchedule.EndWork"]').on('click', setTime);
-    $('body').on('click', 'input[name*="SpecialSchedules"]', setTime);
+    $('body').on('click', 'input[name*="StartTime"]', setTime);
+    $('body').on('click', 'input[name*="EndTime"]', setTime);
     
     function setTime()
     {

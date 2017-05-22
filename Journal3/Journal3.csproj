@@ -424,6 +424,10 @@
     <Compile Include="Migrations\201705171145355_CommentLength.Designer.cs">
       <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.cs" />
+    <Compile Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.Designer.cs">
+      <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
@@ -744,6 +748,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705171145355_CommentLength.resx">
       <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.resx">
+      <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -15,6 +15,7 @@ namespace Journal3.Models
         public int DayOfWeek { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        public bool WithoutTimeBreak { get; set; }
 
         public int WorkScheduleId { get; set; }
 

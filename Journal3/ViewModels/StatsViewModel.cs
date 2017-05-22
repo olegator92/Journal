@@ -9,6 +9,7 @@ namespace Journal3.ViewModels
     {
         public DateTime Date { get; set; } 
         public string DateName { get; set; }
+        public bool IsNotConfirmeds { get; set; }
         public List<JournalViewModel> DateStats { get; set; }
     }
 }

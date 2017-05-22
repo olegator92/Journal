@@ -29,24 +29,26 @@
     </form>
 </div>
 
-<table class="table table-hover customTheme table-striped table-bordered" style="width:auto;">
+<table class="table table-hover customTheme table-striped table-bordered" style="width:auto; @(User.IsInRole("Admin") ? "font-size:10pt;" : "")">
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
             <th scope="row">@Html.ActionLink("ФИО", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "name" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Пришел", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "come" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Ушел", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "gone" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("График работы", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Выезды", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Отпр.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Отраб.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Переработ.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Итого часов", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
+            
             @if (User.IsInRole("Admin"))
             {
-                <th scope="row">@Html.ActionLink("График работы", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Выезды", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Отпр.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Отраб.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Переработ.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Итого часов", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Система", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
                 <th scope="row">Примечание</th>
-                <th scope="row"></th>
+                <th scope="row">
+                </th>
             }
             
         </tr>
@@ -95,44 +97,44 @@
                     }
                     <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", item.Gone.Time)</span>
                 </td>
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        @item.WorkSchedule.Name
-                    </td>
-                    <td>
-                        @if (item.OutForWorkTime != TimeSpan.Zero)
-                        {
-                            <span>@String.Format("{0:h\\:mm}", item.OutForWorkTime)</span>
-                        }
-                    </td>
-                    <td style="white-space: nowrap;">
-                        @if (item.ByPermissionTime != TimeSpan.Zero || item.ByPermissionForgivenTime != TimeSpan.Zero)
-                        {
-                            <span style="color: red;">@String.Format("{0:h\\:mm}", item.ByPermissionTime)</span><span> / </span>
-                            <span>@String.Format("{0:h\\:mm}", item.ByPermissionForgivenTime)</span>
-                        }
-                    </td>
-                    <td style="white-space: nowrap;">
-                        @if (item.MinusDebtWorkTime != TimeSpan.Zero || item.PlusDebtWorkTime != TimeSpan.Zero)
-                        {
-                            <span style="color: red;">-@String.Format("{0:h\\:mm}", item.MinusDebtWorkTime)</span><span> / </span>
-                            <span style="color: green;">+@String.Format("{0:h\\:mm}", item.PlusDebtWorkTime)</span>
-                        }
-                    </td>
-                    <td>
-                        @if (item.OverWorkTime != TimeSpan.Zero)
-                        {
-                            <span>@String.Format("{0:h\\:mm}", item.OverWorkTime)</span>
-                        }
-                    </td>
-                    <td style="font-weight: bold;">
-                        @if (item.TotalTime != TimeSpan.Zero)
-                        {
-                            <span>@(item.TotalTime > TimeSpan.Zero ? "" : " - ")@String.Format("{0:h\\:mm}", item.TotalTime)</span>
-                        }
+                <td>
+                    @item.WorkSchedule.Name
+                </td>
+                <td style="text-align: center;">
+                    @if (item.OutForWorkTime != TimeSpan.Zero)
+                    {
+                        <span>@String.Format("{0:h\\:mm}", item.OutForWorkTime)</span>
+                    }
+                </td>
+                <td style="white-space: nowrap; text-align: center;">
+                    @if (item.ByPermissionTime != TimeSpan.Zero || item.ByPermissionForgivenTime != TimeSpan.Zero)
+                    {
+                        <span style="color: red;">@String.Format("{0:h\\:mm}", item.ByPermissionTime)</span><span> / </span>
+                        <span>@String.Format("{0:h\\:mm}", item.ByPermissionForgivenTime)</span>
+                    }
+                </td>
+                <td style="white-space: nowrap; text-align: center;">
+                    @if (item.MinusDebtWorkTime != TimeSpan.Zero || item.PlusDebtWorkTime != TimeSpan.Zero)
+                    {
+                        <span style="color: red;">-@String.Format("{0:h\\:mm}", item.MinusDebtWorkTime)</span><span> / </span>
+                        <span style="color: green;">+@String.Format("{0:h\\:mm}", item.PlusDebtWorkTime)</span>
+                    }
+                </td>
+                <td style="text-align: center;">
+                    @if (item.OverWorkTime != TimeSpan.Zero)
+                    {
+                        <span>@String.Format("{0:h\\:mm}", item.OverWorkTime)</span>
+                    }
+                </td>
+                <td style="font-weight: bold; text-align: center;">
+                    @if (item.TotalTime != TimeSpan.Zero)
+                    {
+                        <span>@(item.TotalTime > TimeSpan.Zero ? "" : " - ")@String.Format("{0:h\\:mm}", item.TotalTime)</span>
+                    }
                         
-                    </td>
+                </td>
+                 @if (User.IsInRole("Admin"))
+                {
                     <td style="text-align: center;">
                         @if (item.IsSystem)
                         {
@@ -158,8 +160,8 @@
                         }
                     </td>
                     <td>
-                        <a href="@Url.Action("Index", "Home", new {selectedDate = @ViewBag.SelectedDate, userId = item.User.Id})" class="btn" style="margin-left: 15px; font-size: 10pt;" target="_blank">
-                            <span class="glyphicon glyphicon-th-list" aria-hidden="true" style="margin-right: 10px;"></span>Перейти
+                        <a href="@Url.Action("Index", "Home", new {selectedDate = @ViewBag.SelectedDate, userId = item.User.Id})" class="btn" style="margin-left: 15px; font-size: 10pt;" target="_blank" title="Перейти">
+                            <span class="glyphicon glyphicon-th-list" aria-hidden="true" style="margin-right: 10px;"></span>
                         </a>
                     </td>
                 }

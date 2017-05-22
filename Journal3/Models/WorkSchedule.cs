@@ -24,6 +24,7 @@ namespace Journal3.Models
         [RegularExpression(@"^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$", ErrorMessage = "Неверный формат времени")]
         public TimeSpan EndWork { get; set; }
         public bool IsSpecial { get; set; }
+        public bool WithoutTimeBreak { get; set; }
 
         public virtual ICollection<SpecialSchedule> SpecialSchedules { get; set; }
         public virtual ICollection<Record> Records { get; set; }

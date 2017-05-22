@@ -72,7 +72,7 @@
                 {
                     itemClass += "notConfirmed";
                 }
-                if (item.IsLate == true)
+                if (item.IsLate == true || item.Remark == 3)
                 {
                     timeColor += " late";
                 }
@@ -201,7 +201,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td style="text-align:right;">
+                <td style="text-align:right; white-space: nowrap;">
                     <button class="btn btn-primary" id="ConfirmAll" title="Утвердить все">
                         <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
                     </button>

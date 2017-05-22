@@ -101,7 +101,19 @@
             {
                 i = 1;
                 <tr>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                    @if (date.IsNotConfirmeds)
+                    {
+                        <td style="background-color: red; color: #fff; padding: 0;">
+                            <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date, notConfirmed = true })" class="btn" target="_blank" title="Есть неподтвержденные записи!">
+                                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" style="color: #fff;"></span>
+                            </a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="background-color: rgb(245, 221, 155); padding:0;"></td>
+                    }
+
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">@date.DateName</td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                     <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
@@ -159,7 +171,7 @@
                             }
                             <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
                         </td>
-                        <td style="white-space: nowrap;">
+                        <td>
                             @dayStats.WorkSchedule.Name
                         </td>
                         <td class="alignCenter">
@@ -206,8 +218,8 @@
                             }
                         </td>
                         <td>
-                            @if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)
-                            {
+                            @*if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)*@
+                            @{
                                 string colorText = "";
                                 colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
                                 <span style="@colorText">@dayStats.Come.Comment</span>

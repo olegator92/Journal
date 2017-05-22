@@ -27,7 +27,7 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
-        public ActionResult Index(DateTime? selectedDate, string userId = "", string sortOrder = "time")
+        public ActionResult Index(DateTime? selectedDate, string userId = "", bool notConfirmed = false, string sortOrder = "time")
         {
             if (selectedDate == null)
                 selectedDate = DateTime.Now.Date;
@@ -122,6 +122,9 @@ namespace Journal3.Controllers
                 ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
             ViewBag.UserId = userId;
 
+            if(notConfirmed)
+                model = model.Where(x => x.IsConfirmed == false).ToList();
+
             switch (sortOrder)
             {
                 case "time":
@@ -171,11 +174,24 @@ namespace Journal3.Controllers
                 ViewBag.FileStatus = "";
 
             List<JournalViewModel> model = new List<JournalViewModel>();
-            var records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == true)
+            var records = new List<Record>();
+            if (User.IsInRole("Employee"))
+            {
+                string userId = User.Identity.GetUserId();
+                records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == true && x.UserId == userId)
                                             .Include(x => x.WorkSchedule)
                                             .Include(x => x.User.UserInfo)
                                             .OrderBy(x => x.TimeRecord)
                                             .ToList();
+            }
+            else
+            {
+                records = db.Records.Where(x => (DbFunctions.TruncateTime(x.DateRecord) == selectedDate || DbFunctions.TruncateTime(x.DebtWorkDate) == selectedDate) && x.IsConfirmed == true)
+                                            .Include(x => x.WorkSchedule)
+                                            .Include(x => x.User.UserInfo)
+                                            .OrderBy(x => x.TimeRecord)
+                                            .ToList();
+            }
 
             if (records.Any())
             {
@@ -502,7 +518,6 @@ namespace Journal3.Controllers
                         fileText = reader.ReadToEnd();
                     }*/
                     WebClient request = new WebClient();
-                    string url = "";
                     request.Credentials = new NetworkCredential("anonymous", "anonymous@example.com");
                     byte[] newFileData = request.DownloadData(path);
                     fileText = System.Text.Encoding.UTF8.GetString(newFileData);
@@ -897,10 +912,17 @@ namespace Journal3.Controllers
                     dateName += date.ToString("dd MMM yyyy");
 
                     dateStats.DateName = dateName;
+
+                    
+
                     List<JournalViewModel> stats = new List<JournalViewModel>();
                     foreach (var user in records.Select(x => x.User).Distinct().ToList())
                     {
                         var filteredRecords = records.Where(x => x.DateRecord == date || x.DebtWorkDate == date).ToList();
+
+                        if (filteredRecords.Any(x => x.IsConfirmed == false))
+                            dateStats.IsNotConfirmeds = true;
+
                         JournalViewModel userStats = GetDayStatsByUser(user, filteredRecords, date);
                         if (userStats.User != null)
                         {
@@ -978,7 +1000,7 @@ namespace Journal3.Controllers
         JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records, DateTime date)
         {
             JournalViewModel journalRow = new JournalViewModel();
-            var filteredRecords = records.Where(x => x.User == user).ToList();
+            var filteredRecords = records.Where(x => x.User == user && x.IsConfirmed == true).ToList();
             if (filteredRecords.Any())
             {
                 journalRow.User = user;
@@ -1002,48 +1024,95 @@ namespace Journal3.Controllers
                 IsProblem = false,
                 Comment = ""
             };
-            var firstRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.ComeGone && (x.IsSystem == true || x.IsConfirmed == true));
-            if (firstRecord != null)
+
+            var firstCome = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Come && x.DateRecord == date);
+            if (firstCome != null)
             {
-                if (!firstRecord.IsSystem)
+                int remark = firstCome.Remark;
+                if (!firstCome.IsSystem)
                     journalRow.IsSystem = false;
-                if (firstRecord.WithoutTimebreak)
+
+                if (firstCome.WithoutTimebreak)
                     journalRow.WithoutTimebreak = true;
 
-                if (firstRecord.IsLate)
+                if (remark == (int)Remarks.ComeGone)
+                {
+                    if (firstCome.IsLate)
+                    {
+                        come.IsProblem = true;
+                        come.IsLate = true;
+                        come.Comment = "Опоздание";
+
+                        if (firstCome.IsForgiven == true)
+                        {
+                            come.IsForgiven = true;
+                            if (!firstCome.WorkSchedule.IsSpecial)
+                                come.Time = firstCome.WorkSchedule.StartWork;
+                            else
+                                come.Time = GetSpecialSchedule(firstCome.WorkSchedule, date).StartTime;
+                        }
+                        else
+                            come.Time = firstCome.TimeRecord;
+                    }
+                    else
+                        come.Time = firstCome.TimeRecord;
+                }
+                else if (remark == (int)Remarks.OutForWork)
                 {
                     come.IsProblem = true;
-                    come.IsLate = true;
-                    come.Comment = "Опоздание";
-                    if (firstRecord.IsForgiven == true)
+                    come.IsForgiven = true;
+                    come.Comment = "Ушел по работе";
+
+                    if (!firstCome.WorkSchedule.IsSpecial)
+                        come.Time = firstCome.WorkSchedule.StartWork;
+                    else
+                        come.Time = GetSpecialSchedule(firstCome.WorkSchedule, date).StartTime;
+
+                }
+                else if (remark == (int)Remarks.ByPermission)
+                {
+                    come.IsProblem = true;
+                    if (firstCome.IsForgiven)
                     {
                         come.IsForgiven = true;
-                        if (!firstRecord.WorkSchedule.IsSpecial)
-                            come.Time = firstRecord.WorkSchedule.StartWork;
-                        else
-                            come.Time = GetSpecialSchedule(firstRecord.WorkSchedule, date).StartTime;
+                    }
+
+                    if (!firstCome.WorkSchedule.IsSpecial)
+                        come.Time = firstCome.WorkSchedule.StartWork;
+                    else
+                        come.Time = GetSpecialSchedule(firstCome.WorkSchedule, date).StartTime;
+
+                    come.Comment = "Отпросился";
+                }
+                else if (remark == (int)Remarks.DebtWork)
+                {
+                    if (firstCome.DateRecord == date)
+                    {
+                        come.Time = firstCome.TimeRecord;
+                        come.Comment = "Отработка";
                     }
                     else
                     {
-                        come.Time = firstRecord.TimeRecord;
+                        come.IsProblem = true;
+                        come.Comment = "Не указано время прихода";
                     }
-                    
+
+                }
+                else if (remark == (int)Remarks.OverWork)
+                {
+                    come.Time = firstCome.TimeRecord;
+                    come.Comment = "Переработка";
                 }
                 else
-                    come.Time = firstRecord.TimeRecord;
+                {
+                    come.IsProblem = true;
+                    come.Comment = "Не указано время прихода";
+                }
             }
             else
             {
                 come.IsProblem = true;
-                var debtWorkRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.DebtWork && (x.IsSystem == true || x.IsConfirmed == true));
-                if (debtWorkRecord != null)
-                {
-                    come.Comment = "Отработка";
-                }
-                else
-                {
-                    come.Comment = "Не указано время прихода";
-                }
+                come.Comment = "Не указано время прихода";
             }
 
             return come;
@@ -1058,82 +1127,104 @@ namespace Journal3.Controllers
                 Comment = ""
             };
 
-            var lastRecord = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.ComeGone && (x.IsSystem == true || x.IsConfirmed == true));
-            if (lastRecord != null)
+            var lastGone = filteredRecords.OrderByDescending(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.DateRecord == date);
+
+            if (lastGone != null)
             {
-                if (!lastRecord.IsSystem)
+                int remark = lastGone.Remark;
+                if (!lastGone.IsSystem)
                     journalRow.IsSystem = false;
-                if (lastRecord.WithoutTimebreak)
+
+                if (lastGone.WithoutTimebreak)
                     journalRow.WithoutTimebreak = true;
 
-                if (lastRecord.IsLate)
+                if (remark == (int)Remarks.ComeGone)
                 {
-                    gone.IsProblem = true;
-                    gone.IsEarlyGone = true;
-                    gone.Comment = "Уход раньше времени";
-                    if (lastRecord.IsForgiven == true)
-                    {
-                        gone.IsForgiven = true;
-                        if (!lastRecord.WorkSchedule.IsSpecial)
-                            gone.Time = lastRecord.WorkSchedule.EndWork;
-                        else
-                            gone.Time = GetSpecialSchedule(lastRecord.WorkSchedule, date).EndTime;
-                    }
-                    else
-                        gone.Time = lastRecord.TimeRecord;
-                }
-                else
-                    gone.Time = lastRecord.TimeRecord;
-            }
-            else
-            {
-                var outForWorkRecordGone = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.OutForWork);
-                if (outForWorkRecordGone != null)
-                {
-                    var outForWorkRecordCome = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.OutForWork);
-                    if (outForWorkRecordCome == null)
-                    {
-                        if (!outForWorkRecordGone.IsSystem)
-                            journalRow.IsSystem = false;
-
-                        gone.IsProblem = true;
-                        gone.IsForgiven = true;
-                        gone.Comment = "Ушел по работе";
-
-
-                        if (!outForWorkRecordGone.WorkSchedule.IsSpecial)
-                            gone.Time = outForWorkRecordGone.WorkSchedule.EndWork;
-                        else
-                            gone.Time = GetSpecialSchedule(outForWorkRecordGone.WorkSchedule, date).EndTime;
-                        
-                    }
-                    else
+                    if (lastGone.IsLate)
                     {
                         gone.IsProblem = true;
-                        gone.Comment = "Не указано время ухода";
-                    }
+                        gone.IsEarlyGone = true;
+                        gone.Comment = "Уход раньше времени";
 
+                        if (lastGone.IsForgiven == true)
+                        {
+                            gone.IsForgiven = true;
+                            if (!lastGone.WorkSchedule.IsSpecial)
+                                gone.Time = lastGone.WorkSchedule.EndWork;
+                            else
+                                gone.Time = GetSpecialSchedule(lastGone.WorkSchedule, date).EndTime;
+                        }
+                        else
+                            gone.Time = lastGone.TimeRecord;
+                    }
+                    else
+                        gone.Time = lastGone.TimeRecord;
                 }
-                else
+                else if (remark == (int)Remarks.OutForWork)
                 {
                     gone.IsProblem = true;
-                    var debtWorkRecord = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.DebtWork && (x.IsSystem == true || x.IsConfirmed == true));
-                    if (debtWorkRecord != null)
+                    gone.IsForgiven = true;
+                    gone.Comment = "Ушел по работе";
+
+                    if (!lastGone.WorkSchedule.IsSpecial)
+                        gone.Time = lastGone.WorkSchedule.EndWork;
+                    else
+                        gone.Time = GetSpecialSchedule(lastGone.WorkSchedule, date).EndTime;
+
+                }
+                else if (remark == (int)Remarks.ByPermission)
+                {
+                    gone.IsProblem = true;
+                    if (lastGone.IsForgiven)
                     {
+                        gone.IsForgiven = true;
+                    }
+
+                    if (!lastGone.WorkSchedule.IsSpecial)
+                        gone.Time = lastGone.WorkSchedule.EndWork;
+                    else
+                        gone.Time = GetSpecialSchedule(lastGone.WorkSchedule, date).EndTime;
+
+                    gone.Comment = "Отпросился";
+                }
+                else if (remark == (int)Remarks.DebtWork)
+                {
+                    if (lastGone.DateRecord == date)
+                    {
+                        gone.Time = lastGone.TimeRecord;
                         gone.Comment = "Отработка";
                     }
                     else
                     {
+                        gone.IsProblem = true;
                         gone.Comment = "Не указано время ухода";
                     }
+
+                }
+                else if (remark == (int)Remarks.OverWork)
+                {
+                    gone.Time = lastGone.TimeRecord;
+                    gone.Comment = "Переработка";
+                }
+                else
+                {
+                    gone.IsProblem = true;
+                    gone.Comment = "Не указано время ухода";
                 }
             }
+            else
+            {
+                gone.IsProblem = true;
+                gone.Comment = "Не указано время ухода";
+            }
+            
             return gone;
         }
 
         public void CountTime(List<Record> filteredRecords, JournalViewModel journalRow, DateTime date)
         {
-            TimeSpan endWorkTime = GetSpecialSchedule(journalRow.WorkSchedule, date).EndTime;
+            StartEndWork startEnd = GetSpecialSchedule(journalRow.WorkSchedule, date);
+            TimeSpan endWorkTime = startEnd.EndTime;
 
             journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, endWorkTime);
             journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, endWorkTime);
@@ -1141,7 +1232,12 @@ namespace Journal3.Controllers
             journalRow.MinusDebtWorkTime = CountMinusDebtWorkTime(filteredRecords, endWorkTime, date);
             journalRow.PlusDebtWorkTime = CountPlusDebtWorkTime(filteredRecords, endWorkTime, date);
             journalRow.OverWorkTime = CountOverWorkTime(filteredRecords, endWorkTime);
-            journalRow.TotalTime = CountTotalTime(journalRow, date) - journalRow.ByPermissionTime /*- journalRow.MinusDebtWorkTime*/ + journalRow.PlusDebtWorkTime + journalRow.OverWorkTime;
+            journalRow.TotalTime = CountTotalTime(journalRow, date) - journalRow.ByPermissionTime - journalRow.MinusDebtWorkTime + journalRow.PlusDebtWorkTime + journalRow.OverWorkTime;
+
+            if (journalRow.TotalTime > GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak))
+            {
+                journalRow.TotalTime = GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak);
+            }
         }
 
         public StartEndWork GetSpecialSchedule(WorkSchedule workSchedule, DateTime date)
@@ -1152,13 +1248,16 @@ namespace Journal3.Controllers
             int dayOfWeek = (int)date.DayOfWeek;
             if (specials.Any(x => x.DayOfWeek == dayOfWeek))
             {
-                model.StartTime = specials.FirstOrDefault(x => x.DayOfWeek == dayOfWeek).StartTime;
-                model.EndTime = specials.FirstOrDefault(x => x.DayOfWeek == dayOfWeek).EndTime;
+                var special = specials.FirstOrDefault(x => x.DayOfWeek == dayOfWeek);
+                model.StartTime = special.StartTime;
+                model.EndTime = special.EndTime;
+                model.WithoutTimeBreak = special.WithoutTimeBreak;
             }
             else
             {
                 model.StartTime = workSchedule.StartWork;
                 model.EndTime = workSchedule.EndWork;
+                model.WithoutTimeBreak = workSchedule.WithoutTimeBreak;
             }
 
             return model;
@@ -1280,11 +1379,16 @@ namespace Journal3.Controllers
         {
             TimeSpan startTime = TimeSpan.Zero;
             TimeSpan endTime = TimeSpan.Zero;
+            bool withoutTimeBreak = false;
 
             StartEndWork workSchedule = GetSpecialSchedule(journalRow.WorkSchedule, date);
 
+            if (journalRow.WithoutTimebreak || workSchedule.WithoutTimeBreak)
+                withoutTimeBreak = true;
+
             if (journalRow.Come != null)
             {
+                
                 if (journalRow.Come.Time <= workSchedule.StartTime)
                     startTime = workSchedule.StartTime;
                 else
@@ -1320,7 +1424,7 @@ namespace Journal3.Controllers
                         endTime = journalRow.Gone.Time;
                 }
             }
-            return GetTotalTime(startTime, endTime, journalRow.WithoutTimebreak);
+            return GetTotalTime(startTime, endTime, withoutTimeBreak);
         }
 
         public TimeSpan GetTotalTime(TimeSpan startTime, TimeSpan endTime, bool timeBreak = false)
@@ -1433,6 +1537,7 @@ namespace Journal3.Controllers
         {
             public TimeSpan StartTime { get; set; }
             public TimeSpan EndTime { get; set; }
+            public bool WithoutTimeBreak { get; set; }
         }
     }
 }

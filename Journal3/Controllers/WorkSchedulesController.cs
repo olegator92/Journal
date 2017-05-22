@@ -96,6 +96,7 @@ namespace Journal3.Controllers
             dbWorkSchedule.StartWork = model.WorkSchedule.StartWork;
             dbWorkSchedule.EndWork = model.WorkSchedule.EndWork;
             dbWorkSchedule.IsSpecial = model.WorkSchedule.IsSpecial;
+            dbWorkSchedule.WithoutTimeBreak = model.WorkSchedule.WithoutTimeBreak;
 
             var specialWorkSchedules = db.SpecialSchedules.Where(x => x.WorkScheduleId == model.WorkSchedule.Id).ToList();
             db.SpecialSchedules.RemoveRange(specialWorkSchedules);
@@ -114,43 +115,6 @@ namespace Journal3.Controllers
             }
         }
 
-        // GET: WorkSchedules/Create
-        /* public ActionResult Create()
-         {
-             var workSchedule = new WorkSchedule();
-             return View(workSchedule);
-         }
-
-         // POST: WorkSchedules/Create
-         [HttpPost]
-         public ActionResult Create(WorkSchedule workSchedule)
-         {
-             db.WorkSchedules.Add(workSchedule);
-             db.SaveChanges();
-             return RedirectToAction("Index");
-         }
-
-         // GET: WorkSchedules/Edit/5
-         public ActionResult Edit(int id)
-         {
-             var workSchedule = db.WorkSchedules.Find(id);
-             return View(workSchedule);
-         }
-
-         // POST: WorkSchedules/Edit/5
-         [HttpPost]
-         public ActionResult Edit(WorkSchedule workSchedule)
-         {
-             var dbWorkSchedule = db.WorkSchedules.Find(workSchedule.Id);
-             if (ModelState.IsValid)
-             {
-                 UpdateModel(dbWorkSchedule);
-                 db.SaveChanges();
-                 return RedirectToAction("Index");
-             }
-             return View(workSchedule);
-         }
-         */
         // GET: WorkSchedules/Delete/5
         public ActionResult Delete(int id)
         {
