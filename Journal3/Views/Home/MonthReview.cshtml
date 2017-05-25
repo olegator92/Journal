@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Journal3.ViewModels.StatsViewModel>
 @{
     int i = 1;
-    ViewBag.Title = "Отчет за месяц";
+    ViewBag.Title = "Обзор месяца";
 }
 
 <link href="/Content/datepicker.css" rel="stylesheet">
@@ -11,7 +11,6 @@
 <h2>@ViewBag.Title</h2>
 
 <hr />
-
 
 <div class="row">
     <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">

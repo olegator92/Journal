@@ -71,12 +71,13 @@
         {
             string itemClass = "";
             string timeColor = "";
+            if (item.IsConfirmed == false)
+            {
+                itemClass += "notConfirmed";
+            }
+
             if (User.IsInRole("Admin"))
             {
-                if (item.IsConfirmed == false)
-                {
-                    itemClass += "notConfirmed";
-                }
                 if (item.IsLate == true || item.Remark == 3)
                 {
                     timeColor += " late";
@@ -87,7 +88,7 @@
                 }
             }
             <tr class="@itemClass">
-                <td>
+                <td @(!item.IsSystem ? "style=background-color:#fff0b9;" : "")>
                     <span class="@(item.Remark == 1 ? timeColor : "")" style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                 </td>
                 <td>

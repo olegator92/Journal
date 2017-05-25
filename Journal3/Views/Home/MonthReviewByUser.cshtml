@@ -1,0 +1,169 @@
+﻿@model IEnumerable<Journal3.ViewModels.StatsViewModel>
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+@{
+    ViewBag.Title = "Отчет за месяц";
+    int i = 1;
+    double totalOutForWork = 0;
+    double totalByPermission = 0;
+    double totalByPermissionForgiven = 0;
+    double totalDebtWork = 0;
+    double totalOverWork = 0;
+    double totalTime = 0;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div class="row">
+    <form action="/Home/MonthReviewByUser" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">
+        <a href="@Url.Action("MonthReviewByUser","Home", new {  startDate = ViewBag.PreviousStartDate, endDate = ViewBag.PreviousEndDate, userId = ViewBag.UserId, sortOrder = ViewBag.SortOrder })" class="btn btn-primary" title="Предыдущий">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+        </a>
+        <div class="input-append date" id="datepicker1" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="startDate" id="startDate" value="@ViewBag.StartDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+        <span style="margin: 0 5px;">-</span>
+        <div class="input-append date" id="datepicker2" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="endDate" id="endDate" value="@ViewBag.EndDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+        <a href="@Url.Action("MonthReviewByUser","Home", new { startDate = ViewBag.NextStartDate, endDate = ViewBag.NextEndDate, userId = ViewBag.UserId, sortOrder = ViewBag.SortOrder  })" class="btn btn-primary" title="Следующий">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+        </a>
+
+        @if (User.IsInRole("Admin"))
+        {
+            @Html.DropDownList("userId", (SelectList)ViewBag.User, "Все", new { @class = "form-control inlineDropdown" })
+        }
+
+        <div style="display: inline-block; margin-top: 15px; padding-left: 15px;">
+            <input type="submit" value="Показать" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+<br>
+<table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 10pt;">
+    <thead>
+        <tr class="tabcolor">
+            <th scope="row">№</th>
+            <th scope="row">Дата</th>
+            <th scope="row">@Html.ActionLink("Пришел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "come" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Ушел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "gone" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("График работы", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Выезды", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Отпр.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Отраб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Перераб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Итого часов", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
+            <th scope="row"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var date in Model)
+        {
+            if (date.DateStats.Any())
+            {
+                foreach (var dayStats in date.DateStats)
+                {
+                    <tr>
+                        <td>
+                            @i)
+                        </td>
+                        <td>
+                            @date.DateName
+                        </td>
+                        <td>
+                            <span>@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
+                        </td>
+                        <td>
+                            <span>@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
+                        </td>
+                        <td>
+                            @dayStats.WorkSchedule.Name
+                        </td>
+                        <td class="alignCenter">
+                            @if (dayStats.OutForWorkTime != TimeSpan.Zero)
+                            {
+                                totalOutForWork += dayStats.OutForWorkTime.TotalHours;
+                                <span>@String.Format("{0:h\\:mm}", dayStats.OutForWorkTime)</span>
+                            }
+                        </td>
+                        <td style="white-space: nowrap;" class="alignCenter">
+                            @if (dayStats.ByPermissionTime != TimeSpan.Zero || dayStats.ByPermissionForgivenTime != TimeSpan.Zero)
+                            {
+                                totalByPermission += dayStats.ByPermissionTime.TotalHours;
+                                totalByPermissionForgiven += dayStats.ByPermissionForgivenTime.TotalHours;
+                                <span style="color: red;">@String.Format("{0:h\\:mm}", dayStats.ByPermissionTime)</span><span> / </span>
+                                <span>@String.Format("{0:h\\:mm}", dayStats.ByPermissionForgivenTime)</span>
+                            }
+                        </td>
+                        <td style="white-space: nowrap;" class="alignCenter">
+                            @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
+                            {
+                                totalDebtWork += dayStats.PlusDebtWorkTime.TotalHours;
+                                <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
+                                <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                            }
+                        </td>
+                        <td class="alignCenter">
+                            @if (dayStats.OverWorkTime != TimeSpan.Zero)
+                            {
+                                totalOverWork += dayStats.OverWorkTime.TotalHours;
+                                <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
+                            }
+                        </td>
+                        <td style="font-weight: bold;" class="alignCenter">
+                            @if (dayStats.TotalTime != TimeSpan.Zero)
+                            {
+                                totalTime += dayStats.TotalTime.TotalHours;
+                                <span>@(dayStats.TotalTime > TimeSpan.Zero ? "" : " - ")</span><span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                            }
+
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" target="_blank" title="Перейти">
+                                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                        i++;
+                    }
+                 
+                }
+
+            }
+        <tr style="font-weight: bold;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="text-align: right;">Итого:</td>
+            <td style="text-align: center;">@Math.Round(totalOutForWork, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalByPermission, 2) <span>/</span> @Math.Round(totalByPermissionForgiven,2)</td>
+            <td style="text-align: center;">@Math.Round(totalDebtWork, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalOverWork, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalTime, 2)</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type='text/javascript'>
+        $(function () {
+            $('#datepicker1').datepicker({
+                language: 'ru'
+            });
+        });
+
+        $(function () {
+            $('#datepicker2').datepicker({
+                language: 'ru'
+            });
+        });
+
+</script>

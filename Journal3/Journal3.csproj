@@ -428,6 +428,14 @@
     <Compile Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.Designer.cs">
       <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705230330186_RemoveWithoutTimebreak.cs" />
+    <Compile Include="Migrations\201705230330186_RemoveWithoutTimebreak.Designer.cs">
+      <DependentUpon>201705230330186_RemoveWithoutTimebreak.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705230331386_WithoutTimebreak.cs" />
+    <Compile Include="Migrations\201705230331386_WithoutTimebreak.Designer.cs">
+      <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
@@ -497,6 +505,7 @@
     <Content Include="fonts\RobotoCondensed-Regular.ttf" />
     <None Include="Properties\PublishProfiles\Journal.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
+    <None Include="Properties\PublishProfiles\WebJournal.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\draggabilly.pkgd.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -580,6 +589,7 @@
     <Content Include="Views\Home\MonthHoursReview.cshtml" />
     <Content Include="Views\WorkSchedules\_SpecialSchedulePartial.cshtml" />
     <Content Include="Views\Account\ResetPasswordMail.cshtml" />
+    <Content Include="Views\Home\MonthReviewByUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -751,6 +761,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.resx">
       <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705230330186_RemoveWithoutTimebreak.resx">
+      <DependentUpon>201705230330186_RemoveWithoutTimebreak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705230331386_WithoutTimebreak.resx">
+      <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

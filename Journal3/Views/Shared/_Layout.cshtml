@@ -31,9 +31,10 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Отчет за день", "DayStats", "Home")</li>
+                    <li>@Html.ActionLink("Отчет за месяц", "MonthReviewByUser", "Home")</li>
                     @if (User.IsInRole("Admin"))
                     {
-                        <li>@Html.ActionLink("Отчет за месяц", "MonthReview", "Home")</li>
+                        <li>@Html.ActionLink("Обзор месяца", "MonthReview", "Home")</li>
                         <li>@Html.ActionLink("Итоги по часам", "MonthHoursReview", "Home")</li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">Настройки<b class="caret"></b></a>
