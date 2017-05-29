@@ -319,6 +319,10 @@ namespace Journal3.Controllers
                         if ((startEndWork.EndTime - model.TimeRecord).TotalMinutes > 5)
                             model.IsLate = true;
                     }
+
+                    if (User.IsInRole("Employee") && UserId != User.Identity.GetUserId())
+                        return RedirectToAction("Index", new { selectedDate = model.DateRecord });
+
                     db.Records.Add(model);
                     db.SaveChanges();
                 }
@@ -348,7 +352,7 @@ namespace Journal3.Controllers
             }
             else
             {
-                if (record.User.UserName != User.Identity.Name || (!record.IsSystem && record.IsConfirmed == true))
+                if (record.UserId != User.Identity.GetUserId() || (!record.IsSystem && record.IsConfirmed == true))
                     return RedirectToAction("Index", new { selectedDate = record.DateRecord});
             }
 
@@ -362,6 +366,10 @@ namespace Journal3.Controllers
         public ActionResult Edit(Record record, DateTime selectedDate)
         {
             var dbRecord = db.Records.Find(record.Id);
+            
+            if (User.IsInRole("Employee") && (dbRecord.UserId != User.Identity.GetUserId() || (!dbRecord.IsSystem && dbRecord.IsConfirmed == true)))
+                return RedirectToAction("Index", new { selectedDate = record.DateRecord });
+
             if (User.IsInRole("Admin"))
                 dbRecord.IsConfirmed = true;
             else
@@ -373,11 +381,15 @@ namespace Journal3.Controllers
             {
                 if ((record.TimeRecord - startEndWork.StartTime).TotalMinutes > 5)
                     dbRecord.IsLate = true;
+                else
+                    dbRecord.IsLate = false;
             }
             else if (record.Status == (int)Statuses.Gone && record.Remark == (int)Remarks.ComeGone)
             {
                 if ((startEndWork.EndTime - record.TimeRecord).TotalMinutes > 5)
                     dbRecord.IsLate = true;
+                else
+                    dbRecord.IsLate = false;
             }
 
             if (!(record.Remark == (int)Remarks.DebtWork && record.DebtWorkDate == null))
@@ -420,6 +432,10 @@ namespace Journal3.Controllers
         public ActionResult Delete(int id, FormCollection collection)
         {
             var record = db.Records.Find(id);
+
+            if (User.IsInRole("Employee") && (record.UserId != User.Identity.GetUserId() || (!record.IsSystem && record.IsConfirmed == true)))
+                return RedirectToAction("Index", new { selectedDate = record.DateRecord });
+
             string userId = record.UserId;
             ViewBag.UserId = userId;
             try
@@ -436,7 +452,7 @@ namespace Journal3.Controllers
             return RedirectToAction("Index", new { selectedDate = record.DateRecord, userId = userId });
         }
 
-
+        [Authorize(Roles = "Admin")]
         public void ConfirmRecord(int recordId)
         {
             var record = db.Records.Find(recordId);
@@ -450,6 +466,7 @@ namespace Journal3.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public void ConfirmAll(string date, string userId = "")
         {
             DateTime selectedDate = Convert.ToDateTime(date);
@@ -470,6 +487,7 @@ namespace Journal3.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public void ForgiveRecord(int recordId)
         {
             var record = db.Records.Find(recordId);
@@ -483,6 +501,7 @@ namespace Journal3.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public void ForgiveAll(string date, string userId = "")
         {
             DateTime selectedDate = Convert.ToDateTime(date);
@@ -686,6 +705,7 @@ namespace Journal3.Controllers
             return newRecords;
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult MonthHoursReview(DateTime? startDate, DateTime? endDate, string sortOrder = "name")
         {
             if (startDate == null || endDate == null)
@@ -868,6 +888,7 @@ namespace Journal3.Controllers
             return model;
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult MonthReview(DateTime? startDate, DateTime? endDate, bool all = true, bool onlyProblem = false, bool onlyUser = false, string sortOrder = "name")
         {
             if (startDate == null || endDate == null)
@@ -1057,9 +1078,9 @@ namespace Journal3.Controllers
                 {
                     StatsViewModel dateStats = new StatsViewModel();
                     dateStats.Date = date;
-                    string dateName = Helper.DaysOfWeekHelper.GetDayName((int)date.DayOfWeek);
+                    string dateName = date.ToString("dd MMM yyyy");
                     dateName += " - ";
-                    dateName += date.ToString("dd MMM yyyy");
+                    dateName += Helper.DaysOfWeekHelper.GetDayName((int)date.DayOfWeek);
 
                     dateStats.DateName = dateName;
                     
@@ -1120,7 +1141,7 @@ namespace Journal3.Controllers
         JournalViewModel GetDayStatsByUser(ApplicationUser user, List<Record> records, DateTime date)
         {
             JournalViewModel journalRow = new JournalViewModel();
-            var filteredRecords = records.Where(x => x.User == user && x.IsConfirmed == true).ToList();
+            var filteredRecords = records.Where(x => x.User == user).ToList();
             if (filteredRecords.Any())
             {
                 journalRow.User = user;
@@ -1145,7 +1166,7 @@ namespace Journal3.Controllers
                 Comment = ""
             };
 
-            var firstCome = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Come && x.DateRecord == date);
+            var firstCome = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Come && x.DateRecord == date && x.IsConfirmed == true);
             if (firstCome != null)
             {
                 int remark = firstCome.Remark;
@@ -1247,7 +1268,7 @@ namespace Journal3.Controllers
                 Comment = ""
             };
 
-            var lastGone = filteredRecords.OrderByDescending(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.DateRecord == date);
+            var lastGone = filteredRecords.OrderByDescending(x => x.TimeRecord).FirstOrDefault(x => x.Status == (int)Statuses.Gone && x.DateRecord == date && x.IsConfirmed == true);
 
             if (lastGone != null)
             {
@@ -1542,58 +1563,6 @@ namespace Journal3.Controllers
             }
             return overWorkTime;
         }
-
-        /*public TimeSpan CountTotalTime(JournalViewModel journalRow, DateTime date)
-        {
-            TimeSpan startTime = TimeSpan.Zero;
-            TimeSpan endTime = TimeSpan.Zero;
-            bool withoutTimeBreak = false;
-
-            StartEndWork workSchedule = GetSpecialSchedule(journalRow.WorkSchedule, date);
-
-            if (journalRow.WithoutTimebreak || workSchedule.WithoutTimeBreak)
-                withoutTimeBreak = true;
-
-            if (journalRow.Come != null)
-            {
-                
-                if (journalRow.Come.Time <= workSchedule.StartTime)
-                    startTime = workSchedule.StartTime;
-                else
-                {
-                    if ((journalRow.Come.Time - workSchedule.StartTime).TotalMinutes < 5)
-                        startTime = workSchedule.StartTime;
-                    else
-                    {
-                        if (journalRow.Come.IsLate && !journalRow.Come.IsForgiven)
-                        {
-                            TimeSpan hour = new TimeSpan(1, 0, 0);
-                            if (journalRow.Come.Time - workSchedule.StartTime < hour)
-                                startTime = new TimeSpan(journalRow.Come.Time.Hours + 1, 0, 0);
-                            else
-                                startTime = journalRow.Come.Time;
-                        }
-                        else
-                            startTime = journalRow.Come.Time;
-                    }
-                        
-                }
-            }
-
-            if (journalRow.Gone != null)
-            {
-                if (journalRow.Gone.Time >= workSchedule.EndTime)
-                    endTime = workSchedule.EndTime;
-                else
-                {
-                    if ((workSchedule.EndTime - journalRow.Gone.Time).TotalMinutes < 5)
-                        endTime = workSchedule.EndTime;
-                    else
-                        endTime = journalRow.Gone.Time;
-                }
-            }
-            return GetTotalTime(startTime, endTime, withoutTimeBreak);
-        }*/
 
         public TimeSpan GetTotalTime(TimeSpan startTime, TimeSpan endTime, bool timeBreak = false)
         {
