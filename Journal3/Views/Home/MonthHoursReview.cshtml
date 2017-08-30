@@ -7,6 +7,7 @@
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+<script src="/Scripts/jquery.fixedheadertable.js"></script>
 
 <h2>@ViewBag.Title</h2>
 
@@ -36,28 +37,24 @@
 
     </form>
 </div>
-<br>
 
-
-    <table class="table table-hover table-striped table-fixed table-bordered customTheme" style="width:auto; font-size: 10pt;">
+<div class="fixed-table-container">
+    <table class="table-hover table-striped table-fixed table-bordered customTheme" id="main-table">
         <thead>
             <tr class="tabcolor">
                 <th scope="row">№</th>
                 <th scope="row">@Html.ActionLink("ФИО", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "name" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Опоздания (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "late" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Прощенные опоздания (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenLate" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Уходы раньше времени (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "earlyGone" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Прощенные уходы раньше времени (кол-во)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenEarlyGone" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Выезды", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Отпр. (лич.)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
-                <th scope="row">@Html.ActionLink("Отпр. (уваж.)", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "forgivenByPermission" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Выезды по работе", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Отпр.", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Отработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "debtWork" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Переработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Итого часов", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "totalHours" }, new { @class = "whiteText" })</th>
             </tr>
         </thead>
         <tbody>
-
+            <tr><td></td></tr>
             @foreach (var item in Model)
             {
                 <tr>
@@ -67,55 +64,55 @@
                     <td style="white-space: nowrap;">
                         @item.Name
                     </td>
-                    <td class="alignCenter">
-                        @(item.LateHours != 0 ? item.LateHours.ToString() : "")
+                    <td class="alignCenter" style="width: 100px;">
+                        <span style="color: red;">@(item.LateHours != 0 ? item.LateHours.ToString() : "")</span>
+                        <span style="color: green;">@(item.LateForgivenHours != 0 ? " / " + item.LateForgivenHours.ToString() : "")</span>
                     </td>
-                    <td class="alignCenter">
-                        @(item.LateForgivenHours != 0 ? item.LateForgivenHours.ToString() : "")
+                    <td class="alignCenter" style="width: 100px;">
+                        <span style="color: red;"> @(item.EarlyGoneHours != 0 ? item.EarlyGoneHours.ToString() : "")</span>
+                        <span style="color: green;">@(item.EarlyGoneForgivenHours != 0 ? " / " + item.EarlyGoneForgivenHours.ToString() : "")</span>
                     </td>
-                    <td class="alignCenter">
-                        @(item.EarlyGoneHours != 0 ? item.EarlyGoneHours.ToString() : "")
-                    </td>
-                    <td class="alignCenter">
-                        @(item.EarlyGoneForgivenHours != 0 ? item.EarlyGoneForgivenHours.ToString() : "")
-                    </td>
-                    <td class="alignCenter">
+                    <td class="alignCenter" style="width: 100px;">
                         @(item.OutForWorkHours != 0 ? item.OutForWorkHours.ToString() : "")
                     </td>
-                    <td class="alignCenter">
-                        @(item.ByPermissionHours != 0 ? item.ByPermissionHours.ToString() : "")
+                    <td class="alignCenter" style="width: 100px;">
+                        <span style="color: red;">@(item.ByPermissionHours != 0 ? item.ByPermissionHours.ToString() : "")</span>
+                        <span style="color: green;"> @(item.ByPermissionForgivenHours != 0 ? " / " + item.ByPermissionForgivenHours.ToString() : "")</span>
                     </td>
-                    <td class="alignCenter">
-                        @(item.ByPermissionForgivenHours != 0 ? item.ByPermissionForgivenHours.ToString() : "")
-                    </td>
-                    <td class="alignCenter">
+                    <td class="alignCenter" style="width: 100px;">
                         @(item.DebtWorkHours != 0 ? item.DebtWorkHours.ToString() : "")
-                    </td>     
-                    <td class="alignCenter">
+                    </td>
+                    <td class="alignCenter" style="width: 100px;">
                         @(item.OverWorkHours != 0 ? item.OverWorkHours.ToString() : "")
-                    </td>    
-                    <td style="font-weight: bold;">
+                    </td>
+                    <td style="font-weight: bold; width: 100px;">
                         @item.TotalHours
-                    </td>  
+                    </td>
                 </tr>
                 i++;
             }
-                    
+
         </tbody>
     </table>
-
+</div>
     <script type='text/javascript'>
         $(function () {
             $('#datepicker1').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
 
         $(function () {
             $('#datepicker2').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
 
+        $('#main-table').fixedHeaderTable({
+            footer: true,
+            altClass: 'odd',
+        });
 
     </script>

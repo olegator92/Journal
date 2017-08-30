@@ -18,11 +18,11 @@
         </div>
     }
     @Html.Partial("_EditPartial")
-    
+
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Редактировать" />
+            <input id="Edit" type="button" class="btn btn-default" value="Редактировать" />
         </div>
     </div>
 }
@@ -32,3 +32,23 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+<script type='text/javascript'>
+    $("#Edit").click(DisplayDebtWork);
+
+    function DisplayDebtWork(event) {
+        if ($("input[name='Remark']:checked").val() == 4) {
+            if ($("input[name='DebtWorkDate']").val() == "") {
+                alert("Заполните дату отработки");
+                this.type = "button";
+                return;
+            }
+            else {
+                this.type = "submit";
+            }
+        }
+        else {
+            this.type = "submit";
+        }
+    }
+</script>

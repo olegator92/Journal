@@ -6,7 +6,7 @@
 @{
     ViewBag.Title = "Журнал";
 
- }
+}
 <h2>@ViewBag.Title</h2>
 
 <hr />
@@ -20,12 +20,12 @@
             <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.PreviousDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Предыдущий">
                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
             </a>
-            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;"/>
+            <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
             <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.NextDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Следующий">
                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
             </a>
-                     
+
         </div>
         @if (User.Identity.IsAuthenticated)
             {
@@ -33,7 +33,7 @@
                 <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись
             </a>
         }
-        
+
         @if (User.IsInRole("Admin"))
         {
             @Html.DropDownList("userId", (SelectList)ViewBag.User, "Все", new { @class = "form-control inlineDropdown" })
@@ -41,7 +41,7 @@
         else
         {
             <input type="hidden" name="userId" value="@ViewBag.UserId" />
-        } 
+        }
     </form>
 </div>
 
@@ -87,15 +87,17 @@
                     timeColor += " forgiven";
                 }
             }
+            string lineCol = item.Remark == 1 ? "background-color :#d9ecca;" : ""; ;
+
             <tr class="@itemClass">
                 <td @(!item.IsSystem ? "style=background-color:#fff0b9;" : "")>
                     <span class="@(item.Remark == 1 ? timeColor : "")" style="font-size: 11pt; font-weight: bold;">@String.Format("{0:hh\\:mm}", item.TimeRecord)</span>
                 </td>
-                <td>
+                <td @lineCol>
                     @item.User.UserInfo.Name
                 </td>
                 <td style="white-space: nowrap;">
-                    
+
                     @if (item.Status == 1)
                     {
                         <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
@@ -104,9 +106,9 @@
                     {
                         <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
                     }
-                    @item.StatusName                
+                    @item.StatusName
                 </td>
-                <td  style="white-space: nowrap;">
+                <td style="white-space: nowrap; @lineCol">
                     @{
                         string permissionClass = "";
                         if (User.IsInRole("Admin") && item.Remark == 3)
@@ -122,8 +124,8 @@
                         }
                     }
 
-                    <span class="@permissionClass"> @item.RemarkName</span>   
-                        @(item.Remark == 4 && item.DebtWorkDate != null ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy") : "")
+                    <span class="@permissionClass"> @item.RemarkName</span>
+                    @(item.Remark == 4 && item.DebtWorkDate != null ? item.DebtWorkDate.Value.ToString("dd.MM.yyyy") : "")
                 </td>
                 <td class="col-md-2">
                     @item.Comment
@@ -137,7 +139,7 @@
 
                 @if (User.IsInRole("Admin"))
                 {
-                    <td  style="white-space: nowrap;">
+                    <td style="white-space: nowrap;">
                         @item.WorkSchedule.Name
                     </td>
                     <td>
@@ -157,7 +159,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <td style="font-size: 11pt; white-space: nowrap;">
-                        <input type="hidden" name="recordId" value="@item.Id"/>
+                        <input type="hidden" name="recordId" value="@item.Id" />
                         @if (User.IsInRole("Admin") || User.Identity.Name == item.User.UserName)
                         {
                             <a href="@Url.Action("Edit", "Home", new {id = item.Id, selectedDate = ViewBag.SelectedDate})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
@@ -168,7 +170,7 @@
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                            
+
                             if (item.IsConfirmed)
                             {
                                 <span class="glyphicon glyphicon-thumbs-up btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
@@ -177,8 +179,8 @@
                             {
                                 <span class="glyphicon glyphicon-thumbs-down btn-link confirm" aria-hidden="true" style="margin-right: 10px;" title="Утвердить?"></span>
                             }
-                            
-                            if ((item.IsLate && item.Remark == 1)|| item.Remark == 3)
+
+                            if ((item.IsLate && item.Remark == 1) || item.Remark == 3)
                             {
                                 <span class="glyphicon glyphicon-gift btn-link forgive @timeColor" aria-hidden="true" style="margin-right: 10px;" title="Простить?"></span>
                             }
@@ -186,9 +188,9 @@
 
                     </td>
                 }
-                    
+
             </tr>
-        }
+                        }
         @if (User.IsInRole("Admin"))
         {
             <tr>
@@ -217,7 +219,8 @@
 <script type='text/javascript'>
     $(function () {
         $('#datepicker').datepicker({
-            language: 'ru'
+            language: 'ru',
+            weekStart: 1
         });
     });
 
@@ -234,7 +237,7 @@
     function ConfirmRecord(event) {
         var id = $(this).parent().children("input[name=recordId]").val();
 
-        $.get('/Home/ConfirmRecord', { recordId: id}).done(
+        $.get('/Home/ConfirmRecord', { recordId: id }).done(
                 function () {
                 });
         $(this).toggleClass("glyphicon-thumbs-down");
@@ -248,11 +251,11 @@
         var selectedDate = $("#selectedDate").val();
         var userId = $("#userId").val();
 
-        $.get('/Home/ConfirmAll', { date: selectedDate, userId: userId}).done(
+        $.get('/Home/ConfirmAll', { date: selectedDate, userId: userId }).done(
                 function () {
                 });
 
-        $(".glyphicon-thumbs-down").each(function() {
+        $(".glyphicon-thumbs-down").each(function () {
             $(this).toggleClass("glyphicon-thumbs-down");
             $(this).toggleClass("glyphicon-thumbs-up");
             $(this).parent().parent().toggleClass("notConfirmed");

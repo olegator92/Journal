@@ -22,6 +22,47 @@
 input,
 select,
 textarea {
-    max-width: 280px;
+    max-width: 350px; /*280px;*/
 }
 
+#TabStatus{
+    border: 1px solid #cccccc;
+    border-radius: 15px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    margin-left: 15px;
+    width: 350px;
+    display: block;
+}
+
+#TabStatus td input{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#TabStatus th{
+    border-bottom: 1px solid #cccccc;
+}
+
+#TabStatus th, #TabStatus td{
+    padding-bottom: 10px;
+}
+
+.col-md-10 #TabStatusOne{
+    border-right: 1px solid #cccccc;
+    vertical-align: top; /* Выравнивание по верхнему краю ячеек */
+    width: 120px;
+}
+#TabStatus #TabStatusTwo {
+    width: 230px;
+}
+
+.col-md-10 .RemarkLT, .col-md-10 .StatusLT {
+    display: block;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.col-md-10 .RemarkLT{
+    margin-left: 10px;
+}

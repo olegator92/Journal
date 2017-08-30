@@ -7,13 +7,14 @@
 <link href="/Content/datepicker.css" rel="stylesheet">
 <script src="/Scripts/bootstrap-datepicker.js"></script>
 <script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+<script src="/Scripts/jquery.fixedheadertable.js"></script>
 
 <h2>@ViewBag.Title</h2>
 
 <hr />
 
 <div class="row">
-    <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show" style="margin-left: 15px;">
+    <form action="/Home/MonthReview" method="post" role="form" class="form-inline" id="show">
         <a href="@Url.Action("MonthReview","Home", new {  startDate = ViewBag.PreviousStartDate, endDate = ViewBag.PreviousEndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem,  onlyUser = ViewBag.OnlyUser })" class="btn btn-primary" title="Предыдущий">
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
         </a>
@@ -68,207 +69,221 @@
 </div>
 <br>
 <div class="row">
-    <button class="btn btn-primary" style="margin-left: 15px;" id="update">
+    <button class="btn btn-primary" id="update">
         <span class="glyphicon glyphicon-refresh" aria-hidden="true" style="margin-right: 10px;"></span>Обновить данные
     </button>
 
     <a href="@Url.Action("ExportFile", "Home", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate })" class="btn btn-primary" style="margin-left: 15px;">
         <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" style="margin-right: 10px;"></span>Сохранить файл</a>
 </div>
-
-
-<table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 10pt;">
-    <thead>
-        <tr class="tabcolor">
-            <th scope="row">№</th>
-            <th scope="row">@Html.ActionLink("ФИО", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "name" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Пришел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "come" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Ушел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "gone" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("График работы", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Выезды", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Отпр.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Отраб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Перераб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Итого часов", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
-            <th scope="row">@Html.ActionLink("Сист.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
-            <th scope="row">Примечание</th>
-            <th scope="row"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var date in Model)
-        {
-            if (date.DateStats.Any())
-            {
-                i = 1;
-                <tr>
-                    @if (date.IsNotConfirmeds)
-                    {
-                        <td style="background-color: red; color: #fff; padding: 0;">
-                            <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date, notConfirmed = true })" class="btn" target="_blank" title="Есть неподтвержденные записи!">
-                                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" style="color: #fff;"></span>
-                            </a>
-                        </td>
-                    }
-                    else
-                    {
-                        <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    }
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">
-                        <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date })" class="btn" target="_blank" title="Перейти к журналу" style="color: #000;">
-                            @date.DateName
-                        </a>
-                    </td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
-                    <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+<div class="row">
+    <div class="fixed-table-container">
+        <table class="table-hover customTheme table-striped table-bordered fancyTable" font-size 10pt;" id="main-table">
+            <thead>
+                <tr class="tabcolor">
+                    <th scope="row">№</th>
+                    <th scope="row">@Html.ActionLink("ФИО", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "name" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Пришел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "come" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Ушел", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "gone" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("График работы", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Выезды", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Отпр.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Отраб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Перераб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Итого часов", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Сист.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
+                    <th scope="row">Примечание</th>
+                    <th scope="row"></th>
                 </tr>
-            
-                foreach (var dayStats in date.DateStats)
+            </thead>
+            <tfoot>
+                <tr>
+                    <td></td>
+                </tr>
+            </tfoot>
+            <tbody>
+                <tr><td></td></tr>
+                @foreach (var date in Model)
                 {
-                    <tr>
-                        <td>
-                            @i)
-                        </td>
-                        <td>
-                            @dayStats.User.UserInfo.Name
-                        </td>
-                        <td>
-                            @{
-                                string comeColor = "";
-                                if (dayStats.Come.IsProblem)
-                                {
-                                    if (dayStats.Come.IsForgiven)
-                                    {
-                                        comeColor = "color: green;";
-                                    }
-                                    else
-                                    {
-                                        comeColor = "color: red;";
-                                    }
-                                }
-                            }
-                            <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
-                        </td>
-                        <td>
-                            @{
-                                string goneColor = "";
-                                if (dayStats.Gone.IsProblem)
-                                {
-                                    if (dayStats.Gone.IsForgiven)
-                                    {
-                                        goneColor = "color: green;";
-                                    }
-                                    else
-                                    {
-                                        goneColor = "color: red;";
-                                    }
-                                }
-                            }
-                            <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
-                        </td>
-                        <td>
-                            @dayStats.WorkSchedule.Name
-                        </td>
-                        <td class="alignCenter">
-                            @if (dayStats.OutForWorkTime != TimeSpan.Zero)
-                            {
-                                <span>@String.Format("{0:h\\:mm}", dayStats.OutForWorkTime)</span>
-                            }
-                        </td>
-                        <td style="white-space: nowrap;" class="alignCenter">
-                            @if (dayStats.ByPermissionTime != TimeSpan.Zero || dayStats.ByPermissionForgivenTime != TimeSpan.Zero)
-                        {
-                                <span style="color: red;">@String.Format("{0:h\\:mm}", dayStats.ByPermissionTime)</span><span> / </span>
-                                <span>@String.Format("{0:h\\:mm}", dayStats.ByPermissionForgivenTime)</span>
-                            }
-                        </td>
-                        <td style="white-space: nowrap;" class="alignCenter">
-                            @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
-                            {
-                                <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
-                                <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
-                            }
-                        </td>
-                        <td class="alignCenter">
-                            @if (dayStats.OverWorkTime != TimeSpan.Zero)
-                            {
-                                <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
-                            }
-                        </td>
-                        <td style="font-weight: bold;" class="alignCenter">
-                            @if (dayStats.TotalTime != TimeSpan.Zero)
-                            {
-                                <span>@(dayStats.TotalTime > TimeSpan.Zero ? "" : " - ")</span><span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
-                            }
-
-                        </td>
-                        <td class="alignCenter">
-                            @if (dayStats.IsSystem)
-                            {
-                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    if (date.DateStats.Any())
+                    {
+                        i = 1;
+                        <tr>
+                            @if (date.IsNotConfirmeds)
+                    {
+                                <td style="background-color: red; color: #fff; padding: 0;">
+                                    <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date, notConfirmed = true })" class="btn" target="_blank" title="Есть неподтвержденные записи!">
+                                        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" style="color: #fff;"></span>
+                                    </a>
+                                </td>
                             }
                             else
                             {
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
                             }
-                        </td>
-                        <td>
-                            @*if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)*@
-                            @{
-                                string colorText = "";
-                                colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
-                                <span style="@colorText">@dayStats.Come.Comment</span>
-                                if (dayStats.Come.Comment != "")
-                                {
-                                    <br />
-                                }
-                                colorText = (dayStats.Gone.IsForgiven ? "color: green;" : "color: red;");
-                                <span style="@colorText">@dayStats.Gone.Comment</span>
-                            }
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" target="_blank" title="Перейти">
-                                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-                            </a>
-                        </td>
-                    </tr>
-                    i++;
-                }
-            }
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;">
+                                <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date })" class="btn" target="_blank" title="Перейти к журналу" style="color: #000;">
+                                    @date.DateName
+                                </a>
+                            </td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                            <td style="font-weight: bold; background-color: rgb(245, 221, 155); padding: 2px;"></td>
+                        </tr>
 
-        }
-    </tbody>
-</table>
+                        foreach (var dayStats in date.DateStats)
+                        {
+                            <tr>
+                                <td>
+                                    @i)
+                                </td>
+                                <td>
+                                    @dayStats.User.UserInfo.Name
+                                </td>
+                                <td>
+                                    @{
+                                        string comeColor = "";
+                                        if (dayStats.Come.IsProblem)
+                                        {
+                                            if (dayStats.Come.IsForgiven)
+                                            {
+                                                comeColor = "color: green;";
+                                            }
+                                            else
+                                            {
+                                                comeColor = "color: red;";
+                                            }
+                                        }
+                                    }
+                                    <span style="@comeColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Come.Time)</span>
+                                </td>
+                                <td>
+                                    @{
+                                        string goneColor = "";
+                                        if (dayStats.Gone.IsProblem)
+                                        {
+                                            if (dayStats.Gone.IsForgiven)
+                                            {
+                                                goneColor = "color: green;";
+                                            }
+                                            else
+                                            {
+                                                goneColor = "color: red;";
+                                            }
+                                        }
+                                    }
+                                    <span style="@goneColor">@String.Format("{0:hh\\:mm\\:ss}", dayStats.Gone.Time)</span>
+                                </td>
+                                <td>
+                                    @dayStats.WorkSchedule.Name
+                                </td>
+                                <td class="alignCenter">
+                                    @if (dayStats.OutForWorkTime != TimeSpan.Zero)
+                                    {
+                                        <span>@String.Format("{0:h\\:mm}", dayStats.OutForWorkTime)</span>
+                                    }
+                                </td>
+                                <td style="white-space: nowrap;" class="alignCenter">
+                                    @if (dayStats.ByPermissionTime != TimeSpan.Zero || dayStats.ByPermissionForgivenTime != TimeSpan.Zero)
+                        {
+                                        <span style="color: red;">@String.Format("{0:h\\:mm}", dayStats.ByPermissionTime)</span><span> / </span>
+                                        <span>@String.Format("{0:h\\:mm}", dayStats.ByPermissionForgivenTime)</span>
+                                    }
+                                </td>
+                                <td style="white-space: nowrap;" class="alignCenter">
+                                    @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
+                                    {
+                                        <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
+                                        <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                                    }
+                                </td>
+                                <td class="alignCenter">
+                                    @if (dayStats.OverWorkTime != TimeSpan.Zero)
+                                    {
+                                        <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
+                                    }
+                                </td>
+                                <td style="font-weight: bold;" class="alignCenter">
+                                    @if (dayStats.TotalTime != TimeSpan.Zero)
+                                    {
+                                        <span>@(dayStats.TotalTime > TimeSpan.Zero ? "" : " - ")</span><span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                                    }
 
-<script type='text/javascript'>
+                                </td>
+                                <td class="alignCenter">
+                                    @if (dayStats.IsSystem)
+                                    {
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    }
+                                </td>
+                                <td>
+                                    @*if (dayStats.Come.IsProblem || dayStats.Gone.IsProblem)*@
+                                    @{
+                                        string colorText = "";
+                                        colorText = (dayStats.Come.IsForgiven ? "color: green;" : "color: red;");
+                                        <span style="@colorText">@dayStats.Come.Comment</span>
+                                        if (dayStats.Come.Comment != "")
+                                        {
+                                            <br />
+                                        }
+                                        colorText = (dayStats.Gone.IsForgiven ? "color: green;" : "color: red;");
+                                        <span style="@colorText">@dayStats.Gone.Comment</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" target="_blank" title="Перейти">
+                                        <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                                                    i++;
+                                                }
+                                            }
+
+                                        }
+            </tbody>
+        </table>
+    </div>
+</div>
+    <script type='text/javascript'>
         $(function () {
             $('#datepicker1').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
 
         $(function () {
             $('#datepicker2').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
+
+        $('#main-table').fixedHeaderTable({
+            footer: true,
+            altClass: 'odd',
+        });
+
 
         $("#all").click(function () {
             if ($(this).is(":checked")) {
                 $("#onlyProblem").prop('checked', false);
                 $("#onlyUser").prop('checked', false);
             }
-            else
-            {
+            else {
                 $("#onlyProblem").prop('checked', true);
                 $("#onlyUser").prop('checked', true);
             }
@@ -280,7 +295,7 @@
             }
             else {
                 if (!$("#onlyUser").is(":checked"))
-                $("#all").prop('checked', true);;
+                    $("#all").prop('checked', true);;
             }
         });
 
@@ -306,5 +321,5 @@
                     });
         }
 
-        
-</script>
+
+    </script>

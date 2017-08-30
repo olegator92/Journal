@@ -11,7 +11,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-primary" value="Добавить" />
+            <input id="Add" type="button" class="btn btn-primary" value="Добавить" />
         </div>
     </div>
 }
@@ -20,3 +20,23 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+<script type='text/javascript'>
+    $("#Add").click(DisplayDebtWork);
+
+    function DisplayDebtWork(event) {
+        if ($("input[name='Remark']:checked").val() == 4) {
+            if ($("input[name='DebtWorkDate']").val() == "") {
+                alert("Заполните дату отработки");
+                this.type = "button";
+                return;
+            }
+            else {
+                this.type = "submit";
+            }
+        }
+        else {
+            this.type = "submit";
+        }
+    }
+</script>

@@ -12,6 +12,7 @@
     double totalDebtWork = 0;
     double totalOverWork = 0;
     double totalTime = 0;
+    double totalNotWorkedTime = 0;
 }
 
 <h2>@ViewBag.Title</h2>
@@ -46,7 +47,7 @@
         </div>
     </form>
 </div>
-<br>
+
 <table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 10pt;">
     <thead>
         <tr class="tabcolor">
@@ -60,6 +61,7 @@
             <th scope="row">Отраб.</th>
             <th scope="row">Перераб.</th>
             <th scope="row">Итого часов</th>
+            <th scope="row">Не отработано</th>
             <th scope="row"></th>
         </tr>
     </thead>
@@ -121,7 +123,15 @@
                             @if (dayStats.TotalTime != TimeSpan.Zero)
                             {
                                 totalTime += dayStats.TotalTime.TotalHours;
-                                <span>@(dayStats.TotalTime > TimeSpan.Zero ? "" : " - ")</span><span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                                <span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                            }
+
+                        </td>
+                        <td style="font-weight: bold;" class="alignCenter">
+                            @if (dayStats.NotWorkedTime != TimeSpan.Zero)
+                            {
+                                totalNotWorkedTime += dayStats.NotWorkedTime.TotalHours;
+                                <span style="color: red;">@String.Format("{0:h\\:mm}", dayStats.NotWorkedTime)</span>
                             }
 
                         </td>
@@ -148,6 +158,7 @@
             <td style="text-align: center;">@Math.Round(totalDebtWork, 2)</td>
             <td style="text-align: center;">@Math.Round(totalOverWork, 2)</td>
             <td style="text-align: center;">@Math.Round(totalTime, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalNotWorkedTime, 2)</td>
             <td></td>
         </tr>
     </tbody>
@@ -156,13 +167,15 @@
 <script type='text/javascript'>
         $(function () {
             $('#datepicker1').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
 
         $(function () {
             $('#datepicker2').datepicker({
-                language: 'ru'
+                language: 'ru',
+                weekStart: 1
             });
         });
 

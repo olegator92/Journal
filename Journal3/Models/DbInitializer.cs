@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Journal3.Models
 {
-    public class DbInitializer: IDatabaseInitializer<ApplicationDbContext>
+    /*public class DbInitializer: IDatabaseInitializer<ApplicationDbContext>
     {
         public void InitializeDatabase(ApplicationDbContext context)
         {
@@ -23,6 +23,6 @@ namespace Journal3.Models
 
         }
 
-    }
+    }*/
 
 }

@@ -14,6 +14,7 @@ namespace Journal3.ViewModels
         public GoneViewModel Gone { get; set; }
         public bool WithoutTimebreak { get; set; }
         public bool IsSystem { get; set; }
+        public TimeSpan NotWorkedTime { get; set; }
         public TimeSpan OutForWorkTime { get; set; }
         public TimeSpan ByPermissionTime { get; set; }
         public TimeSpan ByPermissionForgivenTime { get; set; }
@@ -21,6 +22,7 @@ namespace Journal3.ViewModels
         public TimeSpan MinusDebtWorkTime { get; set; }
         public TimeSpan OverWorkTime { get; set; }
         public TimeSpan TotalTime { get; set; }
+        public bool IsDislplay { get; set; }
     }
 
     public class ComeViewModel
