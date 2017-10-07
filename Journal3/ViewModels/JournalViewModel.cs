@@ -23,6 +23,7 @@ namespace Journal3.ViewModels
         public TimeSpan OverWorkTime { get; set; }
         public TimeSpan TotalTime { get; set; }
         public bool IsDislplay { get; set; }
+        public bool NotConfirmeds { get; set; }
     }
 
     public class ComeViewModel

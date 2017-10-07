@@ -448,6 +448,7 @@
     <Compile Include="Models\WorkSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ComeGoneRecordViewModel.cs" />
     <Compile Include="ViewModels\FileRecordViewModel.cs" />
     <Compile Include="ViewModels\JournalViewModel.cs" />
     <Compile Include="ViewModels\MonthHoursViewModel.cs" />
@@ -601,6 +602,7 @@
     <Content Include="Views\WorkSchedules\_SpecialSchedulePartial.cshtml" />
     <Content Include="Views\Account\ResetPasswordMail.cshtml" />
     <Content Include="Views\Home\MonthReviewByUser.cshtml" />
+    <Content Include="Views\Home\CreateComeGone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

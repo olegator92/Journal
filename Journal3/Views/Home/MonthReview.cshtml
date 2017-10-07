@@ -110,7 +110,7 @@
                         i = 1;
                         <tr>
                             @if (date.IsNotConfirmeds)
-                    {
+                            {
                                 <td style="background-color: red; color: #fff; padding: 0;">
                                     <a href="@Url.Action("Index", "Home", new { selectedDate = date.Date, notConfirmed = true })" class="btn" target="_blank" title="Есть неподтвержденные записи!">
                                         <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" style="color: #fff;"></span>

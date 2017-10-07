@@ -1,0 +1,181 @@
+﻿@model Journal3.ViewModels.ComeGoneRecordViewModel
+
+<link href="/Content/mdDateTimePicker.css" rel="stylesheet">
+<link href="/Content/Site.css" rel="stylesheet">
+<script src="/Scripts/moment.min.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+<script src="/Scripts/mdDateTimePicker.js"></script>
+<script src="/Scripts/draggabilly.pkgd.min.js"></script>
+
+<link href="/Content/jquery.ui.timepicker.css" rel="stylesheet">
+<link href="/Content/jquery-ui-1.10.0.custom.min.css" rel="stylesheet">
+<script src="/Scripts/jquery-1.9.0.min.js"></script>
+<script src="/Scripts/jquery.ui.timepicker.js"></script>
+<script src="/Scripts/jquery.ui.core.min.js"></script>
+<script src="/Scripts/jquery.ui.position.min.js"></script>
+<script src="/Scripts/jquery.ui.tabs.min.js"></script>
+<script src="/Scripts/jquery.ui.widget.min.js"></script>
+
+@{
+    string debtWork = "";
+    if (Model.DebtWorkDate != null)
+    {
+        debtWork = Model.DebtWorkDate.Value.ToString("dd.MM.yyyy");
+    }
+    ViewBag.Title = "Запись (начало-конец)";
+}
+@Html.Partial("_HeaderPartial")
+
+@using (Html.BeginForm("CreateComeGone", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    
+    <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate" />
+
+    if (User.IsInRole("Admin"))
+    {
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="Comment">Сотрудник</label>
+            <div class="col-md-10">
+                @Html.DropDownList("UserId", (SelectList)ViewBag.Users, new { @class = "form-control" })
+            </div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" name="UserId" value="@Model.UserId" />
+    }
+
+    <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+        <label class="control-label" for="Date" style="display: inline-block;  padding-left: 120px; padding-right: 21px;">Дата</label>
+        <input class="form-control" size="16" type="text" name="DateRecord" value="@Model.DateRecord.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;" />
+        <span class="add-on glyphicon glyphicon-calendar"></span>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="StartTime">Начало:</label>
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.StartTime, String.Format("{0:hh\\:mm\\:ss}", Model.StartTime), new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="EndTime">Конец:</label>
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.EndTime, String.Format("{0:hh\\:mm\\:ss}", Model.EndTime), new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Status"></label>
+        <table class="col-md-10" id="TabStatus">
+            <tr>
+                <th id="TabStatusTwo">
+                    <label class="col-md-2 control-label" for="Remark">Примечание</label>
+                </th>
+            </tr>
+            <tr>
+                <td id="TabStatusTwo">
+                    <label class="RemarkLT"><input @(Model.Remark == 1 ? "checked" : "" ) name="Remark" type="radio" value="1">Пришел/Ушел </label>
+                    <label class="RemarkLT"><input @(Model.Remark == 2 ? "checked" : "" ) name="Remark" type="radio" value="2">Выезд по работе </label>
+                    <label class="RemarkLT"><input @(Model.Remark == 3 ? "checked" : "" ) name="Remark" type="radio" value="3">Отпросился </label>
+                    <label class="RemarkLT"><input @(Model.Remark == 4 ? "checked" : "" ) name="Remark" type="radio" value="4">Отработка</label>
+                    <label class="RemarkLT"><input @(Model.Remark == 5 ? "checked" : "" ) name="Remark" type="radio" value="5">Переработка </label>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <p></p>
+    <div id="DebtWorkContainer" class=@(Model.Remark != 4 ? "hidden" : "")>
+        <div class="input-append date" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+            <label class="control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
+            <input class="form-control" size="16" type="text" name="DebtWorkDate" value="@debtWork" readonly="" style="display: inline-block;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Comment">Комментарий</label>
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Comment, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for=""></label>
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.WithoutTimebreak)
+            <label for="WithoutTimebreak" style="cursor: pointer;">Без обеда</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="Add" type="button" class="btn btn-primary" value="Добавить" />
+        </div>
+    </div>
+}
+@Html.Partial("_FooterPartial")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $('input[name="StartTime"]').timepicker({
+            minutes: {
+                interval: 5,
+                manual: [0, 1, 30, 59]
+            },
+        })
+        $('input[name="EndTime"]').timepicker({
+            minutes: {
+                interval: 5,
+                manual: [0, 1, 30, 59]
+            },
+        })
+    });
+
+    $(function () {
+        $('#datepicker').datepicker({
+            language: 'ru',
+            weekStart: 1
+        });
+    });
+
+    $(function () {
+        $('#datepickerDebtWorkDate').datepicker( {
+            language: 'ru',
+            weekStart: 1
+        });
+    });
+
+    $("input[name='Remark']").change(DisplayDebtWork);
+
+    function DisplayDebtWork(event) {
+        if ($("input[name='Remark']:checked").val() == 4)
+            $('#DebtWorkContainer').removeClass("hidden");
+        else
+            $('#DebtWorkContainer').addClass("hidden");
+    }
+
+    $("#Add").click(CheckDebtWork);
+
+    function CheckDebtWork(event) {
+        if ($("input[name='Remark']:checked").val() == 4) {
+            if ($("input[name='DebtWorkDate']").val() == "") {
+                alert("Заполните дату отработки");
+                this.type = "button";
+                return;
+            }
+            else {
+                this.type = "submit";
+            }
+        }
+        else {
+            this.type = "submit";
+        }
+    }
+</script>

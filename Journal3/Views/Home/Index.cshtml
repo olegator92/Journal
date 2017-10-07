@@ -28,9 +28,13 @@
 
         </div>
         @if (User.Identity.IsAuthenticated)
-            {
+        {
             <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate, userId = ViewBag.UserId})" class="btn btn-primary" style="margin-left: 15px;">
                 <span class="glyphicon glyphicon-time" aria-hidden="true" style="margin-right: 10px;"></span>Запись
+            </a>
+            <a href="@Url.Action("CreateComeGone", "Home", new {selectedDate = ViewBag.SelectedDate, userId = ViewBag.UserId})" class="btn btn-primary" style="margin-left: 15px;">
+                <span class="glyphicon glyphicon-arrow-down" aria-hidden="true" style="margin-right: 0px;"></span>
+                <span class="glyphicon glyphicon-arrow-up" aria-hidden="true" style="margin-left: 0px; margin-right: 10px;"></span>Запись (начало-конец)
             </a>
         }
 
