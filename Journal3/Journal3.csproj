@@ -445,6 +445,7 @@
     <Compile Include="Models\Setting.cs" />
     <Compile Include="Models\SpecialSchedule.cs" />
     <Compile Include="Models\UserInfo.cs" />
+    <Compile Include="Models\Vacation.cs" />
     <Compile Include="Models\WorkSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -471,6 +472,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\icon_briefcase.png" />
+    <Content Include="Images\icon_car.png" />
+    <Content Include="Images\icon_home.png" />
+    <Content Include="Images\icon_thermometer.png" />
+    <Content Include="Images\ic_briefcase.svg" />
     <Content Include="Images\ic_keyboard_arrow_left_black_24px.svg" />
     <Content Include="Images\ic_keyboard_arrow_left_black_disabled_24px.svg" />
     <Content Include="Images\ic_keyboard_arrow_left_white_24px.svg" />

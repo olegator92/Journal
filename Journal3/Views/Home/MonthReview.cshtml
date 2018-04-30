@@ -88,8 +88,9 @@
                     <th scope="row">@Html.ActionLink("График работы", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "workschedule" }, new { @class = "whiteText" })</th>
                     <th scope="row">@Html.ActionLink("Выезды", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "outForWork" }, new { @class = "whiteText" })</th>
                     <th scope="row">@Html.ActionLink("Отпр.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
-                    <th scope="row">@Html.ActionLink("Отраб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Отраб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "debtWork" }, new { @class = "whiteText" })</th>
                     <th scope="row">@Html.ActionLink("Перераб.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+                    <th scope="row">@Html.ActionLink("Больнич.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "sickLeave" }, new { @class = "whiteText" })</th>
                     <th scope="row">@Html.ActionLink("Итого часов", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
                     <th scope="row">@Html.ActionLink("Сист.", "MonthReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, all = ViewBag.All, onlyProblem = ViewBag.OnlyProblem, onlyUser = ViewBag.OnlyUser, sortOrder = "isSystem" }, new { @class = "whiteText" })</th>
                     <th scope="row">Примечание</th>
@@ -209,6 +210,12 @@
                                     @if (dayStats.OverWorkTime != TimeSpan.Zero)
                                     {
                                         <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
+                                    }
+                                </td>
+                                <td class="alignCenter">
+                                    @if (dayStats.SickLeave != TimeSpan.Zero)
+                                    {
+                                        <span>@String.Format("{0:h\\:mm}", dayStats.SickLeave)</span>
                                     }
                                 </td>
                                 <td style="font-weight: bold;" class="alignCenter">

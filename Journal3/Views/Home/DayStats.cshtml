@@ -45,6 +45,7 @@
             <th scope="row">@Html.ActionLink("Отпр.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Отраб.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "debthWork" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Переработ.", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+            <th scope="row">@Html.ActionLink("Больничный", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "sickLeave" }, new { @class = "whiteText" })</th>
             <th scope="row">@Html.ActionLink("Итого часов", "DayStats", new { selectedDate = ViewBag.SelectedDate, sortOrder = "totalTime" }, new { @class = "whiteText" })</th>
 
             @if (User.IsInRole("Admin"))
@@ -137,6 +138,12 @@
                     @if (item.OverWorkTime != TimeSpan.Zero)
                     {
                         <span>@String.Format("{0:h\\:mm}", item.OverWorkTime)</span>
+                    }
+                </td>
+                <td style="text-align: center;">
+                    @if (item.SickLeave != TimeSpan.Zero)
+                    {
+                        <span>@String.Format("{0:h\\:mm}", item.SickLeave)</span>
                     }
                 </td>
                 <td style="font-weight: bold; text-align: center;">

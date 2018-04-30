@@ -66,3 +66,26 @@ textarea {
 .col-md-10 .RemarkLT{
     margin-left: 10px;
 }
+
+.icon {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*.icon-home::before {
+   
+    background-image: url("../Images/icon_home.png");
+}*/
+
+.icon-briefcase::before {
+    content: "../Images/ic_briefcase.png";
+    /*background-image: url("../Images/icon_briefcase.png");*/
+}
+
+/*.mddtp-picker-date .mddtp-picker__left {
+  background: url("../images/ic_keyboard_arrow_left_black_24px.svg");
+  left: 4px; }*/

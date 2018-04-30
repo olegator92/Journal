@@ -50,6 +50,7 @@
                 <th scope="row">@Html.ActionLink("Отпр.", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "byPermission" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Отработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "debtWork" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Переработка", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "overWork" }, new { @class = "whiteText" })</th>
+                <th scope="row">@Html.ActionLink("Больничный", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "sickLeave" }, new { @class = "whiteText" })</th>
                 <th scope="row">@Html.ActionLink("Итого часов", "MonthHoursReview", new { startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, sortOrder = "totalHours" }, new { @class = "whiteText" })</th>
             </tr>
         </thead>
@@ -84,6 +85,9 @@
                     </td>
                     <td class="alignCenter" style="width: 100px;">
                         @(item.OverWorkHours != 0 ? item.OverWorkHours.ToString() : "")
+                    </td>
+                    <td class="alignCenter" style="width: 100px;">
+                        @(item.SickLeaveHours != 0 ? item.SickLeaveHours.ToString() : "")
                     </td>
                     <td style="font-weight: bold; width: 100px;">
                         @item.TotalHours

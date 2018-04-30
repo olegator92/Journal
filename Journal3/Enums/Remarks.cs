@@ -11,6 +11,7 @@ namespace Journal3.Enums
         OutForWork = 2,
         ByPermission = 3,
         DebtWork = 4,
-        OverWork = 5
+        OverWork = 5,
+        SickLeave = 6
     }
 }

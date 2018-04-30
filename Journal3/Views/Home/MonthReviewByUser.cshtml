@@ -11,6 +11,7 @@
     double totalByPermissionForgiven = 0;
     double totalDebtWork = 0;
     double totalOverWork = 0;
+    double totalSickLeave = 0;
     double totalTime = 0;
     double totalNotWorkedTime = 0;
 }
@@ -60,6 +61,7 @@
             <th scope="row">Отпр.</th>
             <th scope="row">Отраб.</th>
             <th scope="row">Перераб.</th>
+            <th scope="row">Больнич.</th>
             <th scope="row">Итого часов</th>
             <th scope="row">Не отработано</th>
             <th scope="row"></th>
@@ -119,6 +121,13 @@
                                 <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
                             }
                         </td>
+                        <td class="alignCenter">
+                            @if (dayStats.SickLeave != TimeSpan.Zero)
+                            {
+                                totalSickLeave += dayStats.SickLeave.TotalHours;
+                                <span>@String.Format("{0:h\\:mm}", dayStats.SickLeave)</span>
+                            }
+                        </td>
                         <td style="font-weight: bold;" class="alignCenter">
                             @if (dayStats.TotalTime != TimeSpan.Zero)
                             {
@@ -157,6 +166,7 @@
             <td style="text-align: center;">@Math.Round(totalByPermission, 2) <span>/</span> @Math.Round(totalByPermissionForgiven,2)</td>
             <td style="text-align: center;">@Math.Round(totalDebtWork, 2)</td>
             <td style="text-align: center;">@Math.Round(totalOverWork, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalSickLeave, 2)</td>
             <td style="text-align: center;">@Math.Round(totalTime, 2)</td>
             <td style="text-align: center;">@Math.Round(totalNotWorkedTime, 2)</td>
             <td></td>
