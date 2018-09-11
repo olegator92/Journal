@@ -124,6 +124,7 @@ namespace Journal3.Controllers
                 }
             }
 
+            ViewBag.DayOfWeek = selectedDate != null ? Helper.DaysOfWeekHelper.GetDayName((int)selectedDate.Value.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedDate = selectedDate;
             ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
             ViewBag.NextDate = selectedDate.Value.AddDays(1);
@@ -261,6 +262,7 @@ namespace Journal3.Controllers
             }
 
             model.DateStats = dayStats;
+            ViewBag.DayOfWeek = selectedDate != null ? Helper.DaysOfWeekHelper.GetDayName((int)selectedDate.Value.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedDate = selectedDate;
             ViewBag.PreviousDate = selectedDate.Value.AddDays(-1);
             ViewBag.NextDate = selectedDate.Value.AddDays(1);
@@ -948,6 +950,7 @@ namespace Journal3.Controllers
                     break;
             }
 
+            ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             return View(model);
         }
 
@@ -1097,6 +1100,7 @@ namespace Journal3.Controllers
             ViewBag.All = all;
             ViewBag.OnlyProblem = onlyProblem;
             ViewBag.OnlyUser = onlyUser;
+            ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
 
             return View(model);
         }
@@ -1133,6 +1137,7 @@ namespace Journal3.Controllers
             if (User.IsInRole("Admin"))
                 ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
             ViewBag.UserId = userId;
+            ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
 
             return View(model);
         }

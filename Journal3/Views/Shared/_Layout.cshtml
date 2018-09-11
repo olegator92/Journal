@@ -30,7 +30,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Отчет за день", "DayStats", "Home")</li>
+                    <!--<li>@Html.ActionLink("Отчет за день", "DayStats", "Home")</li>-->
                     <li>@Html.ActionLink("Отчет за месяц", "MonthReviewByUser", "Home")</li>
                     @if (User.IsInRole("Admin"))
                     {
@@ -53,7 +53,8 @@
     </div>
     <div class="container body-content">
         <div class="jumbotron">
-            <h1>Журнал - @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("d MMMM yyyy") : DateTime.Now.ToString("d MMMM yyyy"))</h1>
+            <h1>Журнал </h1>
+            <h2>@(ViewBag.DayOfWeek) @(ViewBag.SelectedDate != null ? ViewBag.SelectedDate.ToString("d MMMM yyyy") : DateTime.Now.ToString("d MMMM yyyy")) </h2>
         </div>
         <div class="container" style="background-color:#fff; padding-left: 50px; padding-right: 50px; padding-bottom: 15px;">
         @RenderBody()
