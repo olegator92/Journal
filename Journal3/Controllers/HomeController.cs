@@ -539,23 +539,6 @@ namespace Journal3.Controllers
             else
                 dbRecord.IsConfirmed = false;
 
-            /*StartEndWorkViewModel startEndWork = GetSpecialSchedule(db.WorkSchedules.Find(dbRecord.WorkScheduleId), dbRecord.DateRecord);
-
-            if (record.Status == (int)Statuses.Come && record.Remark == (int)Remarks.ComeGone)
-            {
-                if ((record.TimeRecord - startEndWork.StartTime).TotalMinutes > 6)
-                    dbRecord.IsLate = true;
-                else
-                    dbRecord.IsLate = false;
-            }
-            else if (record.Status == (int)Statuses.Gone && record.Remark == (int)Remarks.ComeGone)
-            {
-                if ((startEndWork.EndTime - record.TimeRecord).TotalMinutes > 6)
-                    dbRecord.IsLate = true;
-                else
-                    dbRecord.IsLate = false;
-            }*/
-
             if (!(record.Remark == (int)Remarks.DebtWork && record.DebtWorkDate == null))
             {
                 if (ModelState.IsValid)
@@ -1530,14 +1513,17 @@ namespace Journal3.Controllers
             StartEndWorkViewModel startEnd = GetSpecialSchedule(journalRow.WorkSchedule, date);
             TimeSpan endWorkTime = startEnd.EndTime;
             
-            journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, startEnd, date);
-            journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, startEnd, date);
-            journalRow.ByPermissionForgivenTime = CountByPermissionForgivenTime(filteredRecords, startEnd, date);
-            journalRow.MinusDebtWorkTime = CountMinusDebtWorkTime(filteredRecords, endWorkTime, date);
-            journalRow.PlusDebtWorkTime = CountPlusDebtWorkTime(filteredRecords, endWorkTime, date);
-            journalRow.OverWorkTime = CountOverWorkTime(filteredRecords, endWorkTime, date);
-            journalRow.SickLeave = CountSickLeaveTime(filteredRecords, endWorkTime, date);
-            journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
+            journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, startEnd, date, true);
+            journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, startEnd, date, true);
+            journalRow.ByPermissionForgivenTime = CountByPermissionForgivenTime(filteredRecords, startEnd, date, true);
+            journalRow.MinusDebtWorkTime = CountMinusDebtWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.PlusDebtWorkTime = CountPlusDebtWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.OverWorkTime = CountOverWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.SickLeave = CountSickLeaveTime(filteredRecords, endWorkTime, date, true);
+            journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date, true) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
+            journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) +
+                                       CountPlusDebtWorkTime(filteredRecords, endWorkTime, date, false) +
+                                       CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
 
             TimeSpan totalDayTime = GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak);
 
@@ -1595,8 +1581,9 @@ namespace Journal3.Controllers
             return model;
         }
 
-        public TimeSpan CountComeGoneTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date)
+        public TimeSpan CountComeGoneTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
         {
+            TimeResult result = new TimeResult();
             TimeSpan comeGoneTime = TimeSpan.Zero;
             TimeSpan startTime = TimeSpan.Zero;
             TimeSpan endTime = TimeSpan.Zero;
@@ -1606,8 +1593,18 @@ namespace Journal3.Controllers
             if (startEnd.WithoutTimeBreak)
                 withoutTimeBreak = true;
 
-            var comeComeGone = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.ComeGone && x.IsConfirmed);
-            var goneComeGone = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.ComeGone && x.IsConfirmed);
+            Record comeComeGone = new Record();
+            Record goneComeGone = new Record();
+            if (isConfirmed)
+            {
+                comeComeGone = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.ComeGone && x.IsConfirmed);
+                goneComeGone = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.ComeGone && x.IsConfirmed);
+            }
+            else
+            {
+                comeComeGone = filteredRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.Remark == (int)Remarks.ComeGone);
+                goneComeGone = filteredRecords.LastOrDefault(x => x.Status == (int)Statuses.Gone && x.Remark == (int)Remarks.ComeGone);
+            }
 
             if (comeComeGone != null)
             {
@@ -1625,7 +1622,12 @@ namespace Journal3.Controllers
             }
             else
             {
-                var firstCome = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.IsConfirmed);
+                Record firstCome = new Record();
+                if (isConfirmed)
+                    firstCome = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.IsConfirmed);
+                else
+                    firstCome = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).FirstOrDefault();
+                    
                 if (firstCome != null)
                 {
                     firstComeTime = firstCome.TimeRecord;
@@ -1667,7 +1669,12 @@ namespace Journal3.Controllers
             }
             else
             {
-                var lastGone = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).LastOrDefault(x => x.IsConfirmed);
+                Record lastGone = new Record();
+                if (isConfirmed)
+                    lastGone = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).LastOrDefault(x => x.IsConfirmed);
+                else
+                    lastGone = filteredRecords.Where(x => x.DateRecord == date && x.Remark != (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).LastOrDefault();
+
                 if (lastGone != null)
                 {
                     switch (lastGone.Remark)
@@ -1697,33 +1704,52 @@ namespace Journal3.Controllers
 
             comeGoneTime = GetTotalTime(startTime, endTime, withoutTimeBreak);
 
-            var byPermissonRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.ByPermission && !x.IsForgiven && x.TimeRecord > firstComeTime && x.TimeRecord < endTime).ToList();
+            List<Record> byPermissonRecords = new List<Record>();
+            if(isConfirmed)
+                byPermissonRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.ByPermission && !x.IsForgiven && x.TimeRecord > firstComeTime && x.TimeRecord < endTime && x.IsConfirmed).ToList();
+            else
+                byPermissonRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.ByPermission && !x.IsForgiven && x.TimeRecord > firstComeTime && x.TimeRecord < endTime).ToList();
             TimeSpan byPermissionTime = TimeSpan.Zero;
             if (byPermissonRecords.Any())
             {
-                byPermissionTime = CountByPermissionTime(byPermissonRecords, startEnd, date);
+                byPermissionTime = CountByPermissionTime(byPermissonRecords, startEnd, date, isConfirmed);
             }
 
-            var minusDebtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.DebtWorkDate != date && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime).ToList();
+            List<Record> minusDebtWorkRecords = new List<Record>();
+            if(isConfirmed)
+                minusDebtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.DebtWorkDate != date && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime && x.IsConfirmed).ToList();
+            else
+                minusDebtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.DebtWorkDate != date && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime).ToList();
+
             TimeSpan minusDebtTime = TimeSpan.Zero;
             if (minusDebtWorkRecords.Any())
             {
-                minusDebtTime = CountMinusDebtWorkTime(minusDebtWorkRecords, startEnd.EndTime, date);
+                minusDebtTime = CountMinusDebtWorkTime(minusDebtWorkRecords, startEnd.EndTime, date, isConfirmed);
             }
-            var sickLeaveRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.SickLeave && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime).ToList();
+
+            List<Record> sickLeaveRecords = new List<Record>(); 
+            if(isConfirmed)
+                sickLeaveRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.SickLeave && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime && x.IsConfirmed).ToList();
+            else
+                sickLeaveRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.SickLeave && x.TimeRecord >= firstComeTime && x.TimeRecord <= endTime).ToList();
             TimeSpan sickLeaveTime = TimeSpan.Zero;
             if (sickLeaveRecords.Any())
             {
-                sickLeaveTime = CountSickLeaveTime(sickLeaveRecords, startEnd.EndTime, date);
+                sickLeaveTime = CountSickLeaveTime(sickLeaveRecords, startEnd.EndTime, date, isConfirmed);
             }
 
             return comeGoneTime - byPermissionTime - minusDebtTime - sickLeaveTime;
         }
 
-        public TimeSpan CountOutForWorkTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date)
+        public TimeSpan CountOutForWorkTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
         {
             TimeSpan outForWorkTime = TimeSpan.Zero;
-            var firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date);
+            Record firstRecord = new Record();
+            if(isConfirmed)
+                firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date && x.IsConfirmed);
+            else
+                firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date);
+
             if (firstRecord != null)
             {
                 if (firstRecord.Remark == (int)Remarks.OutForWork && firstRecord.Status == (int)Statuses.Come)
@@ -1731,15 +1757,20 @@ namespace Journal3.Controllers
                     outForWorkTime += GetTotalTime(startEnd.StartTime, firstRecord.TimeRecord, firstRecord.WithoutTimebreak);
                 }
             }
-            
-            var outForWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OutForWork && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
-            
+
+            List<Record> outForWorkRecords = new List<Record>();
+            if(isConfirmed)
+                outForWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OutForWork && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
+            else
+                outForWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OutForWork).OrderBy(x => x.TimeRecord).ToList();
+
             if (outForWorkRecords.Any())
             {
                 foreach (var goneOutForWork in outForWorkRecords.Where(x => x.Status == (int)Statuses.Gone))
                 {
                     TimeSpan goneOutForWorkTime = goneOutForWork.TimeRecord;
-                    var comeOutForWork = outForWorkRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.TimeRecord > goneOutForWorkTime);
+
+                    Record comeOutForWork = outForWorkRecords.FirstOrDefault(x => x.Status == (int)Statuses.Come && x.TimeRecord > goneOutForWorkTime);
                     if (comeOutForWork != null)
                         outForWorkTime += GetTotalTime(goneOutForWorkTime, comeOutForWork.TimeRecord, comeOutForWork.WithoutTimebreak);
                     else
@@ -1750,11 +1781,15 @@ namespace Journal3.Controllers
             return outForWorkTime;
         }
 
-        public TimeSpan CountByPermissionTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date)
+        public TimeSpan CountByPermissionTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
         {
             TimeSpan byPermissionTime = TimeSpan.Zero;
 
-            var firstRecord = filteredRecords.Where(x => x.DateRecord == date).OrderBy(x => x.TimeRecord).FirstOrDefault();
+            Record firstRecord = new Record();
+            if(isConfirmed)
+                firstRecord = filteredRecords.Where(x => x.DateRecord == date && x.IsConfirmed).OrderBy(x => x.TimeRecord).FirstOrDefault();
+            else
+                firstRecord = filteredRecords.Where(x => x.DateRecord == date).OrderBy(x => x.TimeRecord).FirstOrDefault();
             if (firstRecord != null)
             {
                 if (firstRecord.Remark == (int)Remarks.ByPermission && firstRecord.Status == (int)Statuses.Come && !firstRecord.IsForgiven)
@@ -1763,8 +1798,12 @@ namespace Journal3.Controllers
                 }
             }
 
-            var byPermissionRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && !x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
-            
+            List<Record> byPermissionRecords = new List<Record>();
+            if(isConfirmed)
+                byPermissionRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && !x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+            else
+                byPermissionRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && !x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+
             if (byPermissionRecords.Any())
             {
                 foreach (var goneByPermission in byPermissionRecords.Where(x => x.Status == (int)Statuses.Gone))
@@ -1780,10 +1819,14 @@ namespace Journal3.Controllers
             return byPermissionTime;
         }
 
-        public TimeSpan CountByPermissionForgivenTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date)
+        public TimeSpan CountByPermissionForgivenTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
         {
             TimeSpan byPermissionForgivenTime = TimeSpan.Zero;
-            var firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date);
+            Record firstRecord = new Record();
+            if(isConfirmed)
+                firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date && x.IsConfirmed);
+            else
+                firstRecord = filteredRecords.OrderBy(x => x.TimeRecord).FirstOrDefault(x => x.DateRecord == date);
             if (firstRecord != null)
             {
                 if (firstRecord.Remark == (int)Remarks.ByPermission && firstRecord.Status == (int)Statuses.Come && firstRecord.IsForgiven)
@@ -1792,8 +1835,12 @@ namespace Journal3.Controllers
                 }
             }
 
-            var byPermissionForgivenRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
-            
+            List<Record> byPermissionForgivenRecords = new List<Record>();
+            if(isConfirmed)
+                byPermissionForgivenRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && x.IsConfirmed && x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+            else
+                byPermissionForgivenRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.ByPermission && x.IsForgiven).OrderBy(x => x.TimeRecord).ToList();
+
             if (byPermissionForgivenRecords.Any())
             {
                 foreach (var goneByPermissionForgiven in byPermissionForgivenRecords.Where(x => x.Status == (int)Statuses.Gone))
@@ -1809,11 +1856,15 @@ namespace Journal3.Controllers
             return byPermissionForgivenTime;
         }
 
-        public TimeSpan CountMinusDebtWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date)
+        public TimeSpan CountMinusDebtWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date, bool isConfirmed)
         {
             TimeSpan debtWorkTime = TimeSpan.Zero;
             bool withoutTimeBreak = false;
-            var debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate != date).OrderBy(x => x.TimeRecord).ToList();
+            List<Record> debtWorkRecords = new List<Record>();
+            if(isConfirmed)
+                debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate != date).OrderBy(x => x.TimeRecord).ToList();
+            else
+                debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.DebtWorkDate != date).OrderBy(x => x.TimeRecord).ToList();
             if (debtWorkRecords.Any())
             {
                 var dates = debtWorkRecords.Select(x => x.DateRecord).Distinct().ToList();
@@ -1834,11 +1885,15 @@ namespace Journal3.Controllers
             return debtWorkTime;
         }
 
-        public TimeSpan CountPlusDebtWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date)
+        public TimeSpan CountPlusDebtWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date, bool isConfirmed)
         {
             TimeSpan debtWorkTime = TimeSpan.Zero;
             bool withoutTimeBreak = false;
-            var debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate == date).OrderBy(x => x.TimeRecord).ToList();
+            List<Record> debtWorkRecords = new List<Record>();
+            if(isConfirmed)
+                debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.IsConfirmed && x.DebtWorkDate == date).OrderBy(x => x.TimeRecord).ToList();
+            else
+                debtWorkRecords = filteredRecords.Where(x => x.Remark == (int)Remarks.DebtWork && x.DebtWorkDate == date).OrderBy(x => x.TimeRecord).ToList();
             if (debtWorkRecords.Any())
             {
                 var dates = debtWorkRecords.Select(x => x.DateRecord).Distinct().ToList();
@@ -1860,9 +1915,13 @@ namespace Journal3.Controllers
             return debtWorkTime;
         }
 
-        public TimeSpan CountOverWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date)
+        public TimeSpan CountOverWorkTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date, bool isConfirmed)
         {
-            var overWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OverWork && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
+            List<Record> overWorkRecords = new List<Record>();
+            if(isConfirmed)
+                overWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OverWork && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
+            else
+                overWorkRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.OverWork).OrderBy(x => x.TimeRecord).ToList();
             TimeSpan overWorkTime = TimeSpan.Zero;
             if (overWorkRecords.Any())
             {
@@ -1877,9 +1936,13 @@ namespace Journal3.Controllers
             return overWorkTime;
         }
 
-        public TimeSpan CountSickLeaveTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date)
+        public TimeSpan CountSickLeaveTime(List<Record> filteredRecords, TimeSpan endWorkTime, DateTime date, bool isConfirmed)
         {
-            var sickLeaveRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.SickLeave && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
+            List<Record> sickLeaveRecords = new List<Record>();
+            if(isConfirmed)
+                sickLeaveRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.SickLeave).OrderBy(x => x.TimeRecord).ToList();
+            else
+                sickLeaveRecords = filteredRecords.Where(x => x.DateRecord == date && x.Remark == (int)Remarks.SickLeave && x.IsConfirmed).OrderBy(x => x.TimeRecord).ToList();
             TimeSpan sickLeaveTime = TimeSpan.Zero;
             if (sickLeaveRecords.Any())
             {

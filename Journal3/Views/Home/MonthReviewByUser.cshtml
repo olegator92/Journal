@@ -13,6 +13,7 @@
     double totalOverWork = 0;
     double totalSickLeave = 0;
     double totalTime = 0;
+    double totalUserTime = 0;
     double totalNotWorkedTime = 0;
 }
 
@@ -129,10 +130,11 @@
                             }
                         </td>
                         <td style="font-weight: bold;" class="alignCenter">
-                            @if (dayStats.TotalTime != TimeSpan.Zero)
+                            @if (dayStats.TotalTime != TimeSpan.Zero && dayStats.TotalUserTime != TimeSpan.Zero)
                             {
                                 totalTime += dayStats.TotalTime.TotalHours;
                                 <span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
+                                <span style="color:red">(@String.Format("{0:h\\:mm}", dayStats.TotalUserTime))</span>
                             }
 
                         </td>
