@@ -391,6 +391,7 @@ namespace Journal3.Controllers
 
             }
 
+            ViewBag.DayOfWeek = selectedDate != null ? Helper.DaysOfWeekHelper.GetDayName((int)selectedDate.Value.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedDate = selectedDate;
             ViewBag.UserId = userId;
             return View(record);
@@ -499,6 +500,8 @@ namespace Journal3.Controllers
                 ViewBag.UserId = new SelectList(userInfoes, "UserId", "Name", UserId);
             }
 
+
+            ViewBag.DayOfWeek = model.DateRecord != null ? Helper.DaysOfWeekHelper.GetDayName((int)model.DateRecord.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedDate = model.DateRecord;
             ViewBag.UserId = UserId;
             return RedirectToAction("Index", new { selectedDate = model.DateRecord, model.UserId });
@@ -520,6 +523,8 @@ namespace Journal3.Controllers
                     return RedirectToAction("Index", new { selectedDate = record.DateRecord});
             }
 
+
+            ViewBag.DayOfWeek = record.DateRecord != null ? Helper.DaysOfWeekHelper.GetDayName((int)record.DateRecord.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name", record.WorkSchedule.Id);
             ViewBag.UserId = record.UserId;
             ViewBag.SelectedDate = record.DateRecord;
@@ -573,6 +578,7 @@ namespace Journal3.Controllers
             var roleId = db.Roles.FirstOrDefault(x => x.Name == "Employee").Id;
             var userInfoes = db.Users.Where(x => x.Roles.Any(i => i.RoleId == roleId)).Select(x => x.UserInfo).OrderBy(x => x.Name).ToList();
 
+            ViewBag.DayOfWeek = selectedDate != null ? Helper.DaysOfWeekHelper.GetDayName((int)selectedDate.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.WorkSchedule = new SelectList(db.WorkSchedules.ToList(), "Id", "Name", dbRecord.WorkScheduleId);
             ViewBag.Users = new SelectList(userInfoes, "UserId", "Name", dbRecord.UserId);
             ViewBag.SelectedDate = selectedDate;
@@ -586,6 +592,7 @@ namespace Journal3.Controllers
             if (User.IsInRole("Employee") && !record.IsSystem && record.IsConfirmed)
                 return RedirectToAction("Index", new { selectedDate = record.DateRecord });
 
+            ViewBag.DayOfWeek = record.DateRecord != null ? Helper.DaysOfWeekHelper.GetDayName((int)record.DateRecord.DayOfWeek) : Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedDate = record.DateRecord;
             ViewBag.UserId = record.UserId;
             return View(record);
@@ -1267,8 +1274,8 @@ namespace Journal3.Controllers
     
                     var filteredRecords = records.Where(x => x.DateRecord == date || x.DebtWorkDate == date).ToList();
 
-                    if (filteredRecords.Any(x => x.IsConfirmed == false && x.DateRecord == date))
-                        dateStats.IsNotConfirmeds = true;
+                    dateStats.IsNotConfirmeds = filteredRecords.Any(x => x.IsConfirmed == false && x.DateRecord == date);
+                    dateStats.WithoutTimeBreak = filteredRecords.Any(x => x.WithoutTimebreak == true && x.DateRecord == date);
 
                     JournalViewModel userStats = GetDayStatsByUser(user, filteredRecords, date.Value);
                     if (userStats.User != null && userStats.IsDislplay)
@@ -1328,7 +1335,7 @@ namespace Journal3.Controllers
             journalRow.IsSystem = true;
             var filteredRecords = records.Where(x => x.User == user).ToList();
             journalRow.NotConfirmeds = filteredRecords.Any(x => x.DateRecord == date && x.IsConfirmed == false);
-            filteredRecords = filteredRecords.Where(x => x.IsConfirmed).ToList();
+            //filteredRecords = filteredRecords.Where(x => x.IsConfirmed).ToList();
             if (filteredRecords.Any())
             {
                 journalRow.WorkSchedule = filteredRecords.FirstOrDefault().WorkSchedule;
@@ -1535,6 +1542,16 @@ namespace Journal3.Controllers
             {
                 journalRow.TotalTime = TimeSpan.Zero;
             }
+
+            if (journalRow.TotalUserTime > totalDayTime)
+            {
+                journalRow.TotalUserTime = totalDayTime;
+            }
+            else if (journalRow.TotalUserTime < TimeSpan.Zero)
+            {
+                journalRow.TotalUserTime = TimeSpan.Zero;
+            }
+
             if (startEnd.IsWorkDay)
                 journalRow.NotWorkedTime = totalDayTime - journalRow.TotalTime;
             else

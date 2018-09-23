@@ -129,12 +129,18 @@
                                 <span>@String.Format("{0:h\\:mm}", dayStats.SickLeave)</span>
                             }
                         </td>
-                        <td style="font-weight: bold;" class="alignCenter">
-                            @if (dayStats.TotalTime != TimeSpan.Zero && dayStats.TotalUserTime != TimeSpan.Zero)
+                        <td style="font-weight: bold; white-space: nowrap;" class="alignCenter">
+                            @if (dayStats.TotalTime != TimeSpan.Zero || dayStats.TotalUserTime != TimeSpan.Zero)
                             {
                                 totalTime += dayStats.TotalTime.TotalHours;
-                                <span>@String.Format("{0:h\\:mm}", dayStats.TotalTime)</span>
-                                <span style="color:red">(@String.Format("{0:h\\:mm}", dayStats.TotalUserTime))</span>
+                                <div class = "customTooltip">
+                                    @String.Format("{0:h\\:mm}", dayStats.TotalTime)
+                                    <span class="customTooltiptext">Утвержденное время</span>
+                                </div>
+                                <div class = "customTooltip" style="color:#b5b5b5">
+                                    (@String.Format("{0:h\\:mm}", dayStats.TotalUserTime))
+                                    <span class="customTooltiptext">Рассчитанное время</span>
+                                </div>
                             }
 
                         </td>
@@ -146,7 +152,7 @@
                             }
 
                         </td>
-                        <td>
+                        <td style = @(dayStats.WithoutTimebreak ? "background-color:#fff0b9;" :"")>
                             <a href="@Url.Action("Index", "Home", new {selectedDate = date.Date, userId = dayStats.User.Id})" class="btn" target="_blank" title="Перейти">
                                 <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                             </a>
