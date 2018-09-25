@@ -1335,7 +1335,8 @@ namespace Journal3.Controllers
             journalRow.IsSystem = true;
             var filteredRecords = records.Where(x => x.User == user).ToList();
             journalRow.NotConfirmeds = filteredRecords.Any(x => x.DateRecord == date && x.IsConfirmed == false);
-            //filteredRecords = filteredRecords.Where(x => x.IsConfirmed).ToList();
+            journalRow.WithoutTimebreak = filteredRecords.Any(x => x.DateRecord == date && x.WithoutTimebreak == true);
+
             if (filteredRecords.Any())
             {
                 journalRow.WorkSchedule = filteredRecords.FirstOrDefault().WorkSchedule;
@@ -1524,13 +1525,15 @@ namespace Journal3.Controllers
             journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, startEnd, date, true);
             journalRow.ByPermissionForgivenTime = CountByPermissionForgivenTime(filteredRecords, startEnd, date, true);
             journalRow.MinusDebtWorkTime = CountMinusDebtWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.MinusDebtWorkUserTime = CountMinusDebtWorkTime(filteredRecords, endWorkTime, date, false);
             journalRow.PlusDebtWorkTime = CountPlusDebtWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.PlusDebtWorkUserTime = CountPlusDebtWorkTime(filteredRecords, endWorkTime, date, false);
             journalRow.OverWorkTime = CountOverWorkTime(filteredRecords, endWorkTime, date, true);
+            journalRow.OverWorkUserTime = CountOverWorkTime(filteredRecords, endWorkTime, date, false);
             journalRow.SickLeave = CountSickLeaveTime(filteredRecords, endWorkTime, date, true);
+            journalRow.SickLeaveUser = CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
             journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date, true) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
-            journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) +
-                                       CountPlusDebtWorkTime(filteredRecords, endWorkTime, date, false) +
-                                       CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
+            journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) + journalRow.PlusDebtWorkUserTime + journalRow.SickLeaveUser;
 
             TimeSpan totalDayTime = GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak);
 
@@ -1561,10 +1564,15 @@ namespace Journal3.Controllers
                 journalRow.ByPermissionTime == TimeSpan.Zero &&
                 journalRow.ByPermissionForgivenTime == TimeSpan.Zero &&
                 journalRow.MinusDebtWorkTime == TimeSpan.Zero &&
+                journalRow.MinusDebtWorkUserTime == TimeSpan.Zero &&
                 journalRow.PlusDebtWorkTime == TimeSpan.Zero &&
+                journalRow.PlusDebtWorkUserTime == TimeSpan.Zero &&
                 journalRow.OverWorkTime == TimeSpan.Zero &&
+                journalRow.OverWorkUserTime == TimeSpan.Zero &&
                 journalRow.SickLeave == TimeSpan.Zero &&
-                journalRow.TotalTime == TimeSpan.Zero)
+                journalRow.SickLeaveUser == TimeSpan.Zero &&
+                journalRow.TotalTime == TimeSpan.Zero &&
+                journalRow.TotalUserTime == TimeSpan.Zero)
             {
                 journalRow.IsDislplay = false;
             }

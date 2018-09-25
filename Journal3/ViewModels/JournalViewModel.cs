@@ -19,9 +19,13 @@ namespace Journal3.ViewModels
         public TimeSpan ByPermissionTime { get; set; }
         public TimeSpan ByPermissionForgivenTime { get; set; }
         public TimeSpan PlusDebtWorkTime { get; set; }
+        public TimeSpan PlusDebtWorkUserTime { get; set; }
         public TimeSpan MinusDebtWorkTime { get; set; }
+        public TimeSpan MinusDebtWorkUserTime { get; set; }
         public TimeSpan OverWorkTime { get; set; }
+        public TimeSpan OverWorkUserTime { get; set; }
         public TimeSpan SickLeave { get; set; }
+        public TimeSpan SickLeaveUser { get; set; }
         public TimeSpan TotalTime { get; set; }
         public TimeSpan TotalUserTime { get; set; }
         public bool IsDislplay { get; set; }

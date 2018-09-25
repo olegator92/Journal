@@ -107,19 +107,37 @@
                                 <span>@String.Format("{0:h\\:mm}", dayStats.ByPermissionForgivenTime)</span>
                             }
                         </td>
-                        <td style="white-space: nowrap;" class="alignCenter">
+                        <td class="alignCenter">
                             @if (dayStats.MinusDebtWorkTime != TimeSpan.Zero || dayStats.PlusDebtWorkTime != TimeSpan.Zero)
                             {
                                 totalDebtWork += dayStats.PlusDebtWorkTime.TotalHours;
-                                <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
-                                <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                                <div style="white-space: nowrap;" class = "customTooltip">
+                                    <span style="color: red;">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkTime)</span><span> / </span>
+                                    <span style="color: green;">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkTime)</span>
+                                    <span class="customTooltiptext">Утвержденное время</span>
+                                </div>
                             }
-                        </td>
-                        <td class="alignCenter">
-                            @if (dayStats.OverWorkTime != TimeSpan.Zero)
+                            @if (dayStats.MinusDebtWorkUserTime != TimeSpan.Zero || dayStats.PlusDebtWorkUserTime != TimeSpan.Zero)
+                            {
+                                <div style="white-space: nowrap; color:#b5b5b5" class = "customTooltip">
+                                    (<span style="">-@String.Format("{0:h\\:mm}", dayStats.MinusDebtWorkUserTime)</span><span> / </span>
+                                    <span style="">+@String.Format("{0:h\\:mm}", dayStats.PlusDebtWorkUserTime)</span>)
+                                    <span class="customTooltiptext">Рассчитанное время</span>
+                                </div>
+                            }
+</td>
+                        <td class="alignCenter" style="white-space: nowrap;">
+                            @if (dayStats.OverWorkTime != TimeSpan.Zero || dayStats.OverWorkUserTime != TimeSpan.Zero)
                             {
                                 totalOverWork += dayStats.OverWorkTime.TotalHours;
-                                <span>@String.Format("{0:h\\:mm}", dayStats.OverWorkTime)</span>
+                                <div class="customTooltip">
+                                    @String.Format("{0:h\\:mm}", dayStats.OverWorkTime)
+                                    <span class="customTooltiptext">Утвержденное время</span>
+                                </div>
+                                <div class="customTooltip" style="color:#b5b5b5">
+                                    (@String.Format("{0:h\\:mm}", dayStats.OverWorkUserTime))
+                                    <span class="customTooltiptext">Рассчитанное время</span>
+                                </div>
                             }
                         </td>
                         <td class="alignCenter">
