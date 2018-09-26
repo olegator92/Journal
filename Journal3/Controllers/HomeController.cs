@@ -427,6 +427,7 @@ namespace Journal3.Controllers
                     comeRecord.User = dbUser;
                     comeRecord.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     comeRecord.TimeRecord = model.StartTime;
+                    comeRecord.WithoutTimebreak = model.WithoutTimebreak;
 
                     Record goneRecord = new Record();
                     goneRecord.DateCreated = model.DateCreated;
@@ -440,6 +441,7 @@ namespace Journal3.Controllers
                     goneRecord.User = dbUser;
                     goneRecord.WorkSchedule = dbUser.UserInfo.WorkSchedule;
                     goneRecord.TimeRecord = model.EndTime;
+                    goneRecord.WithoutTimebreak = model.WithoutTimebreak;
 
                     if (model.Remark == (int)Remarks.ByPermission || model.Remark == (int)Remarks.OutForWork)
                     {
@@ -1608,7 +1610,6 @@ namespace Journal3.Controllers
 
         public TimeSpan CountComeGoneTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
         {
-            TimeResult result = new TimeResult();
             TimeSpan comeGoneTime = TimeSpan.Zero;
             TimeSpan startTime = TimeSpan.Zero;
             TimeSpan endTime = TimeSpan.Zero;
@@ -1763,7 +1764,10 @@ namespace Journal3.Controllers
                 sickLeaveTime = CountSickLeaveTime(sickLeaveRecords, startEnd.EndTime, date, isConfirmed);
             }
 
-            return comeGoneTime - byPermissionTime - minusDebtTime - sickLeaveTime;
+            TimeSpan resultTime = comeGoneTime - byPermissionTime - sickLeaveTime;
+            if (goneComeGone != null && !goneComeGone.IsForgiven)
+                resultTime -= minusDebtTime;
+            return resultTime;
         }
 
         public TimeSpan CountOutForWorkTime(List<Record> filteredRecords, StartEndWorkViewModel startEnd, DateTime date, bool isConfirmed)
