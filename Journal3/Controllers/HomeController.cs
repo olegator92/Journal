@@ -1765,7 +1765,7 @@ namespace Journal3.Controllers
             }
 
             TimeSpan resultTime = comeGoneTime - byPermissionTime - sickLeaveTime;
-            if (goneComeGone != null && !goneComeGone.IsForgiven)
+            if ((goneComeGone != null && !goneComeGone.IsForgiven) || goneComeGone == null)
                 resultTime -= minusDebtTime;
             return resultTime;
         }
