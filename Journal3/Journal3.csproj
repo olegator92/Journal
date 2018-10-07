@@ -204,6 +204,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
@@ -436,9 +437,18 @@
     <Compile Include="Migrations\201705230331386_WithoutTimebreak.Designer.cs">
       <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810071157309_Holidays.cs" />
+    <Compile Include="Migrations\201810071157309_Holidays.Designer.cs">
+      <DependentUpon>201810071157309_Holidays.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810071237189_HolidaysComment.cs" />
+    <Compile Include="Migrations\201810071237189_HolidaysComment.Designer.cs">
+      <DependentUpon>201810071237189_HolidaysComment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
+    <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Record.cs" />
@@ -609,6 +619,13 @@
     <Content Include="Views\Account\ResetPasswordMail.cshtml" />
     <Content Include="Views\Home\MonthReviewByUser.cshtml" />
     <Content Include="Views\Home\CreateComeGone.cshtml" />
+    <Content Include="Views\Holidays\Index.cshtml" />
+    <Content Include="Views\Holidays\Create.cshtml" />
+    <Content Include="Views\Holidays\_EditPartial.cshtml" />
+    <Content Include="Views\Holidays\_HeaderPartial.cshtml" />
+    <Content Include="Views\Holidays\_FooterPartial.cshtml" />
+    <Content Include="Views\Holidays\Edit.cshtml" />
+    <Content Include="Views\Holidays\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -786,6 +803,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705230331386_WithoutTimebreak.resx">
       <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810071157309_Holidays.resx">
+      <DependentUpon>201810071157309_Holidays.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810071237189_HolidaysComment.resx">
+      <DependentUpon>201810071237189_HolidaysComment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

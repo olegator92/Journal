@@ -1,0 +1,17 @@
+﻿@model Journal3.Models.Holiday
+@{
+    ViewBag.Title = "Добавить";
+}
+@Html.Partial("_HeaderPartial")
+
+@using (Html.BeginForm("Create", "Holidays", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.Partial("_EditPartial")
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Добавить" />
+        </div>
+    </div>
+}
+@Html.Partial("_FooterPartial")
+

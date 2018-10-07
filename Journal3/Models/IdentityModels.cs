@@ -41,6 +41,7 @@ namespace Journal3.Models
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<SpecialSchedule> SpecialSchedules { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<Holiday> Holidays { get; set; }
 
         public static ApplicationDbContext Create()
         {

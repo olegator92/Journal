@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Journal3.Models.Holiday>
+
+<link href="/Content/datepicker.css" rel="stylesheet">
+<script src="/Scripts/bootstrap-datepicker.js"></script>
+<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
+
+@{
+    ViewBag.Title = "Праздники и выходные";
+}
+<h3>@ViewBag.Title </h3>
+
+<hr />
+<div class="row">
+    <form action="/Holidays/Index" method="post" role="form" class="form-inline" id="getByYear" style="margin-left: 15px;">
+        <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <a href="@Url.Action("Index","Holidays", new { year = ViewBag.PreviousYear })" class="btn btn-primary" title="Предыдущий">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+            </a>
+            <input class="form-control" size="16" type="text" name="year" id="year" value="@ViewBag.SelectedYear.ToString("yyyy")" readonly="" style="width: 150px;" />
+            <span class="add-on glyphicon glyphicon-calendar"></span>
+            <a href="@Url.Action("Index","Holidays", new { year = ViewBag.NextYear})" class="btn btn-primary" title="Следующий">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+            </a>
+        </div>
+    </form>
+</div>
+
+<a href="/Holidays/Create">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Добавить
+</a>
+<table class="table table-hover customTheme" style="width:auto;">
+    <thead>
+        <tr class="tabcolor">
+            <th scope="row">Дата</th>
+            <th scope="row">Комментарий</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @item.Date
+                </td>
+                <td>
+                    @item.Comment
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "Holidays", new {id = item.Id.ToString()})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    <a href="@Url.Action("Delete", "Holidays", new {id = item.Id.ToString()})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script type='text/javascript'>
+    $(function () {
+        $('#datepicker').datepicker({
+            format: 'yyyy',
+            startView: 2,
+            language: 'ru',
+            weekStart: 1
+        });
+    });
+
+    $('#year').change(function () {
+        $('#getByYear').submit();
+    });
+
+</script>
+
+
+
+
+
