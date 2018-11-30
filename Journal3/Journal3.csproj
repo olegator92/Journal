@@ -437,13 +437,9 @@
     <Compile Include="Migrations\201705230331386_WithoutTimebreak.Designer.cs">
       <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201810071157309_Holidays.cs" />
-    <Compile Include="Migrations\201810071157309_Holidays.Designer.cs">
-      <DependentUpon>201810071157309_Holidays.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201810071237189_HolidaysComment.cs" />
-    <Compile Include="Migrations\201810071237189_HolidaysComment.Designer.cs">
-      <DependentUpon>201810071237189_HolidaysComment.cs</DependentUpon>
+    <Compile Include="Migrations\201811301003546_AddHolidaysTable.cs" />
+    <Compile Include="Migrations\201811301003546_AddHolidaysTable.Designer.cs">
+      <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -804,11 +800,8 @@
     <EmbeddedResource Include="Migrations\201705230331386_WithoutTimebreak.resx">
       <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201810071157309_Holidays.resx">
-      <DependentUpon>201810071157309_Holidays.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201810071237189_HolidaysComment.resx">
-      <DependentUpon>201810071237189_HolidaysComment.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201811301003546_AddHolidaysTable.resx">
+      <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -3,7 +3,7 @@ namespace Journal3.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Holidays : DbMigration
+    public partial class AddHolidaysTable : DbMigration
     {
         public override void Up()
         {
@@ -13,6 +13,7 @@ namespace Journal3.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Date = c.DateTime(nullable: false),
+                        Comment = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             

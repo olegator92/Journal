@@ -7,13 +7,13 @@ namespace Journal3.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Holidays : IMigrationMetadata
+    public sealed partial class AddHolidaysTable : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Holidays));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddHolidaysTable));
         
         string IMigrationMetadata.Id
         {
-            get { return "201810071157309_Holidays"; }
+            get { return "201811301003546_AddHolidaysTable"; }
         }
         
         string IMigrationMetadata.Source
