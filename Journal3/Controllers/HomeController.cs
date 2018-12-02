@@ -717,11 +717,12 @@ namespace Journal3.Controllers
                     {
                         fileText = reader.ReadToEnd();
                     }*/
-                    WebClient request = new WebClient();
-                    request.Credentials = new NetworkCredential("anonymous", "anonymous@example.com");
-                    byte[] newFileData = request.DownloadData(path);
-                    fileText = System.Text.Encoding.UTF8.GetString(newFileData);
- 
+                    using (WebClient request = new WebClient())
+                    {
+                        request.Credentials = new NetworkCredential("anonymous", "anonymous@example.com");
+                        byte[] newFileData = request.DownloadData(path);
+                        fileText = System.Text.Encoding.UTF8.GetString(newFileData);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -2090,6 +2091,15 @@ namespace Journal3.Controllers
             return File(Encoding.UTF8.GetBytes(fileText.ToString()),
                  "text/plain", string.Format("{0}.txt", fileName));
 
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
     }

@@ -228,5 +228,14 @@ namespace Journal3.Controllers
 
             return RedirectToAction("Index", new { Role = model.UserRoles });
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

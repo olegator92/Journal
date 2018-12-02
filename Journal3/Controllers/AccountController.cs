@@ -568,6 +568,7 @@ namespace Journal3.Controllers
             }
             return View(model);
         }
+        
 
     }
 }
