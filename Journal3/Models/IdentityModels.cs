@@ -50,7 +50,6 @@ namespace Journal3.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-
             modelBuilder.Entity<UserInfo>()
                 .HasKey(e => e.UserId);
 
