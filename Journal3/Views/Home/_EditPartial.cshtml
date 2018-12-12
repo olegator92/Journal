@@ -1,21 +1,5 @@
 ﻿@model Journal3.Models.Record
 
-<link href="/Content/mdDateTimePicker.css" rel="stylesheet">
-<link href="/Content/Site.css" rel="stylesheet">
-<script src="/Scripts/moment.min.js"></script>
-<script src="/Scripts/draggabilly.pkgd.min.js"></script>
-<script src="/Scripts/mdDateTimePicker.js"></script>
-<script src="/Scripts/draggabilly.pkgd.min.js"></script>
-
-<link href="/Content/jquery.ui.timepicker.css" rel="stylesheet">
-<link href="/Content/jquery-ui-1.10.0.custom.min.css" rel="stylesheet">
-<script src="/Scripts/jquery-1.9.0.min.js"></script>
-<script src="/Scripts/jquery.ui.timepicker.js"></script>
-<script src="/Scripts/jquery.ui.core.min.js"></script>
-<script src="/Scripts/jquery.ui.position.min.js"></script>
-<script src="/Scripts/jquery.ui.tabs.min.js"></script>
-<script src="/Scripts/jquery.ui.widget.min.js"></script>
-
 @{
     String debtWork = "";
     if (Model.DebtWorkDate != null)
@@ -107,10 +91,6 @@
         <label for="WithoutTimebreak" style="cursor: pointer;">Без обеда</label>
     </div>
 </div>
-
-<link href="/Content/datepicker.css" rel="stylesheet">
-<script src="/Scripts/bootstrap-datepicker.js"></script>
-<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 
 <script type='text/javascript'>
     $(function () {

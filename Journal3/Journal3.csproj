@@ -467,9 +467,9 @@
     <Compile Include="ViewModels\WorkScheduleViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\datepicker.css" />
     <Content Include="Content\jquery-ui-1.10.0.custom.min.css" />
     <Content Include="Content\jquery.ui.timepicker.css" />
     <Content Include="Content\mdDateTimePicker.css" />
@@ -493,6 +493,7 @@
     <Content Include="Images\ic_keyboard_arrow_right_white_disabled_24px.svg" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.ru.js" />
+    <Content Include="Scripts\bootstrap-datepicker.ru.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -519,6 +520,7 @@
     <Content Include="fonts\RobotoCondensed-Light.ttf" />
     <Content Include="fonts\RobotoCondensed-LightItalic.ttf" />
     <Content Include="fonts\RobotoCondensed-Regular.ttf" />
+    <Content Include="Content\bootstrap-datepicker.css.map" />
     <None Include="Properties\PublishProfiles\Journal.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <None Include="Properties\PublishProfiles\WebJournal.pubxml" />

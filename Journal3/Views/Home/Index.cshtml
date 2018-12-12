@@ -1,8 +1,5 @@
 ﻿@model IEnumerable<Journal3.ViewModels.RecordViewModel>
 
-<link href="/Content/datepicker.css" rel="stylesheet">
-<script src="/Scripts/bootstrap-datepicker.js"></script>
-<script src="/Scripts/bootstrap-datepicker.ru.js"></script>
 @{
     ViewBag.Title = "Журнал";
 
@@ -220,12 +217,13 @@
 </table>
 
 <script type='text/javascript'>
-    $(function () {
-        $('#datepicker').datepicker({
-            language: 'ru',
-            weekStart: 1
-        });
+    $('#selectedDate').datepicker({
+        format: "dd.mm.yyyy",
+        weekStart: 1,
+        language: "ru",
+        autoclose: true
     });
+
 
     $('#selectedDate').change(function () {
         $('#getByDate').submit();
