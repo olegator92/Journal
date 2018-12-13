@@ -99,6 +99,21 @@
 </div>
 
 <script type="text/javascript">
+
+    $('input[name="WorkSchedule.StartWork"]').timepicker({
+        minutes: {
+            interval: 5,
+            manual: [0, 1, 30, 59]
+        },
+    });
+
+    $('input[name="WorkSchedule.EndWork"]').timepicker({
+        minutes: {
+            interval: 5,
+            manual: [0, 1, 30, 59]
+        },
+    })
+
     $("#IsSpecial").click(SpecialSchedule);
     function SpecialSchedule()
     {
@@ -183,7 +198,22 @@
 
         document.getElementById('specialScheduleContainer').innerHTML = (html + newHtml);
 
-        $("#index").val(index+1);
+        $('input[id*="WorkSchedule_StartWork"]').timepicker({
+            minutes: {
+                interval: 5,
+                manual: [0, 1, 30, 59]
+            },
+        });
+
+        $('input[id*="WorkSchedule_EndWork"]').timepicker({
+            minutes: {
+                interval: 5,
+                manual: [0, 1, 30, 59]
+            },
+        })
+
+        $("#index").val(index + 1);
+
     }
 
     $('body').on('click', '.RemoveButton', function () {
@@ -208,10 +238,22 @@
         })
     });
 
+    $('body').on('change', 'input[name="WorkSchedule.StartWork"]', function () 
+    {
+        $(this).attr('value', $(this).val());
+    });
+
+    $('body').on('change', 'input[name="WorkSchedule.EndWork"]', function () {
+        $(this).attr('value', $(this).val());
+    });
+
+
+
+
 </script>
 
 <script type="text/javascript">
-  (function() {
+  /*(function() {
     var a = new mdDateTimePicker.default({
         type: 'time'
     });
@@ -236,5 +278,7 @@
             this.value = a.time.format("HH:mm:ss");
         });
     }
-  }).call(this);
+  }).call(this);*/
 </script>
+
+
