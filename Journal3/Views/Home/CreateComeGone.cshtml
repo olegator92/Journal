@@ -30,10 +30,9 @@
         <input type="hidden" name="UserId" value="@Model.UserId" />
     }
 
-    <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
+    <div class="input-append date" style="margin-bottom: 15px;">
         <label class="control-label" for="Date" style="display: inline-block;  padding-left: 120px; padding-right: 21px;">Дата</label>
-        <input class="form-control" size="16" type="text" name="DateRecord" value="@Model.DateRecord.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;" />
-        <span class="add-on glyphicon glyphicon-calendar"></span>
+        <input class="form-control"  id="datepicker" data-date-format="dd.mm.yyyy" size="16" type="text" name="DateRecord" value="@Model.DateRecord.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;" />
     </div>
     <div class="form-group">
         <label class="col-md-2 control-label" for="StartTime">Начало:</label>
@@ -69,10 +68,13 @@
     </div>
     <p></p>
     <div id="DebtWorkContainer" class=@(Model.Remark != 4 ? "hidden" : "")>
-        <div class="input-append date" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" style="margin-bottom: 15px;">
-            <label class="control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
-            <input class="form-control" size="16" type="text" name="DebtWorkDate" value="@debtWork" readonly="" style="display: inline-block;" />
-            <span class="add-on glyphicon glyphicon-calendar"></span>
+        <div class="form-group">
+            <div class="input-append date" style="margin-bottom: 15px;">
+                <label class="col-md-2 control-label" for="DebtWorkDate" style="display: inline-block;  padding-left: 37px; padding-right: 27px;">Дата отработки</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="datepickerDebtWorkDate" data-date-format="dd.mm.yyyy" size="16" type="text" name="DebtWorkDate" value="@debtWork" readonly="" style="display: inline-block;" />
+                </div>
+            </div>
         </div>
     </div>
 
@@ -118,15 +120,21 @@
 
     $(function () {
         $('#datepicker').datepicker({
-            language: 'ru',
-            weekStart: 1
+            format: "dd.mm.yyyy",
+            weekStart: 1,
+            language: "ru",
+            autoclose: true,
+            orientation: "top auto"
         });
     });
 
     $(function () {
         $('#datepickerDebtWorkDate').datepicker( {
-            language: 'ru',
-            weekStart: 1
+            format: "dd.mm.yyyy",
+            weekStart: 1,
+            language: "ru",
+            autoclose: true,
+            orientation: "top auto"
         });
     });
 

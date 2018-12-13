@@ -13,16 +13,18 @@
 <br>
 <div class="row">
     <form action="/Home/Index" method="post" role="form" class="form-inline" id="getByDate" style="margin-left: 15px;">
+        <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.PreviousDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Предыдущий">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+        </a>
         <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="display: inline-block;">
-            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.PreviousDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Предыдущий">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
-            </a>
+            
             <input class="form-control" size="16" type="text" name="selectedDate" id="selectedDate" value="@ViewBag.SelectedDate.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
-            <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.NextDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Следующий">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
-            </a>
+            
         </div>
+        <a href="@Url.Action("Index","Home", new { selectedDate = ViewBag.NextDate, userId = ViewBag.UserId })" class="btn btn-primary" title="Следующий">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+        </a>
         @if (User.Identity.IsAuthenticated)
         {
             <a href="@Url.Action("Create", "Home", new {selectedDate = ViewBag.SelectedDate, userId = ViewBag.UserId})" class="btn btn-primary" style="margin-left: 15px;">
@@ -217,11 +219,12 @@
 </table>
 
 <script type='text/javascript'>
-    $('#selectedDate').datepicker({
+    $('#datepicker').datepicker({
         format: "dd.mm.yyyy",
         weekStart: 1,
         language: "ru",
-        autoclose: true
+        autoclose: true, 
+        orientation: "top auto"
     });
 
 
