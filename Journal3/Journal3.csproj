@@ -441,10 +441,6 @@
     <Compile Include="Migrations\201811301003546_AddHolidaysTable.Designer.cs">
       <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201812140259566_TimeSpanValidation.cs" />
-    <Compile Include="Migrations\201812140259566_TimeSpanValidation.Designer.cs">
-      <DependentUpon>201812140259566_TimeSpanValidation.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
@@ -808,9 +804,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811301003546_AddHolidaysTable.resx">
       <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201812140259566_TimeSpanValidation.resx">
-      <DependentUpon>201812140259566_TimeSpanValidation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
