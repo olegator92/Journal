@@ -76,14 +76,14 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="">Начало</label>
                         <div class="col-md-10">
-                            <input class="form-control startTime" data-val="true"  data-val-regex="Неверный формат времени" data-val-regex-pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$" data-val-required="Требуется поле Начало" id="WorkSchedule_StartWork@(i)" name="SpecialSchedules[@i].StartTime" type="text" value="@Model.SpecialSchedules[@i].StartTime">
+                            <input class="form-control startTime" data-val="true"  data-val-regex="Неверный формат времени" data-val-regex-pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" data-val-required="Требуется поле Начало" id="WorkSchedule_StartWork@(i)" name="SpecialSchedules[@i].StartTime" type="text" value="@Model.SpecialSchedules[@i].StartTime">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="Name">Конец</label>
                         <div class="col-md-10">
-                            <input class="form-control endTime" data-val="true" data-val-regex="Неверный формат времени" data-val-regex-pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$" data-val-required="Требуется поле Конец"  id="WorkSchedule_EndWork@(i)" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
+                            <input class="form-control endTime" data-val="true" data-val-regex="Неверный формат времени" data-val-regex-pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" data-val-required="Требуется поле Конец"  id="WorkSchedule_EndWork@(i)" name="SpecialSchedules[@i].EndTime" type="text" value="@Model.SpecialSchedules[@i].EndTime">
                         </div>
                     </div>
                     <div class="form-group">
@@ -177,13 +177,13 @@
                         "<div class='form-group'>" +
                             "<label class='col-md-2 control-label'>Начало</label>" +
                             "<div class='col-md-10'>" +
-                                "<input class='form-control startTime' data-val='true' data-val-regex='Неверный формат времени' data-val-regex-pattern='^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$' data-val-required='Требуется поле Начало' id='WorkSchedule_StartWork" + index + "' name='SpecialSchedules[" + index + "].StartTime' type='text' value='00:00:00'>" +
+                                "<input class='form-control startTime' data-val='true' data-val-regex='Неверный формат времени' data-val-regex-pattern='^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$' data-val-required='Требуется поле Начало' id='WorkSchedule_StartWork" + index + "' name='SpecialSchedules[" + index + "].StartTime' type='text' value='00:00:00'>" +
                             "</div>" +
                         "</div>" +
                         "<div class='form-group'>" +
                             "<label class='col-md-2 control-label'>Конец</label>" +
                             "<div class='col-md-10'>" +
-                                "<input class='form-control endTime' data-val='true' data-val-regex='Неверный формат времени' data-val-regex-pattern='^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$' data-val-required='Требуется поле Конец' id='WorkSchedule_EndWork" + index + "' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
+                                "<input class='form-control endTime' data-val='true' data-val-regex='Неверный формат времени' data-val-regex-pattern='^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$' data-val-required='Требуется поле Конец' id='WorkSchedule_EndWork" + index + "' name='SpecialSchedules[" + index + "].EndTime' type='text' value='00:00:00'>" +
                             "</div>" +
                         "</div>" +
                         "<div class='form-group'>" +
@@ -211,6 +211,14 @@
                 manual: [0, 1, 30, 59]
             },
         })
+
+        $('body').on('change', 'input[id*="WorkSchedule_StartWork"]', function () {
+            $(this).attr('value', $(this).val());
+        });
+
+        $('body').on('change', 'input[id*="WorkSchedule_EndWork"]', function () {
+            $(this).attr('value', $(this).val());
+        });
 
         $("#index").val(index + 1);
 
@@ -246,8 +254,6 @@
     $('body').on('change', 'input[name="WorkSchedule.EndWork"]', function () {
         $(this).attr('value', $(this).val());
     });
-
-
 
 
 </script>
