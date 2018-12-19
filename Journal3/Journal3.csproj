@@ -421,25 +421,9 @@
     <Compile Include="Migrations\201705170639307_NullableWorkschedule.Designer.cs">
       <DependentUpon>201705170639307_NullableWorkschedule.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705171145355_CommentLength.cs" />
-    <Compile Include="Migrations\201705171145355_CommentLength.Designer.cs">
-      <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.cs" />
-    <Compile Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.Designer.cs">
-      <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201705230330186_RemoveWithoutTimebreak.cs" />
-    <Compile Include="Migrations\201705230330186_RemoveWithoutTimebreak.Designer.cs">
-      <DependentUpon>201705230330186_RemoveWithoutTimebreak.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201705230331386_WithoutTimebreak.cs" />
-    <Compile Include="Migrations\201705230331386_WithoutTimebreak.Designer.cs">
-      <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811301003546_AddHolidaysTable.cs" />
-    <Compile Include="Migrations\201811301003546_AddHolidaysTable.Designer.cs">
-      <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
+    <Compile Include="Migrations\201812190718586_FixingMigration.cs" />
+    <Compile Include="Migrations\201812190718586_FixingMigration.Designer.cs">
+      <DependentUpon>201812190718586_FixingMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -790,20 +774,8 @@
     <EmbeddedResource Include="Migrations\201705170639307_NullableWorkschedule.resx">
       <DependentUpon>201705170639307_NullableWorkschedule.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705171145355_CommentLength.resx">
-      <DependentUpon>201705171145355_CommentLength.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705200348437_WorkScheduleWithoutTimebreak.resx">
-      <DependentUpon>201705200348437_WorkScheduleWithoutTimebreak.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705230330186_RemoveWithoutTimebreak.resx">
-      <DependentUpon>201705230330186_RemoveWithoutTimebreak.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705230331386_WithoutTimebreak.resx">
-      <DependentUpon>201705230331386_WithoutTimebreak.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811301003546_AddHolidaysTable.resx">
-      <DependentUpon>201811301003546_AddHolidaysTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201812190718586_FixingMigration.resx">
+      <DependentUpon>201812190718586_FixingMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
