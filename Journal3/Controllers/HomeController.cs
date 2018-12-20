@@ -1604,6 +1604,10 @@ namespace Journal3.Controllers
                 if (dayOfWeek != 0 && dayOfWeek != 6)
                     isWorkkDay = true;
             }
+
+            if (db.Holidays.FirstOrDefault(x => DbFunctions.TruncateTime(x.Date) == date.Date) != null)
+                isWorkkDay = false;
+
             model.IsWorkDay = isWorkkDay;
 
             return model;

@@ -36,6 +36,7 @@ namespace Journal3.Controllers
         public ActionResult Create()
         {
             var holiday = new Holiday();
+            holiday.Date = DateTime.Now;
             ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             return View(holiday);
         }
@@ -65,7 +66,7 @@ namespace Journal3.Controllers
         [HttpPost]
         public ActionResult Edit(Holiday holiday)
         {
-            var dbHoliday = db.Roles.Find(holiday.Id);
+            var dbHoliday = db.Holidays.Find(holiday.Id);
             if (ModelState.IsValid)
             {
                 UpdateModel(dbHoliday);

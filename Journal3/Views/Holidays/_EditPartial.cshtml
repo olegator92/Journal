@@ -1,25 +1,27 @@
 ﻿@model Journal3.Models.Holiday
 
-<div class="form-group">
-    <div class="input-append date" id="datepicker" data-date-format="dd.mm.yyyy" style="display: inline-block;">
-        <input class="form-control" size="16" type="text" name="Date" id="selectedDate" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
-        <span class="add-on glyphicon glyphicon-calendar"></span>
-    </div>
-
     <div class="form-group">
-        <label class="col-md-2 control-label" for="Comment">Комментарий</label>
+        <label class="col-md-2 control-label" for="">Дата:</label>
+        <div class="input-append date" style="display: inline-block; margin-left: 15px;">
+            <input class="form-control" size="16" type="text" name="Date" id="selectedDate" value="@Model.Date.ToString("dd.MM.yyyy")" readonly="" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Comment">Комментарий:</label>
         <div class="col-md-10">
             @Html.TextAreaFor(m => m.Comment, new { @class = "form-control" })
         </div>
     </div>
 
-</div>
 
 <script type='text/javascript'>
     $(function () {
-        $('#datepicker').datepicker({
-            language: 'ru',
-            weekStart: 1
+        $('#selectedDate').datepicker({
+            format: "dd.mm.yyyy",
+            weekStart: 1,
+            language: "ru",
+            autoclose: true,
+            orientation: "top auto"
         });
     });
 </script>

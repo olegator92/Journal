@@ -15,10 +15,13 @@
         </tr>
     </thead>
     <tr>
-        <td style="font-weight:bold;">Наименование</td>
+        <td style="font-weight:bold;">Комментарий</td>
+        <td>@Html.DisplayFor(model => model.Comment)</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Дата</td>
         <td>@Html.DisplayFor(model => model.Date)</td>
     </tr>
-
 </table>
 
 @using (Html.BeginForm())
