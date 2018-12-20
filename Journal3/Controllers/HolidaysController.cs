@@ -18,18 +18,17 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
         }
         // GET: Holidays
-        public ActionResult Index(DateTime? year)
+        public ActionResult Index(int? year)
         {
-            DateTime currentYear = DateTime.Now;
+            int currentYear = DateTime.Now.Year;
             if (year != null)
                 currentYear = year.Value;
-            List<Holiday> holidays = db.Holidays.Where(x => x.Date.Year == currentYear.Year).ToList();
+            List<Holiday> holidays = db.Holidays.Where(x => x.Date.Year == currentYear).ToList();
 
-            ViewBag.Year = currentYear;
             ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             ViewBag.SelectedYear = currentYear;
-            ViewBag.PreviousYear = currentYear.AddYears(-1);
-            ViewBag.NextYear = currentYear.AddYears(1);
+            ViewBag.PreviousYear = currentYear-1;
+            ViewBag.NextYear = currentYear+1;
 
             return View(holidays);
         }

@@ -8,67 +8,70 @@
 <hr />
 <div class="row">
     <form action="/Holidays/Index" method="post" role="form" class="form-inline" id="getByYear" style="margin-left: 15px;">
-        <div class="input-append date" id="datepicker" data-date-format="yyyy" style="display: inline-block;" data-date-viewmode="years" data-date-minviewmode="years">
-            <a href="@Url.Action("Index","Holidays", new { year = ViewBag.PreviousYear })" class="btn btn-primary" title="Предыдущий">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
-            </a>
-            <input class="form-control" size="16" type="text" name="year" id="year" value="@ViewBag.SelectedYear.ToString("yyyy")" readonly="" style="width: 150px;" />
+        <a href="@Url.Action("Index","Holidays", new { year = ViewBag.PreviousYear })" class="btn btn-primary" title="Предыдущий">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+        </a>
+        <div class="input-append date" id="datepicker" data-date-format="yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="year" id="year" value="@ViewBag.SelectedYear" readonly="" style="width: 150px;" />
             <span class="add-on glyphicon glyphicon-calendar"></span>
-            <a href="@Url.Action("Index","Holidays", new { year = ViewBag.NextYear})" class="btn btn-primary" title="Следующий">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
-            </a>
         </div>
+        <a href="@Url.Action("Index","Holidays", new { year = ViewBag.NextYear})" class="btn btn-primary" title="Следующий">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+        </a>
     </form>
 </div>
-
-<a href="/Holidays/Create">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-    Добавить
-</a>
-<table class="table table-hover customTheme" style="width:auto;">
-    <thead>
-        <tr class="tabcolor">
-            <th scope="row">Дата</th>
-            <th scope="row">Комментарий</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-            {
-            <tr>
-                <td>
-                    @item.Date
-                </td>
-                <td>
-                    @item.Comment
-                </td>
-                <td>
-                    <a href="@Url.Action("Edit", "Holidays", new {id = item.Id.ToString()})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                    <a href="@Url.Action("Delete", "Holidays", new {id = item.Id.ToString()})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                </td>
+<div class="row" style="padding-left: 15px; padding-top: 15px;">
+    <a href="/Holidays/Create">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        Добавить
+    </a>
+</div>
+    <table class="table table-hover customTheme" style="width:auto;">
+        <thead>
+            <tr class="tabcolor">
+                <th scope="row">Дата</th>
+                <th scope="row">Комментарий</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Date
+                    </td>
+                    <td>
+                        @item.Comment
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Holidays", new {id = item.Id.ToString()})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        <a href="@Url.Action("Delete", "Holidays", new {id = item.Id.ToString()})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-<script type='text/javascript'>
-    $(function () {
-        $('#datepicker').datepicker({
-            format: 'yyyy',
-            /*startView: 2,
-            viewMode: 2,
-            minViewMode: 2,*/
-            language: 'ru',
-            weekStart: 1
+    <script type='text/javascript'>
+        $(function () {
+            $('#datepicker').datepicker({
+                format: "yyyy",
+                weekStart: 1,
+                language: "ru",
+                autoclose: true,
+                orientation: "top auto",
+                startView: 2,
+                minViewMode: 2,
+                maxViewMode: 2
+            });
         });
-    });
 
-    $('#year').change(function () {
-        $('#getByYear').submit();
-    });
+        $('#year').change(function () {
+            $('#getByYear').submit();
+        });
 
-</script>
+    </script>
 
 
 

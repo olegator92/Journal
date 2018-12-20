@@ -867,7 +867,7 @@ body .ui-tooltip {
     }
 
 .ui-widget-header {
-    border: 1px solid #000;
+    /*border: 1px solid #000;*/
     background: #285e8e;
     color: #fff;
     font-weight: bold;
