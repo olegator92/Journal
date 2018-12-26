@@ -17,16 +17,10 @@ namespace Journal3.Migrations
                     })
                 .PrimaryKey(t => t.Id);
             
-            AddColumn("dbo.AspNetUsers", "Vacation_Id", c => c.Int());
-            CreateIndex("dbo.AspNetUsers", "Vacation_Id");
-            AddForeignKey("dbo.AspNetUsers", "Vacation_Id", "dbo.Vacations", "Id");
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.AspNetUsers", "Vacation_Id", "dbo.Vacations");
-            DropIndex("dbo.AspNetUsers", new[] { "Vacation_Id" });
-            DropColumn("dbo.AspNetUsers", "Vacation_Id");
             DropTable("dbo.Vacations");
         }
     }

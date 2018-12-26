@@ -427,9 +427,9 @@
     <Compile Include="Migrations\201812190718586_FixingMigration.Designer.cs">
       <DependentUpon>201812190718586_FixingMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201812231238315_Vacations.cs" />
-    <Compile Include="Migrations\201812231238315_Vacations.Designer.cs">
-      <DependentUpon>201812231238315_Vacations.cs</DependentUpon>
+    <Compile Include="Migrations\201812250708156_Vacations.cs" />
+    <Compile Include="Migrations\201812250708156_Vacations.Designer.cs">
+      <DependentUpon>201812250708156_Vacations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -784,8 +784,8 @@
     <EmbeddedResource Include="Migrations\201812190718586_FixingMigration.resx">
       <DependentUpon>201812190718586_FixingMigration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201812231238315_Vacations.resx">
-      <DependentUpon>201812231238315_Vacations.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201812250708156_Vacations.resx">
+      <DependentUpon>201812250708156_Vacations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

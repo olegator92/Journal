@@ -11,6 +11,5 @@ namespace Journal3.Models
         public DateTime Date { get; set; }
         public string UserId { get; set; }
 
-        public ICollection<ApplicationUser> User { get; set; }
     }
 }

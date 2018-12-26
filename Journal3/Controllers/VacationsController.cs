@@ -28,93 +28,49 @@ namespace Journal3.Controllers
             {
                 userId = User.Identity.GetUserId();
             }
-            /*if (userId != "")
+
+            if (userId != "")
             {
                 vacations = db.Vacations.Where(x => x.UserId == userId)
-                                            .OrderBy(x => x.TimeRecord)
+                                            .OrderBy(x => x.Date)
                                             .ToList();
             }
-            else
-            {
-                records = db.Records.Where(x => DbFunctions.TruncateTime(x.DateRecord) == selectedDate)
-                                            .Include(x => x.WorkSchedule)
-                                            .Include(x => x.User.UserInfo)
-                                            .OrderBy(x => x.TimeRecord)
-                                            .ToList();
-            }*/
-            return View();
+
+            ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
+            return View(vacations);
         }
 
-        // GET: Vacations/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Vacations/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Vacations/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Vacations/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
 
         // POST: Vacations/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult AddVacations(List<Vacation> vacations)
         {
-            try
+            foreach (Vacation vacation in vacations)
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                if (!db.Vacations.Any(x => x.Date == vacation.Date && x.UserId == vacation.UserId))
+                {
+                    db.Vacations.Add(vacation);
+                }
             }
-            catch
-            {
-                return View();
-            }
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
-        // GET: Vacations/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Vacations/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public void Delete(int vacationId)
         {
+            var vacation = db.Vacations.Find(vacationId);
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                db.Vacations.Remove(vacation);
+                db.SaveChanges();
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                throw new Exception("Невозможно удалить запись");
             }
+            return RedirectToAction("Index");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Journal3.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201812231238315_Vacations"; }
+            get { return "201812250708156_Vacations"; }
         }
         
         string IMigrationMetadata.Source
