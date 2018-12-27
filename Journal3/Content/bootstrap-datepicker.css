@@ -118,19 +118,19 @@
 .datepicker table tr td.today:hover,
 .datepicker table tr td.today.disabled,
 .datepicker table tr td.today.disabled:hover {
-  background-color: #fde19a;
-  background-image: -moz-linear-gradient(to bottom, #fdd49a, #fdf59a);
+    background-color: #fde19a;
+    /* background-image: -moz-linear-gradient(to bottom, #fdd49a, #fdf59a);
   background-image: -ms-linear-gradient(to bottom, #fdd49a, #fdf59a);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fdd49a), to(#fdf59a));
   background-image: -webkit-linear-gradient(to bottom, #fdd49a, #fdf59a);
   background-image: -o-linear-gradient(to bottom, #fdd49a, #fdf59a);
   background-image: linear-gradient(to bottom, #fdd49a, #fdf59a);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fdd49a', endColorstr='#fdf59a', GradientType=0);
-  border-color: #fdf59a #fdf59a #fbed50;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-  color: #000;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fdd49a', endColorstr='#fdf59a', GradientType=0);
+    border-color: #fdf59a #fdf59a #fbed50;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);*/
+    color: #000;
 }
 .datepicker table tr td.today:hover,
 .datepicker table tr td.today:hover:hover,
@@ -179,26 +179,26 @@
   -moz-border-radius: 0;
   border-radius: 0;
 }
-.datepicker table tr td.range.today,
-.datepicker table tr td.range.today:hover,
-.datepicker table tr td.range.today.disabled,
-.datepicker table tr td.range.today.disabled:hover {
-  background-color: #f3d17a;
-  background-image: -moz-linear-gradient(to bottom, #f3c17a, #f3e97a);
+    .datepicker table tr td.range.today,
+    .datepicker table tr td.range.today:hover,
+    .datepicker table tr td.range.today.disabled,
+    .datepicker table tr td.range.today.disabled:hover {
+        background-color: #f3d17a;
+        /* background-image: -moz-linear-gradient(to bottom, #f3c17a, #f3e97a);
   background-image: -ms-linear-gradient(to bottom, #f3c17a, #f3e97a);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f3c17a), to(#f3e97a));
   background-image: -webkit-linear-gradient(to bottom, #f3c17a, #f3e97a);
   background-image: -o-linear-gradient(to bottom, #f3c17a, #f3e97a);
   background-image: linear-gradient(to bottom, #f3c17a, #f3e97a);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3c17a', endColorstr='#f3e97a', GradientType=0);
-  border-color: #f3e97a #f3e97a #edde34;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-}
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3c17a', endColorstr='#f3e97a', GradientType=0);
+        border-color: #f3e97a #f3e97a #edde34;
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;*/
+    }
 .datepicker table tr td.range.today:hover,
 .datepicker table tr td.range.today:hover:hover,
 .datepicker table tr td.range.today.disabled:hover,
@@ -426,10 +426,10 @@
   background: #eee;
 }
 .datepicker .cw {
-  font-size: 10px;
-  width: 12px;
-  padding: 0 2px 0 5px;
-  vertical-align: middle;
+    /*font-size: 10px;*/
+    width: 12px;
+    padding: 0 2px 0 5px;
+    vertical-align: middle;
 }
 .input-append.date .add-on,
 .input-prepend.date .add-on {
@@ -440,18 +440,18 @@
   margin-top: 3px;
 }
 .input-daterange input {
-  text-align: center;
+    /*text-align: center;*/
 }
 .input-daterange input:first-child {
-  -webkit-border-radius: 3px 0 0 3px;
+  /*-webkit-border-radius: 3px 0 0 3px;
   -moz-border-radius: 3px 0 0 3px;
-  border-radius: 3px 0 0 3px;
+  border-radius: 3px 0 0 3px;*/
 }
-.input-daterange input:last-child {
-  -webkit-border-radius: 0 3px 3px 0;
+    .input-daterange input:last-child {
+        /*-webkit-border-radius: 0 3px 3px 0;
   -moz-border-radius: 0 3px 3px 0;
-  border-radius: 0 3px 3px 0;
-}
+  border-radius: 0 3px 3px 0;*/
+    }
 .input-daterange .add-on {
   display: inline-block;
   width: auto;

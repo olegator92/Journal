@@ -454,6 +454,7 @@
     <Compile Include="ViewModels\StartEndWorkViewModel.cs" />
     <Compile Include="ViewModels\StatsViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
+    <Compile Include="ViewModels\VacationsViewModel.cs" />
     <Compile Include="ViewModels\WorkScheduleViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -614,10 +615,10 @@
     <Content Include="Views\Holidays\_FooterPartial.cshtml" />
     <Content Include="Views\Holidays\Edit.cshtml" />
     <Content Include="Views\Holidays\Delete.cshtml" />
+    <Content Include="Views\Vacations\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Vacations\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

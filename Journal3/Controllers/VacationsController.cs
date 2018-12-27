@@ -1,4 +1,5 @@
 ﻿using Journal3.Models;
+using Journal3.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -22,8 +23,8 @@ namespace Journal3.Controllers
         }
         public ActionResult Index(string userId = "")
         {
+            VacationsViewModel model = new VacationsViewModel();
             List<Vacation> vacations = new List<Vacation>();
-
             if (User.IsInRole("Employee"))
             {
                 userId = User.Identity.GetUserId();
@@ -35,29 +36,62 @@ namespace Journal3.Controllers
                                             .OrderBy(x => x.Date)
                                             .ToList();
             }
+            model.Dates = vacations.Select(x => x.Date).OrderBy(x => x).ToList();
+            
 
             ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
+            if (User.IsInRole("Admin"))
+                ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
+            ViewBag.UserId = userId;
             return View(vacations);
         }
 
-
         // POST: Vacations/Edit/5
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public ActionResult AddVacations(List<Vacation> vacations)
+        public void AddVacations(DateTime date, string UserId)
         {
-            foreach (Vacation vacation in vacations)
+            if (!db.Vacations.Any(x => x.Date == date && x.UserId == UserId))
             {
-                if (!db.Vacations.Any(x => x.Date == vacation.Date && x.UserId == vacation.UserId))
-                {
-                    db.Vacations.Add(vacation);
-                }
+                Vacation vacation = new Vacation();
+                vacation.UserId = UserId;
+                vacation.Date = date;
+                db.Vacations.Add(vacation);
             }
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
-        [HttpPost]
+        public void AddVacations(DateTime startDate, DateTime endDate, string UserId)
+        {
+            if (startDate > endDate || (endDate - startDate).TotalDays > 30)
+                return;
+
+            while (startDate < endDate)
+            {
+                if (!db.Vacations.Any(x => x.Date == startDate && x.UserId == UserId))
+                {
+                    Vacation vacation = new Vacation();
+                    vacation.UserId = UserId;
+                    vacation.Date = startDate;
+                    db.Vacations.Add(vacation);
+                }
+                startDate.AddDays(1);
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public void Delete(int vacationId)
         {
             var vacation = db.Vacations.Find(vacationId);
@@ -68,9 +102,8 @@ namespace Journal3.Controllers
             }
             catch (Exception e)
             {
-                throw new Exception("Невозможно удалить запись");
+                throw new Exception("Невозможно удалить запись\n" + e.Message);
             }
-            return RedirectToAction("Index");
         }
     }
 }

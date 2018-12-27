@@ -1,0 +1,99 @@
+﻿@model IEnumerable<Journal3.Models.Vacation>
+
+@{
+    ViewBag.Title = "Отпуск";
+    var i = 1;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <form action="/Vacations/Index" method="post" role="form" class="form-inline" id="getByUserId">
+        @if (User.IsInRole("Admin"))
+        {
+            @Html.DropDownList("userId", (SelectList)ViewBag.User, "Все", new { @class = "form-control inlineDropdown" })
+        }
+    </form>
+    <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
+        <input type="hidden" name="userId" value="@ViewBag.UserId" />
+
+        <div class="input-append date" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+            <input class="form-control" size="16" type="text" name="date" id="datepicker" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+        </div>
+        <button type="button" class="btn btn-primary" id="AddDate" title="Добавить">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
+    </form>
+
+    <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
+        <input type="hidden" name="userId" value="@ViewBag.UserId" />
+
+        <div class="input-daterange input-group" id="datepickerRange" style="display: block;">
+            <input type="text" class="input-sm form-control" name="startDate" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 150px;" />
+            <span class="input-group-addon" style="display: inline-block; width: 40px; height: 32px;">по</span>
+            <input type="text" class="input-sm form-control" name="endDate" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 150px;" />
+            <button type="button" class="btn btn-primary" id="AddRangeDates" title="Добавить">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-hover table-striped table-bordered customTheme" style="width:auto;">
+    <thead>
+        <tr class="tabcolor">
+            <th scope="row">№</th>
+            <th scope="row">Дата</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@i)</td>
+                <td>
+                    @item.Date.ToString("dd.MM.yyyy")
+                </td>
+                <td>
+                    <a href="@Url.Action("Delete", "Vacations", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                </td>
+            </tr>
+            i++;
+        }
+    </tbody>
+</table>
+
+<script type='text/javascript'>
+    $('#datepicker').datepicker({
+        format: "dd.mm.yyyy",
+        weekStart: 1,
+        language: "ru",
+        autoclose: true,
+        orientation: "top auto"
+    });
+
+    $('#datepickerRange').datepicker({
+        format: "dd.mm.yyyy",
+        weekStart: 1,
+        language: "ru",
+        autoclose: true,
+        orientation: "top auto"
+    });
+
+    $('#userId').change(function () {
+        $('#getByUserId').submit();
+    });
+
+    $('#AddDate').click(AddVacation);
+
+    function AddVacation(event) {
+        var userId = $(this).parent().children("input[name=userId]").val();
+        var date = $(this).parent().children().children("input[name=date]").val();
+
+        $.get('/Vacations/AddVacations', { date: date, UserId: userId }).done(
+            function () {
+            });
+    }
+
+</script>
