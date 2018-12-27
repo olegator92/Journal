@@ -235,8 +235,8 @@
 .datepicker table tr td.selected:hover,
 .datepicker table tr td.selected.disabled,
 .datepicker table tr td.selected.disabled:hover {
-  background-color: #9e9e9e;
-  background-image: -moz-linear-gradient(to bottom, #b3b3b3, #808080);
+  background-color: #40719a;
+  /*background-image: -moz-linear-gradient(to bottom, #b3b3b3, #808080);
   background-image: -ms-linear-gradient(to bottom, #b3b3b3, #808080);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b3b3b3), to(#808080));
   background-image: -webkit-linear-gradient(to bottom, #b3b3b3, #808080);
@@ -246,7 +246,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b3b3b3', endColorstr='#808080', GradientType=0);
   border-color: #808080 #808080 #595959;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);*/
   color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }

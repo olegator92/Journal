@@ -85,13 +85,25 @@
         $('#getByUserId').submit();
     });
 
+    $('body').on('change', 'input[name="date"]', function () {
+        $(this).attr('value', $(this).val());
+    });
+
+    $('body').on('change', 'input[name="startDate"]', function () {
+        $(this).attr('value', $(this).val());
+    });
+
+    $('body').on('change', 'input[name="endDate"]', function () {
+        $(this).attr('value', $(this).val());
+    });
+
     $('#AddDate').click(AddVacation);
 
     function AddVacation(event) {
         var userId = $(this).parent().children("input[name=userId]").val();
-        var date = $(this).parent().children().children("input[name=date]").val();
+        var selectedDate = $(this).parent().children().children("input[name=date]").val();
 
-        $.get('/Vacations/AddVacations', { date: date, UserId: userId }).done(
+        $.get('/Vacations/AddVacation', { dateStr: selectedDate, UserId: userId }).done(
             function () {
             });
     }

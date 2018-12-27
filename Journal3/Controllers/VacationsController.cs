@@ -47,22 +47,27 @@ namespace Journal3.Controllers
         }
 
         // POST: Vacations/Edit/5
-        public void AddVacations(DateTime date, string UserId)
+        public void AddVacation(string dateStr, string UserId)
         {
-            if (!db.Vacations.Any(x => x.Date == date && x.UserId == UserId))
+            DateTime date = new DateTime();
+            DateTime.TryParse(dateStr, out date);
+            if (date != default(DateTime) && UserId != "")
             {
-                Vacation vacation = new Vacation();
-                vacation.UserId = UserId;
-                vacation.Date = date;
-                db.Vacations.Add(vacation);
-            }
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                if (!db.Vacations.Any(x => x.Date == date && x.UserId == UserId))
+                {
+                    Vacation vacation = new Vacation();
+                    vacation.UserId = UserId;
+                    vacation.Date = date;
+                    db.Vacations.Add(vacation);
+                }
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
             }
         }
 
