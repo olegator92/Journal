@@ -55,10 +55,54 @@ namespace Journal3.Controllers
             {
                 if (!db.Vacations.Any(x => x.Date == date && x.UserId == UserId))
                 {
-                    Vacation vacation = new Vacation();
-                    vacation.UserId = UserId;
-                    vacation.Date = date;
-                    db.Vacations.Add(vacation);
+                    var specials = db.SpecialSchedules.Where(x => x.WorkScheduleId == db.UserInfoes.FirstOrDefault(y => y.UserId == UserId).WorkScheduleId).ToList();
+                    int dayOfWeek = (int)date.DayOfWeek;
+                    if (specials.Any(x => x.DayOfWeek == dayOfWeek) || dayOfWeek != 0 && dayOfWeek != 6)
+                    {
+                        Vacation vacation = new Vacation();
+                        vacation.UserId = UserId;
+                        vacation.Date = date;
+                        db.Vacations.Add(vacation);
+                    }
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public void AddVacations(string startDateStr, string endDateStr, string UserId)
+        {
+            if (startDateStr != "" && endDateStr != "" && UserId != "")
+            {
+                DateTime startDate = new DateTime();
+                DateTime endDate = new DateTime();
+                DateTime.TryParse(startDateStr, out startDate);
+                DateTime.TryParse(endDateStr, out endDate);
+
+                if (startDate > endDate || (endDate - startDate).TotalDays > 30)
+                    return;
+
+                var specials = db.SpecialSchedules.Where(x => x.WorkScheduleId == db.UserInfoes.FirstOrDefault(y => y.UserId == UserId).WorkScheduleId).ToList();
+                while (startDate < endDate)
+                {
+                    if (!db.Vacations.Any(x => x.Date == startDate && x.UserId == UserId))
+                    {
+                        int dayOfWeek = (int)startDate.DayOfWeek;
+                        if (specials.Any(x => x.DayOfWeek == dayOfWeek) || dayOfWeek != 0 && dayOfWeek != 6)
+                        {
+                            Vacation vacation = new Vacation();
+                            vacation.UserId = UserId;
+                            vacation.Date = startDate;
+                            db.Vacations.Add(vacation);
+                        }    
+                    }
+                    startDate.AddDays(1);
                 }
                 try
                 {
@@ -71,35 +115,9 @@ namespace Journal3.Controllers
             }
         }
 
-        public void AddVacations(DateTime startDate, DateTime endDate, string UserId)
+        public void Delete(int id)
         {
-            if (startDate > endDate || (endDate - startDate).TotalDays > 30)
-                return;
-
-            while (startDate < endDate)
-            {
-                if (!db.Vacations.Any(x => x.Date == startDate && x.UserId == UserId))
-                {
-                    Vacation vacation = new Vacation();
-                    vacation.UserId = UserId;
-                    vacation.Date = startDate;
-                    db.Vacations.Add(vacation);
-                }
-                startDate.AddDays(1);
-            }
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public void Delete(int vacationId)
-        {
-            var vacation = db.Vacations.Find(vacationId);
+            var vacation = db.Vacations.Find(id);
             try
             {
                 db.Vacations.Remove(vacation);
