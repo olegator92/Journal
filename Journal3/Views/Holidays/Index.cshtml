@@ -20,12 +20,15 @@
         </a>
     </form>
 </div>
-<div class="row" style="padding-left: 15px; padding-top: 15px;">
-    <a href="/Holidays/Create">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-        Добавить
-    </a>
-</div>
+@if (User.IsInRole("Admin"))
+{
+    <div class="row" style="padding-left: 15px; padding-top: 15px;">
+        <a href="/Holidays/Create">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            Добавить
+        </a>
+    </div>
+}
     <table class="table table-hover customTheme" style="width:auto;">
         <thead>
             <tr class="tabcolor">
@@ -45,9 +48,12 @@
                         @item.Comment
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Holidays", new {id = item.Id.ToString()})" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                        <a href="@Url.Action("Delete", "Holidays", new {id = item.Id.ToString()})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
-                    </td>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("Edit", "Holidays", new { id = item.Id.ToString() })" title="Редактировать"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                            <a href="@Url.Action("Delete", "Holidays", new { id = item.Id.ToString() })" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                        }
+                        </td>
                 </tr>
             }
         </tbody>

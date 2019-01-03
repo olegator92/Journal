@@ -25,100 +25,36 @@ namespace Journal3.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(string filePath, string message = "")
+        public ActionResult Index(Setting settings, string message = "")
         {
-            if (filePath != "")
+            var dbSetting = db.Settings.FirstOrDefault();
+            if (dbSetting != null)
             {
-                var dbSetting = db.Settings.FirstOrDefault();
-                if (dbSetting != null)
+                dbSetting.FilePath = settings.FilePath;
+                dbSetting.AllowEditVacation = settings.AllowEditVacation;
+            }
+            else
+            {
+                Setting newSetting = new Setting
                 {
-                    dbSetting.FilePath = filePath;
-                }
-                else
-                {
-                    Setting newSetting = new Setting
-                    {
-                        FilePath = filePath
-                    };
-                    db.Settings.Add(newSetting);
-                }
+                    FilePath = settings.FilePath,
+                    AllowEditVacation = false
+                };
+                db.Settings.Add(newSetting);
+            }
+            try
+            {
                 db.SaveChanges();
-                message = "Путь сохранен!";
+                message = "Настройки сохранены!";
             }
+            catch (Exception ex)
+            {
+                message = "Ошибка при сохранении: " + ex.Message;
+            }
+            
             return RedirectToAction("Index", new { message = message });
-            }
-
-        // GET: Settings/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
         }
 
-        // GET: Settings/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Settings/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Settings/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Settings/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Settings/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Settings/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         protected override void Dispose(bool disposing)
         {

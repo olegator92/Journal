@@ -8,35 +8,49 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="row">
+
+    <input type="hidden" name="userId" id="userId" value="@ViewBag.UserId" />
     <form action="/Vacations/Index" method="post" role="form" class="form-inline" id="getByUserId">
         @if (User.IsInRole("Admin"))
         {
-            @Html.DropDownList("userId", (SelectList)ViewBag.User, "Все", new { @class = "form-control inlineDropdown" })
+            @Html.DropDownList("UserId", (SelectList)ViewBag.User, "", new { @class = "form-control inlineDropdown" })
         }
-    </form>
-    <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
-        <input type="hidden" name="userId" value="@ViewBag.UserId" />
-
-        <div class="input-append date" data-date-format="dd.mm.yyyy" style="display: inline-block;">
-            <input class="form-control" size="16" type="text" name="date" id="datepicker" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="width: 150px;" />
+        <div style="display: block; margin-left: 15px; margin-top: 10px;">
+            <a href="@Url.Action("Index","Vacations", new { year = ViewBag.PreviousYear, userId = ViewBag.UserId})" class="btn btn-primary" title="Предыдущий">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style=""></span>
+            </a>
+            <div class="input-append date" id="yearpicker" data-date-format="yyyy" style="display: inline-block;">
+                <input class="form-control" size="16" type="text" name="year" id="year" value="@ViewBag.SelectedYear" readonly="" style="width: 68px;" />
+                <span class="add-on glyphicon glyphicon-calendar"></span>
+            </div>
+            <a href="@Url.Action("Index","Vacations", new { year = ViewBag.NextYear, userId = ViewBag.UserId})" class="btn btn-primary" title="Следующий">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style=""></span>
+            </a>
         </div>
-        <button type="button" class="btn btn-primary" id="AddDate" title="Добавить">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-        </button>
     </form>
-
-    <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
-        <input type="hidden" name="userId" value="@ViewBag.UserId" />
-
-        <div class="input-daterange input-group" id="datepickerRange" style="display: block;">
-            <input type="text" class="input-sm form-control" name="startDate" value="@DateTime.Now.AddDays(-3).ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 150px;" />
-            <span class="input-group-addon" style="display: inline-block; width: 40px; height: 32px;">по</span>
-            <input type="text" class="input-sm form-control" name="endDate" value="@DateTime.Now.AddDays(3).ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 150px;" />
-            <button type="button" class="btn btn-primary" id="AddRangeDates" title="Добавить">
+    @if (User.IsInRole("Admin") || ViewBag.AllowEditVacations == true)
+    {
+        <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
+            <div class="input-append date" data-date-format="dd.mm.yyyy" style="display: inline-block;">
+                <input class="form-control" size="16" type="text" name="date" id="datepicker" value="@DateTime.Now.ToString("dd.MM.yyyy")" readonly="" style="width: 130px;" />
+            </div>
+            <button type="button" class="btn btn-primary" id="AddDate" title="Добавить">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             </button>
-        </div>
-    </form>
+        </form>
+
+        <form action="/Vactions/AddVacations" method="post" role="form" class="form-inline" style="margin-left: 15px; margin-top: 10px;">
+
+            <div class="input-daterange input-group" id="datepickerRange" style="display: block;">
+                <input type="text" class="input-sm form-control" name="startDate" value="@DateTime.Now.AddDays(-3).ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 130px;" />
+                <span class="input-group-addon" style="display: inline-block; width: 40px; height: 32px;">по</span>
+                <input type="text" class="input-sm form-control" name="endDate" value="@DateTime.Now.AddDays(3).ToString("dd.MM.yyyy")" readonly="" style="display: inline-block;width: 130px;" />
+                <button type="button" class="btn btn-primary" id="AddRangeDates" title="Добавить">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+            </div>
+        </form>
+    }
 </div>
 
 <table class="table table-hover table-striped table-bordered customTheme" style="width:auto;">
@@ -47,16 +61,23 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="vacations">
         @foreach (var item in Model)
         {
             <tr>
-                <td>@i)</td>
+                <td>@i</td>
                 <td>
-                    @item.Date.ToString("dd MMMM yyyy")
+                    @item.Date.ToString("d MMMM yyyy")
                 </td>
                 <td>
-                    <a href="@Url.Action("Delete", "Vacations", new {id = item.Id})" title="Удалить"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-right: 10px;"></span></a>
+                    @if (User.IsInRole("Admin") || ViewBag.AllowEditVacations == true)
+                    {
+                        <input type="hidden" name="vacationId" value="@item.Id" />
+
+                        <button type="button" class="btn btn-primary Delete" title="Удалить">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    }
                 </td>
             </tr>
             i++;
@@ -81,7 +102,24 @@
         orientation: "top auto"
     });
 
-    $('#userId').change(function () {
+    $(function () {
+        $('#yearpicker').datepicker({
+            format: "yyyy",
+            weekStart: 1,
+            language: "ru",
+            autoclose: true,
+            orientation: "top auto",
+            startView: 2,
+            minViewMode: 2,
+            maxViewMode: 2
+        });
+    });
+
+    $('#year').change(function () {
+        $('#getByUserId').submit();
+    });
+
+    $('#UserId').change(function () {
         $('#getByUserId').submit();
     });
 
@@ -100,25 +138,63 @@
     $('#AddDate').click(AddVacation);
 
     function AddVacation(event) {
-        var userId = $(this).parent().children("input[name=userId]").val();
+        var userId = $('#userId').val();
         var date = $(this).parent().children().children("input[name=date]").val();
 
         $.get('/Vacations/AddVacation', { dateStr: date, UserId: userId }).done(
-            function () {
-            });
+            DisplayVacations);
     }
 
     $('#AddRangeDates').click(AddVacations);
 
     function AddVacations(event) {
-        var userId = $(this).parent().parent().children("input[name=userId]").val();
+        var userId = $('#userId').val();
         var startDate = $(this).parent().children("input[name=startDate]").val();
         var endDate = $(this).parent().children("input[name=endDate]").val();
 
-        alert(endDate);
         $.get('/Vacations/AddVacations', { startDateStr: startDate, endDateStr: endDate, UserId: userId }).done(
-            function () {
-            });
+            DisplayVacations);
+    }
+
+    $('body').on('click', '.Delete', DeleteVacations); 
+
+    function DeleteVacations(event) {
+        var userId = $('#userId').val();
+        var id = $(this).parent().children("input[name=vacationId]").val();
+
+        $.get('/Vacations/Delete', { userId: userId, id: id }).done(
+            DisplayVacations);
+    }
+
+    function DisplayVacations(event) {
+        var userId = $('#userId').val();
+        var year = $('#year').val();
+        $.getJSON("/Vacations/GetUserVacations", { userId: userId, year: year },
+            function (data) {
+                var html = "<tbody id='vacations'>";
+                for (var i = 0; i < data.length; i++)
+                {
+                    html += "<tr>" +
+                                "<td> " + (i+1) + "</td > " +
+                                "<td>" + parseJsonDate(data[i].Date) + "</td>" +
+                                "<td>" +
+                                    "<input type = 'hidden' name = 'vacationId' value = '" + data[i].Id + "'> " +
+                                    "<button type='button' class='btn btn-primary Delete' title='Удалить'>" +
+                                        "<span class='glyphicon glyphicon-trash' aria-hidden='true'></span>" +
+                                    "</button>" +
+                                "</td >"+
+                            "</tr > ";
+                }
+                html += "</tbody>"
+                $('#vacations').replaceWith(html);
+            }
+        );
+    }
+
+    function parseJsonDate(jsonDateString) {
+        var date = new Date(parseInt(jsonDateString.replace('/Date(', '')));
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('ru-RU', options).replace(" г.", "");
     }
 
 </script>

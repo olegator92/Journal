@@ -326,7 +326,7 @@ namespace Journal3.Controllers
 
                     model.WorkSchedule = dbUser.UserInfo.WorkSchedule;
 
-                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(dbUser.UserInfo.WorkSchedule, model.DateRecord);
+                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(dbUser.UserInfo.WorkSchedule, model.DateRecord, dbUser.Id);
 
                     if (model.Status == (int)Statuses.Come && model.Remark == (int)Remarks.ComeGone)
                     {
@@ -372,7 +372,7 @@ namespace Journal3.Controllers
             WorkSchedule workSchedule = db.WorkSchedules.Find(db.UserInfoes.FirstOrDefault(x => x.UserId == user.Id).WorkScheduleId);
             if (workSchedule != null)
             {
-                StartEndWorkViewModel startEnd = GetSpecialSchedule(workSchedule, selectedDate.Value);
+                StartEndWorkViewModel startEnd = GetSpecialSchedule(workSchedule, selectedDate.Value, user.Id);
                 record.StartTime = startEnd.StartTime;
                 record.EndTime = startEnd.EndTime;
             }           
@@ -476,7 +476,7 @@ namespace Journal3.Controllers
                         goneRecord.IsConfirmed = false;
                     }
                     
-                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(dbUser.UserInfo.WorkSchedule, model.DateRecord);
+                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(dbUser.UserInfo.WorkSchedule, model.DateRecord, UserId);
 
                     if (model.Remark == (int)Remarks.ComeGone)
                     {
@@ -556,7 +556,7 @@ namespace Journal3.Controllers
                     {
                         dbRecord.DebtWorkDate = null;
                     }
-                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(db.WorkSchedules.Find(dbRecord.WorkScheduleId), dbRecord.DateRecord);
+                    StartEndWorkViewModel startEndWork = GetSpecialSchedule(db.WorkSchedules.Find(dbRecord.WorkScheduleId), dbRecord.DateRecord, dbRecord.UserId);
 
                     if (dbRecord.Status == (int)Statuses.Come && dbRecord.Remark == (int)Remarks.ComeGone)
                     {
@@ -1521,7 +1521,7 @@ namespace Journal3.Controllers
 
         public void CountTime(List<Record> filteredRecords, JournalViewModel journalRow, DateTime date)
         {
-            StartEndWorkViewModel startEnd = GetSpecialSchedule(journalRow.WorkSchedule, date);
+            StartEndWorkViewModel startEnd = GetSpecialSchedule(journalRow.WorkSchedule, date, journalRow.User.Id);
             TimeSpan endWorkTime = startEnd.EndTime;
             
             journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, startEnd, date, true);
@@ -1581,7 +1581,7 @@ namespace Journal3.Controllers
             }
         }
 
-        public StartEndWorkViewModel GetSpecialSchedule(WorkSchedule workSchedule, DateTime date)
+        public StartEndWorkViewModel GetSpecialSchedule(WorkSchedule workSchedule, DateTime date, string userId)
         {
             StartEndWorkViewModel model = new StartEndWorkViewModel();
             bool isWorkkDay = false;
@@ -1606,6 +1606,9 @@ namespace Journal3.Controllers
             }
 
             if (db.Holidays.FirstOrDefault(x => DbFunctions.TruncateTime(x.Date) == date.Date) != null)
+                isWorkkDay = false;
+
+            if (db.Vacations.FirstOrDefault(x => x.UserId == userId && DbFunctions.TruncateTime(x.Date) == date.Date) != null)
                 isWorkkDay = false;
 
             model.IsWorkDay = isWorkkDay;
@@ -2061,7 +2064,7 @@ namespace Journal3.Controllers
                         {
                             FileRecordViewModel fileRecordCome = new FileRecordViewModel();
                             fileRecordCome.Date = date.Date;
-                            startTime = GetSpecialSchedule(key.WorkSchedule, date.Date).StartTime;
+                            startTime = GetSpecialSchedule(key.WorkSchedule, date.Date, key.User.Id).StartTime;
                             fileRecordCome.Time = startTime;
                             fileRecordCome.Key = key.User.UserInfo.Key;
                             fileRecords.Add(fileRecordCome);

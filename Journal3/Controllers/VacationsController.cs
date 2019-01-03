@@ -21,9 +21,12 @@ namespace Journal3.Controllers
             db = new ApplicationDbContext();
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
-        public ActionResult Index(string userId = "")
+        public ActionResult Index(int? year, string userId = "")
         {
-            VacationsViewModel model = new VacationsViewModel();
+            int currentYear = DateTime.Now.Year;
+            if (year != null)
+                currentYear = year.Value;
+
             List<Vacation> vacations = new List<Vacation>();
             if (User.IsInRole("Employee"))
             {
@@ -32,17 +35,22 @@ namespace Journal3.Controllers
 
             if (userId != "")
             {
-                vacations = db.Vacations.Where(x => x.UserId == userId)
+                vacations = db.Vacations.Where(x => x.UserId == userId && x.Date.Year == currentYear)
                                             .OrderBy(x => x.Date)
                                             .ToList();
             }
-            model.Dates = vacations.Select(x => x.Date).OrderBy(x => x).ToList();
-            
+
+            Setting settings = db.Settings.FirstOrDefault();
+            if (settings != null)
+                ViewBag.AllowEditVacations = settings.AllowEditVacation;
 
             ViewBag.DayOfWeek = Helper.DaysOfWeekHelper.GetDayName((int)DateTime.Now.DayOfWeek);
             if (User.IsInRole("Admin"))
                 ViewBag.User = new SelectList(db.UserInfoes.Where(x => x.Key != null).OrderBy(x => x.Name).ToList(), "UserId", "Name", userId);
             ViewBag.UserId = userId;
+            ViewBag.SelectedYear = currentYear;
+            ViewBag.PreviousYear = currentYear - 1;
+            ViewBag.NextYear = currentYear + 1;
             return View(vacations);
         }
 
@@ -89,7 +97,7 @@ namespace Journal3.Controllers
                     return;
 
                 var specials = db.SpecialSchedules.Where(x => x.WorkScheduleId == db.UserInfoes.FirstOrDefault(y => y.UserId == UserId).WorkScheduleId).ToList();
-                while (startDate < endDate)
+                while (startDate < endDate.AddDays(1))
                 {
                     if (!db.Vacations.Any(x => x.Date == startDate && x.UserId == UserId))
                     {
@@ -102,7 +110,7 @@ namespace Journal3.Controllers
                             db.Vacations.Add(vacation);
                         }    
                     }
-                    startDate.AddDays(1);
+                    startDate = startDate.AddDays(1);
                 }
                 try
                 {
@@ -115,9 +123,9 @@ namespace Journal3.Controllers
             }
         }
 
-        public void Delete(int id)
+        public void Delete(string userId, int id)
         {
-            var vacation = db.Vacations.Find(id);
+            var vacation = db.Vacations.FirstOrDefault(x => x.Id == id && x.UserId == userId);
             try
             {
                 db.Vacations.Remove(vacation);
@@ -127,6 +135,21 @@ namespace Journal3.Controllers
             {
                 throw new Exception("Невозможно удалить запись\n" + e.Message);
             }
+        }
+
+        public JsonResult GetUserVacations(string userId, int year)
+        {
+            List<Vacation> vacations = db.Vacations.Where(x => x.UserId == userId && x.Date.Year == year).OrderBy(x => x.Date).ToList();
+            return Json(vacations, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace Journal3.Models
     {
         public int Id { get; set; }
         public string FilePath { get; set; }
+        public bool AllowEditVacation { get; set; }
     }
 }

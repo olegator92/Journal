@@ -431,6 +431,10 @@
     <Compile Include="Migrations\201812250708156_Vacations.Designer.cs">
       <DependentUpon>201812250708156_Vacations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201812311203005_SettingAllowEditVacations.cs" />
+    <Compile Include="Migrations\201812311203005_SettingAllowEditVacations.Designer.cs">
+      <DependentUpon>201812311203005_SettingAllowEditVacations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DbInitializer.cs" />
@@ -787,6 +791,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201812250708156_Vacations.resx">
       <DependentUpon>201812250708156_Vacations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812311203005_SettingAllowEditVacations.resx">
+      <DependentUpon>201812311203005_SettingAllowEditVacations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

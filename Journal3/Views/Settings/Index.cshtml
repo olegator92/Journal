@@ -1,16 +1,18 @@
 ﻿@model Journal3.Models.Setting
 @{
-    ViewBag.Title = "Укажите путь к файлу";
+                /**/
+
+                ViewBag.Title = "Настройки";
 }
 <h3>@ViewBag.Title </h3>
 
 <hr />
 <div class="row">
-    
+
 </div>
 @using (Html.BeginForm("Index", "Settings", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-   
+
     <div class="form-group">
         <label class="col-md-2 control-label" for="Name"></label>
         <div class="col-md-10">
@@ -20,8 +22,16 @@
     <div class="form-group">
         <label class="col-md-2 control-label" for="Name">Путь:</label>
         <div class="col-md-10">
-            <input type="text" class="form-control" value="@(Model != null ? Model.FilePath : "")" name="filePath" style="width: 400px; max-width: 400px; display: inline-block;"/>
+            <input type="text" class="form-control" value="@(Model != null ? Model.FilePath : "")" name="FilePath" style="width: 400px; max-width: 400px; display: inline-block;" />
             <span class="message">@ViewBag.Message</span>
+        </div>
+    </div>
+    <hr/>
+    <div class="form-group">
+        <label class="col-md-2 control-label" for=""></label>
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.AllowEditVacation)
+            <label for="AllowEditVacation">Редактировать отпуски</label>
         </div>
     </div>
     <div class="form-group">

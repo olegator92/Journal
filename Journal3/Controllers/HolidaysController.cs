@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Journal3.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     public class HolidaysController : Controller
     {
         private ApplicationDbContext db = null;
@@ -33,6 +33,7 @@ namespace Journal3.Controllers
             return View(holidays);
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             var holiday = new Holiday();
@@ -42,6 +43,7 @@ namespace Journal3.Controllers
         }
 
         // POST: Holidays/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Create(Holiday holiday)
         {
@@ -56,6 +58,7 @@ namespace Journal3.Controllers
         }
 
         // GET: Holidays/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id)
         {
             var holiday = db.Holidays.Find(id);
@@ -63,6 +66,7 @@ namespace Journal3.Controllers
         }
 
         // POST: Holidays/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Edit(Holiday holiday)
         {
@@ -78,6 +82,7 @@ namespace Journal3.Controllers
         }
 
         // GET: Holidays/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var holiday = db.Holidays.Find(id);
@@ -85,6 +90,7 @@ namespace Journal3.Controllers
         }
 
         // POST: Holidays/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
