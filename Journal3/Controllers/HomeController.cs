@@ -1523,7 +1523,8 @@ namespace Journal3.Controllers
         {
             StartEndWorkViewModel startEnd = GetSpecialSchedule(journalRow.WorkSchedule, date, journalRow.User.Id);
             TimeSpan endWorkTime = startEnd.EndTime;
-            
+            TimeSpan totalDayTime = GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak);
+
             journalRow.OutForWorkTime = CountOutForWorkTime(filteredRecords, startEnd, date, true);
             journalRow.ByPermissionTime = CountByPermissionTime(filteredRecords, startEnd, date, true);
             journalRow.ByPermissionForgivenTime = CountByPermissionForgivenTime(filteredRecords, startEnd, date, true);
@@ -1535,10 +1536,26 @@ namespace Journal3.Controllers
             journalRow.OverWorkUserTime = CountOverWorkTime(filteredRecords, endWorkTime, date, false);
             journalRow.SickLeave = CountSickLeaveTime(filteredRecords, endWorkTime, date, true);
             journalRow.SickLeaveUser = CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
-            journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date, true) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
-            journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) + journalRow.PlusDebtWorkUserTime + journalRow.SickLeaveUser;
 
-            TimeSpan totalDayTime = GetTotalTime(journalRow.WorkSchedule.StartWork, endWorkTime, startEnd.WithoutTimeBreak);
+            if (db.Holidays.Any(x => x.Date == date.Date))
+            {
+                journalRow.HolidayTime = totalDayTime;
+                journalRow.TotalTime = totalDayTime;
+                journalRow.TotalUserTime = totalDayTime;
+            }
+            else if (db.Vacations.Any(x => x.Date == date.Date && x.UserId == journalRow.User.Id))
+            {
+                journalRow.VacationTime = totalDayTime;
+                journalRow.TotalTime = totalDayTime;
+                journalRow.TotalUserTime = totalDayTime;
+            }
+            else
+            {
+                journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date, true) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
+                journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) + journalRow.PlusDebtWorkUserTime + journalRow.SickLeaveUser;
+            }    
+
+            
 
             if (journalRow.TotalTime > totalDayTime)
             {
@@ -1563,7 +1580,10 @@ namespace Journal3.Controllers
             else
                 journalRow.NotWorkedTime = TimeSpan.Zero;
 
-            if (!startEnd.IsWorkDay && journalRow.OutForWorkTime == TimeSpan.Zero &&
+            if (!startEnd.IsWorkDay &&
+                journalRow.HolidayTime == TimeSpan.Zero &&
+                journalRow.VacationTime == TimeSpan.Zero &&
+                journalRow.OutForWorkTime == TimeSpan.Zero &&
                 journalRow.ByPermissionTime == TimeSpan.Zero &&
                 journalRow.ByPermissionForgivenTime == TimeSpan.Zero &&
                 journalRow.MinusDebtWorkTime == TimeSpan.Zero &&
@@ -1604,12 +1624,6 @@ namespace Journal3.Controllers
                 if (dayOfWeek != 0 && dayOfWeek != 6)
                     isWorkkDay = true;
             }
-
-            if (db.Holidays.FirstOrDefault(x => DbFunctions.TruncateTime(x.Date) == date.Date) != null)
-                isWorkkDay = false;
-
-            if (db.Vacations.FirstOrDefault(x => x.UserId == userId && DbFunctions.TruncateTime(x.Date) == date.Date) != null)
-                isWorkkDay = false;
 
             model.IsWorkDay = isWorkkDay;
 

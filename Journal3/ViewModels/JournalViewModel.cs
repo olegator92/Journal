@@ -26,6 +26,8 @@ namespace Journal3.ViewModels
         public TimeSpan OverWorkUserTime { get; set; }
         public TimeSpan SickLeave { get; set; }
         public TimeSpan SickLeaveUser { get; set; }
+        public TimeSpan HolidayTime { get; set; }
+        public TimeSpan VacationTime { get; set; }
         public TimeSpan TotalTime { get; set; }
         public TimeSpan TotalUserTime { get; set; }
         public bool IsDislplay { get; set; }

@@ -9,6 +9,8 @@
     double totalDebtWork = 0;
     double totalOverWork = 0;
     double totalSickLeave = 0;
+    double totalHolidayTime = 0;
+    double totalVacationTime = 0;
     double totalTime = 0;
     double totalUserTime = 0;
     double totalNotWorkedTime = 0;
@@ -47,7 +49,7 @@
     </form>
 </div>
 
-<table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 10pt;">
+<table class="table table-hover customTheme table-striped table-fixed table-bordered" style="width:auto; font-size: 9pt;">
     <thead>
         <tr class="tabcolor">
             <th scope="row">№</th>
@@ -55,6 +57,8 @@
             <th scope="row">Пришел</th>
             <th scope="row">Ушел</th>
             <th scope="row">График работы</th>
+            <th scope="row">Праздники</th>
+            <th scope="row">Отпуск</th>
             <th scope="row">Выезды</th>
             <th scope="row">Отпр.</th>
             <th scope="row">Отраб.</th>
@@ -87,6 +91,20 @@
                         </td>
                         <td>
                             @dayStats.WorkSchedule.Name
+                        </td>
+                        <td class="alignCenter">
+                            @if (dayStats.HolidayTime != TimeSpan.Zero)
+                            {
+                                totalHolidayTime += dayStats.HolidayTime.TotalHours;
+                                <span>@String.Format("{0:h\\:mm}", dayStats.HolidayTime)</span>
+                            }
+                        </td>
+                        <td class="alignCenter">
+                            @if (dayStats.VacationTime != TimeSpan.Zero)
+                            {
+                                totalVacationTime += dayStats.VacationTime.TotalHours;
+                                <span>@String.Format("{0:h\\:mm}", dayStats.VacationTime)</span>
+                            }
                         </td>
                         <td class="alignCenter">
                             @if (dayStats.OutForWorkTime != TimeSpan.Zero)
@@ -185,6 +203,8 @@
             <td></td>
             <td></td>
             <td style="text-align: right;">Итого:</td>
+            <td style="text-align: center;">@Math.Round(totalHolidayTime, 2)</td>
+            <td style="text-align: center;">@Math.Round(totalVacationTime, 2)</td>
             <td style="text-align: center;">@Math.Round(totalOutForWork, 2)</td>
             <td style="text-align: center;">@Math.Round(totalByPermission, 2) <span>/</span> @Math.Round(totalByPermissionForgiven,2)</td>
             <td style="text-align: center;">@Math.Round(totalDebtWork, 2)</td>
