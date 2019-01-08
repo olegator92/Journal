@@ -1538,12 +1538,9 @@ namespace Journal3.Controllers
             journalRow.SickLeaveUser = CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
 
             if (db.Holidays.Any(x => x.Date == date.Date))
-            {
                 journalRow.HolidayTime = totalDayTime;
-                journalRow.TotalTime = totalDayTime;
-                journalRow.TotalUserTime = totalDayTime;
-            }
-            else if (db.Vacations.Any(x => x.Date == date.Date && x.UserId == journalRow.User.Id))
+
+            if (db.Vacations.Any(x => x.Date == date.Date && x.UserId == journalRow.User.Id))
             {
                 journalRow.VacationTime = totalDayTime;
                 journalRow.TotalTime = totalDayTime;
@@ -1554,8 +1551,6 @@ namespace Journal3.Controllers
                 journalRow.TotalTime = CountComeGoneTime(filteredRecords, startEnd, date, true) + journalRow.PlusDebtWorkTime + journalRow.SickLeave;
                 journalRow.TotalUserTime = CountComeGoneTime(filteredRecords, startEnd, date, false) + journalRow.PlusDebtWorkUserTime + journalRow.SickLeaveUser;
             }    
-
-            
 
             if (journalRow.TotalTime > totalDayTime)
             {
@@ -1624,6 +1619,9 @@ namespace Journal3.Controllers
                 if (dayOfWeek != 0 && dayOfWeek != 6)
                     isWorkkDay = true;
             }
+
+            if(db.Holidays.Any(x => x.Date == date))
+                isWorkkDay = false;
 
             model.IsWorkDay = isWorkkDay;
 
