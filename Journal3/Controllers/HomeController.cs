@@ -1298,6 +1298,12 @@ namespace Journal3.Controllers
                         case "workschedule":
                             dateStats.DateStats = stats.OrderBy(x => x.WorkSchedule.Name).ToList();
                             break;
+                        case "holidays":
+                            dateStats.DateStats = stats.OrderBy(x => x.HolidayTime).ToList();
+                            break;
+                        case "vacations":
+                            dateStats.DateStats = stats.OrderBy(x => x.VacationTime).ToList();
+                            break;
                         case "outForWork":
                             dateStats.DateStats = stats.OrderBy(x => x.OutForWorkTime).ToList();
                             break;
@@ -1538,9 +1544,10 @@ namespace Journal3.Controllers
             journalRow.SickLeaveUser = CountSickLeaveTime(filteredRecords, endWorkTime, date, false);
 
             if (db.Holidays.Any(x => x.Date == date.Date))
+            {
                 journalRow.HolidayTime = totalDayTime;
-
-            if (db.Vacations.Any(x => x.Date == date.Date && x.UserId == journalRow.User.Id))
+            }
+            else if (db.Vacations.Any(x => x.Date == date.Date && x.UserId == journalRow.User.Id))
             {
                 journalRow.VacationTime = totalDayTime;
                 journalRow.TotalTime = totalDayTime;
